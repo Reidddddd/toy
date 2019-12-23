@@ -18,6 +18,12 @@ package org.apache.toy;
 
 public interface Toy {
 
-  int play(String dir_of_conf_file);
+  /**
+   * Because it is a toy, as it is name, exceptions are handled casually.
+   * @param dir_of_conf_file
+   * @return a code to denote success or failure
+   * @throws Exception
+   */
+  int play(String dir_of_conf_file) throws Exception;
 
 }

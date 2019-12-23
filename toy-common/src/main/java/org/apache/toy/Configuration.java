@@ -33,7 +33,8 @@ import java.util.Optional;
  * Configuration file for Java application.
  */
 @ThreadSafe
-public class Configuration {
+public final class Configuration {
+
   private static final String HEADER = "# Copyright (c) R.C";
   private static final String DELIMITER = "=";
 
@@ -45,11 +46,10 @@ public class Configuration {
 
   /**
    * Don't directly call this method. Use {@link ConfigurationFactory#createJavaConfiguration}
-   * @param config_file
+   * @param config_file configuration file
    * @return java configuration
    */
   public static Configuration createConfiguration(File config_file) {
-    System.out.println(config_file);
     Map<String, String> key_value_pairs = new HashMap<>();
     try (BufferedReader r = new BufferedReader(new FileReader(config_file))) {
       @Nullable Optional<String> line = Optional.ofNullable(r.readLine());
@@ -94,13 +94,4 @@ public class Configuration {
     return configurations.get(key);
   }
 
-  public static void main(String[] args) {
-    Configuration conf = ConfigurationFactory.createJavaConfiguration("/Users/reid.chen/Desktop");
-    System.out.println(conf.get("who"));
-    System.out.println(conf.get("job"));
-    System.out.println(conf.getInt("a"));
-    System.out.println(conf.getInt("b"));
-    System.out.println(conf.getInt("c"));
-    System.out.println(conf.getInt("d"));
-  }
 }

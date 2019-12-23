@@ -21,7 +21,7 @@ import org.apache.hadoop.conf.Configuration;
 public abstract class AbstractHBaseToy extends AbstractToy<Configuration> {
 
   @Override
-  public final int play(String dir_of_conf_file) {
+  public final int play(String dir_of_conf_file) throws Exception {
     Configuration configuration = ConfigurationFactory.createHBaseConfiguration(dir_of_conf_file);
     return haveFun(configuration);
   }

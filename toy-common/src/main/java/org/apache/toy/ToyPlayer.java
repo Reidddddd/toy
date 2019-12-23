@@ -16,7 +16,13 @@
 
 package org.apache.toy;
 
-public class ToyPlayer {
+/**
+ * Usage of this class:
+ * java -cp classname parameters.
+ * Parameters only support (--help|-h) and (--debug|-d)
+ * Other runtime parameters please set them in respective configuration file, for simplicity.
+ */
+public final class ToyPlayer {
 
   public static void main(String[] args) {
 
