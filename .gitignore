@@ -21,6 +21,7 @@
 
 # Directories
 /.idea
+*target/
 
 # Files
 toy.iml
