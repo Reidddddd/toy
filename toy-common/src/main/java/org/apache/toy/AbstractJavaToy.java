@@ -19,7 +19,7 @@ package org.apache.toy;
 public abstract class AbstractJavaToy extends AbstractToy<Configuration> {
 
   @Override
-  public final int play(String dir_of_conf_file) throws Exception {
+  public final int play(String dir_of_conf_file) {
     Configuration configuration = ConfigurationFactory.createJavaConfiguration(dir_of_conf_file);
     return haveFun(configuration);
   }

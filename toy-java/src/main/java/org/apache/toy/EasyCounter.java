@@ -16,15 +16,12 @@
 
 package org.apache.toy;
 
-import com.google.common.base.Preconditions;
-
-public class EasyCounter implements Toy {
+public class EasyCounter extends AbstractJavaToy {
 
   public EasyCounter() {}
 
-  public int play(ConfigurationWrapper wrapper) throws Exception {
-    Preconditions.checkArgument(wrapper.project() == ConfigurationWrapper.Project.JAVA,
-        "It's a java toy which requires java configuration");
+  @Override
+  public int haveFun(Configuration configuration) throws Exception {
     return 0;
   }
 

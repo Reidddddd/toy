@@ -18,6 +18,6 @@ package org.apache.toy;
 
 public interface Toy {
 
-  int play(String dir_of_conf_file) throws Exception;
+  int play(String dir_of_conf_file);
 
 }
