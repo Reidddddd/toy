@@ -22,6 +22,7 @@ public class EasyCounter extends AbstractJavaToy {
 
   @Override
   public int haveFun(Configuration configuration) throws Exception {
+    System.out.println("Having fun!!!");
     return 0;
   }
 

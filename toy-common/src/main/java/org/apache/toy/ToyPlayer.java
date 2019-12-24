@@ -18,14 +18,25 @@ package org.apache.toy;
 
 /**
  * Usage of this class:
- * java -cp classname parameters.
+ * java -cp jarA:jarB full.class.name.
  * Parameters only support (--help|-h) and (--debug|-d)
  * Other runtime parameters please set them in respective configuration file, for simplicity.
  */
 public final class ToyPlayer {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
+    if (args.length < 1) {
+      throw new IllegalArgumentException();
+    }
 
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].equals("--class")) {
+        String clazz_name = args[++i];
+        System.out.println(clazz_name);
+        Toy toy = (Toy) Class.forName(clazz_name).newInstance();
+        toy.play(args[1]);
+      }
+    }
   }
 
 }
