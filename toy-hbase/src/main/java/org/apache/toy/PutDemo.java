@@ -25,9 +25,21 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import java.io.PrintStream;
+
 public class PutDemo extends AbstractHBaseToy {
 
   public PutDemo() {}
+
+  @Override
+  public void howToPlay(PrintStream out) {
+
+  }
+
+  @Override
+  public void preCheck(Configuration configuration) throws Exception {
+
+  }
 
   public int haveFun(Configuration configuration) throws Exception {
     Connection connection = ConnectionFactory.createConnection(configuration);

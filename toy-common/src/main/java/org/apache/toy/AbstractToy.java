@@ -16,7 +16,13 @@
 
 package org.apache.toy;
 
+import java.io.PrintStream;
+
 public abstract class AbstractToy<T> implements Toy {
+
+  public abstract void howToPlay(PrintStream out);
+
+  public abstract void preCheck(T configuration) throws Exception;
 
   public abstract int haveFun(T configuration) throws Exception;
 

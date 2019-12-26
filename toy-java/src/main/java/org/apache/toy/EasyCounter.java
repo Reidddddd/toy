@@ -16,9 +16,21 @@
 
 package org.apache.toy;
 
+import java.io.PrintStream;
+
 public class EasyCounter extends AbstractJavaToy {
 
   public EasyCounter() {}
+
+  @Override
+  public void howToPlay(PrintStream out) {
+
+  }
+
+  @Override
+  public void preCheck(Configuration configuration) throws Exception {
+
+  }
 
   @Override
   public int haveFun(Configuration configuration) throws Exception {
