@@ -16,7 +16,15 @@
 
 package org.apache.toy;
 
+import java.io.PrintStream;
+
 public interface Toy {
+
+  /**
+   * How to play toy.
+   * @param out stream for printing
+   */
+  int howToPlay(PrintStream out);
 
   /**
    * Because it is a toy, as it is name, exceptions are handled casually.
@@ -25,5 +33,4 @@ public interface Toy {
    * @throws Exception
    */
   int play(String dir_of_conf_file) throws Exception;
-
 }

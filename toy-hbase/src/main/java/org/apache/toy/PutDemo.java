@@ -32,8 +32,8 @@ public class PutDemo extends AbstractHBaseToy {
   public PutDemo() {}
 
   @Override
-  public void howToPlay(PrintStream out) {
-
+  public int howToPlay(PrintStream out) {
+    return RETURN_CODE.HELP.code();
   }
 
   @Override

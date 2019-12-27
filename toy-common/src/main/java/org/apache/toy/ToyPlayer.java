@@ -16,6 +16,8 @@
 
 package org.apache.toy;
 
+import java.util.Optional;
+
 /**
  * Usage of this class:
  * java -cp jarA:jarB full.class.name.
@@ -25,18 +27,9 @@ package org.apache.toy;
 public final class ToyPlayer {
 
   public static void main(String[] args) throws Exception {
-    if (args.length < 1) {
-      throw new IllegalArgumentException();
-    }
-
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].equals("--class")) {
-        String clazz_name = args[++i];
-        System.out.println(clazz_name);
-        Toy toy = (Toy) Class.forName(clazz_name).newInstance();
-        toy.play(args[1]);
-      }
-    }
+    ToyParameters tp = ToyParameters.parse(Optional.ofNullable(args));
+    Toy toy = (Toy) Class.forName(tp.getClassName()).newInstance();
+    System.exit(tp.needHelp() ? toy.howToPlay(System.out) : toy.play(tp.getConfDirectory()));
   }
 
 }

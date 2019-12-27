@@ -16,14 +16,26 @@
 
 package org.apache.toy;
 
-import java.io.PrintStream;
-
 public abstract class AbstractToy<T> implements Toy {
-
-  public abstract void howToPlay(PrintStream out);
 
   public abstract void preCheck(T configuration) throws Exception;
 
   public abstract int haveFun(T configuration) throws Exception;
+
+  protected enum RETURN_CODE {
+    HELP(-2),
+    SUCCESS(0),
+    FAILURE(1);
+
+    private int return_code;
+
+    RETURN_CODE(int return_code) {
+      this.return_code = return_code;
+    }
+
+    protected int code() {
+      return return_code;
+    }
+  }
 
 }

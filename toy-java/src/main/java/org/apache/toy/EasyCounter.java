@@ -23,8 +23,8 @@ public class EasyCounter extends AbstractJavaToy {
   public EasyCounter() {}
 
   @Override
-  public void howToPlay(PrintStream out) {
-
+  public int howToPlay(PrintStream out) {
+    return RETURN_CODE.HELP.code();
   }
 
   @Override
