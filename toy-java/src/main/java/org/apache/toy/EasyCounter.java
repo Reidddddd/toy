@@ -28,12 +28,11 @@ public class EasyCounter extends AbstractJavaToy {
   }
 
   @Override
-  public void preCheck(Configuration configuration) throws Exception {
-
+  public void preCheck(Configuration configuration) {
   }
 
   @Override
-  public int haveFun(Configuration configuration) throws Exception {
+  public int haveFun() throws Exception {
     System.out.println("Having fun!!!");
     return 0;
   }

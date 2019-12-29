@@ -16,17 +16,11 @@
 
 package org.apache.toy;
 
-import org.apache.toy.annotation.Nullable;
 import org.apache.toy.annotation.ThreadSafe;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 
 /**
@@ -36,7 +30,7 @@ import java.util.Optional;
 public final class Configuration {
 
   private static final String HEADER = "# Copyright (c) R.C";
-  private static final String DELIMITER = "=";
+  private static final String KV_DELIMITER = "=";
 
   private Map<String, String> configurations = new HashMap<>();
 
@@ -51,32 +45,27 @@ public final class Configuration {
    */
   public static Configuration createConfiguration(File config_file) {
     Map<String, String> key_value_pairs = new HashMap<>();
-    try (BufferedReader r = new BufferedReader(new FileReader(config_file))) {
-      @Nullable Optional<String> line = Optional.ofNullable(r.readLine());
+
+    try (FileLineIterator fli = new FileLineIterator(config_file)) {
       boolean first_line = true;
-      for (;line.isPresent(); line = Optional.ofNullable(r.readLine())) {
+      while (fli.hasNext()) {
         // Check header of configuration file
         if (first_line) {
-          if (!checkHeader(line.get())) {
+          if (!checkHeader(fli.next())) {
             throw new RuntimeException("Unauthorized toy-site.conf");
           }
           first_line = false;
           continue;
         }
 
-        // Skip comments and empty line.
-        String kv = line.get();
+        // Skip comments and empty line
+        String kv = fli.next();
         if (kv.isEmpty() || kv.startsWith("#") || kv.startsWith("//") || !kv.contains("=")) continue;
 
         // Real key-value pair
-        String[] pair = kv.split(DELIMITER);
+        String[] pair = kv.split(KV_DELIMITER);
         key_value_pairs.put(pair[0], pair[1]);
       }
-    } catch (FileNotFoundException e) {
-      // FileNotFound should be guarded above, here can't be reached.
-      // Just ignore.
-    } catch (IOException e) {
-      // what else?
     }
 
     return new Configuration(key_value_pairs);

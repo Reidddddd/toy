@@ -20,8 +20,7 @@ import java.util.Optional;
 
 /**
  * Usage of this class:
- * java -cp jarA:jarB full.class.name.
- * Parameters only support (--help|-h) and (--debug|-d)
+ * java -cp jarA:jarB --class|-c full.class.name --conf_dir|-cd conf_dir --help|-h
  * Other runtime parameters please set them in respective configuration file, for simplicity.
  */
 public final class ToyPlayer {

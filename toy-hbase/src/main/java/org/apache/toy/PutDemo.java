@@ -37,22 +37,11 @@ public class PutDemo extends AbstractHBaseToy {
   }
 
   @Override
-  public void preCheck(Configuration configuration) throws Exception {
+  public void preCheck(Configuration configuration) {
 
   }
 
-  public int haveFun(Configuration configuration) throws Exception {
-    Connection connection = ConnectionFactory.createConnection(configuration);
-    TableName tableName = TableName.valueOf("toy", "hbase");
-    Table table = connection.getTable(tableName);
-    BufferedMutator bm = connection.getBufferedMutator(tableName);
-    Put put = new Put(Bytes.toBytes("putdemo_toy"));
-    put.addColumn(Bytes.toBytes("p"), Bytes.toBytes("q"), Bytes.toBytes("putdemo"));
-    bm.mutate(put);
-    bm.flush();
-    table.put(put);
-    table.close();
-    connection.close();
+  public int haveFun() throws Exception {
     return 0;
   }
 

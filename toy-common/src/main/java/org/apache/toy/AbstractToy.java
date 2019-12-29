@@ -16,11 +16,26 @@
 
 package org.apache.toy;
 
+/**
+ * An abstract toy.
+ * @param <T> configuration type, based on what kind of toy
+ */
 public abstract class AbstractToy<T> implements Toy {
 
-  public abstract void preCheck(T configuration) throws Exception;
+  /**
+   * This method is used for checking parameters needed for playing toy. Toy should throw IllegalArgumentException
+   * if any required parameter is not set.
+   * @param configuration configuration file for reading parameter
+   * @throws Exception if parameters is not enough or wrong configured
+   */
+  public abstract void preCheck(T configuration);
 
-  public abstract int haveFun(T configuration) throws Exception;
+  /**
+   * Playing toy.
+   * @return {@link RETURN_CODE#SUCCESS} for good play, {@link RETURN_CODE#FAILURE} for bad play
+   * @throws Exception throw exception when playing toy if any
+   */
+  public abstract int haveFun() throws Exception;
 
   protected enum RETURN_CODE {
     HELP(-2),

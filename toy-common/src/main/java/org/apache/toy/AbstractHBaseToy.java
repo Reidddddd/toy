@@ -18,13 +18,16 @@ package org.apache.toy;
 
 import org.apache.hadoop.conf.Configuration;
 
+/**
+ * HBase toy's base implementation. HBase configuration is inititlized in this class.
+ */
 public abstract class AbstractHBaseToy extends AbstractToy<Configuration> {
 
   @Override
   public final int play(String dir_of_conf_file) throws Exception {
     Configuration configuration = ConfigurationFactory.createHBaseConfiguration(dir_of_conf_file);
     preCheck(configuration);
-    return haveFun(configuration);
+    return haveFun();
   }
 
 }

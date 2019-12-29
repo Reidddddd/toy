@@ -20,6 +20,13 @@ import java.util.Optional;
 
 public final class ToyParameters {
 
+  private static final Parameter<Boolean> help = Parameter.newBuilder().setKey("--help").setDescription("Help message").opt();
+  private static final Parameter<String> clazz = Parameter.newBuilder().setKey("--class")
+                                                          .setDescription("Class to be run").setRequired(true)
+                                                          .opt();
+  private static final Parameter<String> conf = Parameter.newBuilder().setKey("--conf_dir").setDescription("Directory of configuration")
+                                                         .setRequired(true)
+                                                         .opt();
   private boolean need_help;
   private String class_name;
   private String conf_dir;
@@ -47,30 +54,29 @@ public final class ToyParameters {
       throw new IllegalArgumentException("Found no argument");
     }
     String[] args = optional_args.get();
+    help.setValue(false);
 
-    String class_name = "";
-    String conf_dir = "";
-    boolean help = false;
     for (int i = 0; i < args.length; i++) {
-      if (args[i].equals("--class") || args[i].equals("-c")) {
-        class_name = args[++i];
+      if (args[i].equals(clazz.key())) {
+        clazz.setValue(args[++i]);
         continue;
       }
-      if (args[i].equals("--help") || args[i].equals("-h")) {
-        help = true;
+      if (args[i].equals(conf.key())) {
+        conf.setValue(args[++i]);
         continue;
       }
-      if (args[i].equals("--conf_dir") || args[i].equals("-cd")) {
-        conf_dir = args[++i];
+      if (args[i].equals(help.key())) {
+        help.setValue(true);
       }
     }
 
-    if (class_name.equals("")) {
+    if (clazz.required() && clazz.empty()) {
       throw new IllegalArgumentException("Class name must be specified");
     }
-    if (conf_dir.equals("")) {
+    if (conf.required() && conf.empty()) {
       throw new IllegalArgumentException("Configuration directory must be specified");
     }
-    return new ToyParameters(help, class_name, conf_dir);
+    return new ToyParameters(help.value(), clazz.value(), conf.value());
   }
+
 }

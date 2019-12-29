@@ -21,16 +21,18 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.toy.annotation.Nullable;
 import org.apache.toy.annotation.ThreadSafe;
-import org.apache.zookeeper.Op;
 
 import java.io.File;
 import java.util.Optional;
 
+/**
+ * Factory for creating various kind of configuration. So far support HBase and Java.
+ */
 @ThreadSafe
 public final class ConfigurationFactory {
 
   private enum Project {
-    HBASE, KAFKA, JAVA
+    HBASE, JAVA
   }
 
   private ConfigurationFactory() {}
