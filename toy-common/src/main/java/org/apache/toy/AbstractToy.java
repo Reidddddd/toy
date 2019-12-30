@@ -16,11 +16,18 @@
 
 package org.apache.toy;
 
+import org.apache.toy.common.Parameter;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * An abstract toy.
  * @param <T> configuration type, based on what kind of toy
  */
 public abstract class AbstractToy<T> implements Toy {
+
+  protected final List<Parameter<?>> parameters = new ArrayList<>();
 
   /**
    * This method is used for checking parameters needed for playing toy. Toy should throw IllegalArgumentException
@@ -28,7 +35,7 @@ public abstract class AbstractToy<T> implements Toy {
    * @param configuration configuration file for reading parameter
    * @throws Exception if parameters is not enough or wrong configured
    */
-  public abstract void preCheck(T configuration);
+  protected abstract void preCheck(T configuration);
 
   /**
    * Playing toy.

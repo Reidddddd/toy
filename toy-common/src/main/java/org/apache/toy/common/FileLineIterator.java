@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.toy;
+package org.apache.toy.common;
 
 import org.apache.toy.annotation.Nullable;
 
@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Read file line by line.
+ * Tool class for read file line by line.
  */
 public final class FileLineIterator implements AutoCloseable, Iterator<String> {
 

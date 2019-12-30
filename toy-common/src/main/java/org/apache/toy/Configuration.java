@@ -16,12 +16,14 @@
 
 package org.apache.toy;
 
+import org.apache.toy.annotation.Nullable;
 import org.apache.toy.annotation.ThreadSafe;
+import org.apache.toy.common.FileLineIterator;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Optional;
 
 /**
  * Configuration file for Java application.
@@ -83,4 +85,8 @@ public final class Configuration {
     return configurations.get(key);
   }
 
+  public String[] getStrings(String key) {
+    @Nullable Optional<String> value = Optional.ofNullable(get(key));
+    return value.isPresent() ? value.get().split(",") : null;
+  }
 }

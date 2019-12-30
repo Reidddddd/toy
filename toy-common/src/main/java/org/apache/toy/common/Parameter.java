@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.toy;
+package org.apache.toy.common;
 
 import org.apache.toy.annotation.Nullable;
 
@@ -31,14 +31,16 @@ public final class Parameter<T> {
   private T value;
   private String description;
   private boolean required;
+  private Class<?> type;
 
   private Parameter() {}
 
-  private Parameter(String key, String description, boolean required) {
+  private Parameter(String key, String description, boolean required, Class<?> type) {
     this.key = key;
     this.description = description;
     this.required = required;
     this.value = null;
+    this.type = type;
   }
 
   /**
@@ -51,7 +53,7 @@ public final class Parameter<T> {
 
   /**
    * Set value for parameter.
-   * @param value
+   * @param value value for this parameter
    */
   public void setValue(T value) {
     this.value = value;
@@ -59,10 +61,26 @@ public final class Parameter<T> {
 
   /**
    * Get value of parameter.
-   * @return
+   * @return value
    */
   public T value() {
     return value;
+  }
+
+  /**
+   * Get type of value.
+   * @return value's class
+   */
+  public Class<?> type() {
+    return type;
+  }
+
+  /**
+   * Description of parameter.
+   * @return description
+   */
+  public String description() {
+    return description;
   }
 
   /**
@@ -95,7 +113,7 @@ public final class Parameter<T> {
 
   /**
    * A builder for creating parameter.
-   * @return A builder
+   * @return a builder
    */
   public static Builder newBuilder() {
     return new Builder();
@@ -106,6 +124,7 @@ public final class Parameter<T> {
     private String key;
     private String description;
     private boolean required;
+    private Class<?> type;
 
     private Builder() {
       key = "";
@@ -116,7 +135,7 @@ public final class Parameter<T> {
     /**
      * Set key for paramter.
      * @param key key
-     * @return Builder itself
+     * @return builder itself
      */
     public Builder setKey(String key) {
       this.key = key;
@@ -126,20 +145,30 @@ public final class Parameter<T> {
     /**
      * Set description for paramter.
      * @param description description
-     * @return Builder itself
+     * @return builder itself
      */
     public Builder setDescription(String description) {
-      this.description = description;
+      this.description = description.toLowerCase();
       return this;
     }
 
     /**
      * Set if it is parameter is a must.
      * @param required true or false
-     * @return Builder itself
+     * @return builder itself
      */
     public Builder setRequired(boolean required) {
       this.required = required;
+      return this;
+    }
+
+    /**
+     * Set type of value.
+     * @param type type of value
+     * @return builder itself
+     */
+    public Builder setType(Class<?> type) {
+      this.type = type;
       return this;
     }
 
@@ -149,7 +178,7 @@ public final class Parameter<T> {
      * @return A parameter
      */
     public <T> Parameter<T> opt() {
-      return new Parameter<>(key, description, required);
+      return new Parameter<>(key, description, required, type);
     }
 
   }

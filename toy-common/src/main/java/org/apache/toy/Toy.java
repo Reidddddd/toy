@@ -18,7 +18,15 @@ package org.apache.toy;
 
 import java.io.PrintStream;
 
+/**
+ * Definition of a toy.
+ */
 public interface Toy {
+
+  /**
+   * Initialzation before playing toy, please add all user-defined parameters in this method.
+   */
+  void init();
 
   /**
    * How to play toy.

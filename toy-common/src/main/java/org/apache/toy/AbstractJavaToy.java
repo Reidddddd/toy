@@ -16,10 +16,26 @@
 
 package org.apache.toy;
 
+import org.apache.toy.common.Parameter;
+
 /**
  * Java toy's base implementation. Java configuration is inititlized in this class.
  */
 public abstract class AbstractJavaToy extends AbstractToy<Configuration> {
+
+  @Override
+  protected void preCheck(Configuration configuration) {
+    for (Parameter parameter : parameters) {
+           if (parameter.type().equals(String.class)) parameter.checkAndSet(configuration.get(parameter.key()));
+      else if (parameter.type().equals(Integer.class)) parameter.checkAndSet(configuration.getInt(parameter.key()));
+      else if (parameter.type().equals(String[].class)) parameter.checkAndSet(configuration.getStrings(parameter.key()));
+
+      if (parameter.required() && parameter.empty()) {
+        howToPlay(System.out);
+        throw new IllegalArgumentException(parameter.key() + " is not set");
+      }
+    }
+  }
 
   @Override
   public final int play(String dir_of_conf_file) throws Exception {
