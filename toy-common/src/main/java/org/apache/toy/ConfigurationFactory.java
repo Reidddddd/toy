@@ -23,6 +23,8 @@ import org.apache.toy.annotation.Nullable;
 import org.apache.toy.annotation.ThreadSafe;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.NotDirectoryException;
 import java.util.Optional;
 
 /**
@@ -41,11 +43,14 @@ public final class ConfigurationFactory {
    * Create hbase configuration.
    * @param dir_of_conf_file the parent directory where configuration file located
    * @return wrapped hbase configuration
+   * @throws NotDirectoryException if passes in parameter is not a directory
+   * @throws FileNotFoundException if dir doesn't contain hbase-site.xml
    */
-  public static synchronized final Configuration createHBaseConfiguration(String dir_of_conf_file) {
+  public static synchronized final Configuration createHBaseConfiguration(String dir_of_conf_file)
+      throws NotDirectoryException, FileNotFoundException {
     @Nullable Optional<File> config_file = getConfigurationFileFor(dir_of_conf_file, Project.HBASE);
     if (!config_file.isPresent()) {
-      throw new RuntimeException("hbase-site.xml doesn't exist");
+      throw new FileNotFoundException("hbase-site.xml doesn't exist");
     }
 
     Configuration configuration = HBaseConfiguration.create();
@@ -57,11 +62,14 @@ public final class ConfigurationFactory {
    * Create java configuration.
    * @param dir_of_conf_file the parent directory where configuration file located
    * @return wrapped java configuration
+   * @throws NotDirectoryException if passes in parameter is not a directory
+   * @throws FileNotFoundException if dir doesn't contain toy-site.conf
    */
-  public static synchronized final org.apache.toy.Configuration createJavaConfiguration(String dir_of_conf_file) {
+  public static synchronized final org.apache.toy.Configuration createJavaConfiguration(String dir_of_conf_file)
+      throws NotDirectoryException, FileNotFoundException {
     @Nullable Optional<File> config_file = getConfigurationFileFor(dir_of_conf_file, Project.JAVA);
     if (!config_file.isPresent()) {
-      throw new RuntimeException("toy-site.conf doesn't exist");
+      throw new FileNotFoundException("toy-site.conf for Java toy doesn't exist");
     }
 
     org.apache.toy.Configuration configuration = org.apache.toy.Configuration.createConfiguration(config_file.get());
@@ -69,11 +77,12 @@ public final class ConfigurationFactory {
   }
 
   @Nullable
-  private static Optional<File> getConfigurationFileFor(String dir_of_conf_file, Project project) {
+  private static Optional<File> getConfigurationFileFor(String dir_of_conf_file, Project project)
+      throws NotDirectoryException {
     File dir = new File(dir_of_conf_file);
     Optional<File[]> files = Optional.ofNullable(dir.listFiles());
     if (!files.isPresent()) {
-      throw new RuntimeException(dir + " maybe not a directory?.");
+      throw new NotDirectoryException(dir + " maybe not a directory?.");
     }
 
     for (File file : files.get()) {

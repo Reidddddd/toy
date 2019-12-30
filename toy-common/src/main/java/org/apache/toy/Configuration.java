@@ -89,4 +89,5 @@ public final class Configuration {
     @Nullable Optional<String> value = Optional.ofNullable(get(key));
     return value.isPresent() ? value.get().split(",") : null;
   }
+
 }

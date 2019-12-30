@@ -85,7 +85,7 @@ public final class ProcessChecker extends AbstractJavaToy {
     return RETURN_CODE.SUCCESS.code();
   }
 
-  class MachineProcesses {
+  private class MachineProcesses {
     String hostname = "";
     Map<String, Boolean> normal = new HashMap<>();
     Set<String> others = new HashSet<>();

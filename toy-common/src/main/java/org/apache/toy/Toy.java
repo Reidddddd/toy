@@ -41,4 +41,5 @@ public interface Toy {
    * @throws Exception
    */
   int play(String dir_of_conf_file) throws Exception;
+
 }

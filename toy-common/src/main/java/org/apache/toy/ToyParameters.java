@@ -75,11 +75,17 @@ public final class ToyParameters {
 
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals(clazz.key())) {
-        clazz.setValue(args[++i]);
+        if (++i == args.length) {
+          throw new ArrayIndexOutOfBoundsException("Value for " + clazz.key() + " is not set.");
+        }
+        clazz.setValue(args[i]);
         continue;
       }
       if (args[i].equals(conf.key())) {
-        conf.setValue(args[++i]);
+        if (++i == args.length) {
+          throw new ArrayIndexOutOfBoundsException("Value for " + conf.key() + " is not set.");
+        }
+        conf.setValue(args[i]);
         continue;
       }
       if (args[i].equals(help.key())) {

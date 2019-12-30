@@ -53,4 +53,5 @@ public class Counter {
     c.inc();
     System.out.println(c);
   }
+
 }
