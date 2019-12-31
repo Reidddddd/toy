@@ -30,9 +30,9 @@ import java.util.Set;
 
 public final class ProcessChecker extends AbstractJavaToy {
 
-  private final Parameter<String> check_file = Parameter.newBuilder().setKey("check_file").setType(String.class)
-                                                        .setRequired(true).setDescription("file to checked")
-                                                        .opt();
+  private final Parameter<String> process_check_file = Parameter.newBuilder().setKey("process_check_file").setType(String.class)
+                                                                .setRequired(true).setDescription("file contains process information to checked")
+                                                                .opt();
   private final Parameter<String> section_delimiter = Parameter.newBuilder().setKey("section_delimiter").setType(String.class)
                                                                .setRequired(true).setDescription("section separator")
                                                                .opt();
@@ -44,7 +44,7 @@ public final class ProcessChecker extends AbstractJavaToy {
 
   @Override
   public void init() {
-    parameters.add(check_file);
+    parameters.add(process_check_file);
     parameters.add(section_delimiter);
     parameters.add(normal_processes);
   }
@@ -57,7 +57,7 @@ public final class ProcessChecker extends AbstractJavaToy {
 
   @Override
   public int haveFun() throws Exception {
-    try (FileLineIterator fli = new FileLineIterator(check_file.value())) {
+    try (FileLineIterator fli = new FileLineIterator(process_check_file.value())) {
       boolean first_section = true;
       MachineProcesses mp = new MachineProcesses(Arrays.asList(normal_processes.value()));
 
@@ -70,10 +70,10 @@ public final class ProcessChecker extends AbstractJavaToy {
             first_section = false;
             mp.hostname = line.split(section_delimiter.value())[1].trim();
             continue;
-          } else if (mp.isAbnormal()) {
+          } else if (mp.abnormal()) {
             mp.listAbnormalOnly();
-            mp.init();
           }
+          mp.init();
           mp.hostname = line.split(section_delimiter.value())[1].trim();
           continue;
         }
@@ -101,7 +101,7 @@ public final class ProcessChecker extends AbstractJavaToy {
       else others.add(p);
     }
 
-    boolean isAbnormal() {
+    boolean abnormal() {
       return !others.isEmpty() || normal.values().contains(Boolean.FALSE);
     }
 

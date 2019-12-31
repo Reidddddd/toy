@@ -16,12 +16,21 @@
 
 package org.apache.toy;
 
+import org.apache.toy.common.HelpPrinter;
 import org.apache.toy.common.Parameter;
+
+import java.io.PrintStream;
 
 /**
  * Java toy's base implementation. Java configuration is inititlized in this class.
  */
 public abstract class AbstractJavaToy extends AbstractToy<Configuration> {
+
+  @Override
+  public int howToPlay(PrintStream out) {
+    HelpPrinter.printUsage(out, this.getClass(), parameters);
+    return RETURN_CODE.HELP.code();
+  }
 
   @Override
   protected void preCheck(Configuration configuration) {
