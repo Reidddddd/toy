@@ -22,22 +22,20 @@
   <!-- HDFS NameNode's configuration. -->
 
   <!--
-    NameNode, NameNodeHttpServer. Configurations are all about the web UI.
+    NameNode.NameNodeHttpServer. Configurations are all about the web UI.
   -->
   <!-- About HTTP/HTTPS -->
   <property>
     <name>dfs.namenode.http-address</name>
     <value>0.0.0.0:50070</value>
-    <description>Default is fine</description>
   </property>
   <property>
     <name>dfs.namenode.http-bind-host</name><value></value>
-    <description>Default is unset, if it is set, it will replace 0.0.0.0 in dfs.namenode.http-address. Keep default is fine.</description>
   </property>
   <property>
     <name>dfs.http.policy</name>
     <value>HTTP_ONLY</value>
-    <description>There're HTTP_AND_HTTPS, HTTP_ONLY, HTTPS_ONLY</description>
+    <description>HTTP_AND_HTTPS,HTTPS_ONLY</description>
   </property>
   <property>
     <name>dfs.https.enable</name>
@@ -124,5 +122,37 @@
     <value>^Mozilla.*,^Opera.*</value>
   </property>
 
+
+  <!--
+    NameNode.NameNodeRpcServer. Configurations are about processing request.
+  -->
+  <property>
+    <name>dfs.namenode.handler.count</name>
+    <value>10</value>
+  </property>
+  <property>
+    <name>dfs.namenode.servicerpc-address</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.servicerpc-bind-host</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.service.handler.count</name>
+    <value>10</value>
+  </property>
+  <property>
+    <name>dfs.namenode.lifeline.rpc-address</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.lifeline.rpc-bind-host</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.lifeline.handler.count</name>
+    <value>0</value>
+  </property>
+  <property>
+    <name>dfs.namenode.lifeline.handler.ratio</name>
+    <value>0.1f</value>
+  </property>
 
 </configuration>
