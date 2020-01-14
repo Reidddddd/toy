@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  ~ Copyright (c) 2019 R.C
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+  <!-- HDFS NameNode's configuration. -->
+
+  <!--
+    NameNode, NameNodeHttpServer. Configurations are all about the web UI.
+  -->
+  <!-- About HTTP/HTTPS -->
+  <property>
+    <name>dfs.namenode.http-address</name>
+    <value>0.0.0.0:50070</value>
+    <description>Default is fine</description>
+  </property>
+  <property>
+    <name>dfs.namenode.http-bind-host</name><value></value>
+    <description>Default is unset, if it is set, it will replace 0.0.0.0 in dfs.namenode.http-address. Keep default is fine.</description>
+  </property>
+  <property>
+    <name>dfs.http.policy</name>
+    <value>HTTP_ONLY</value>
+    <description>There're HTTP_AND_HTTPS, HTTP_ONLY, HTTPS_ONLY</description>
+  </property>
+  <property>
+    <name>dfs.https.enable</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>dfs.namenode.https-address</name>
+    <value>0.0.0.0:50470</value>
+  </property>
+  <property>
+    <name>dfs.namenode.https-bind-host</name><value></value>
+  </property>
+  <property>
+    <name>dfs.cluster.administrators</name><value></value>
+  </property>
+  <property>
+    <name>dfs.https.server.keystore.resource</name>
+    <value>ssl-server.xml</value>
+  </property>
+  <property>
+    <name>ssl.server.truststore.location</name><value></value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.location</name><value></value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.password</name><value></value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.keypassword</name><value></value>
+  </property>
+  <property>
+    <name>dfs.client.https.need-auth</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>dfs.xframe.enabled</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>dfs.xframe.value</name>
+    <value>SAMEORIGIN</value>
+  </property>
+  <!-- About WebHDFS -->
+  <property>
+    <name>dfs.webhdfs.enabled</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.user.provider.user.pattern</name>
+    <value>^[A-Za-z_][A-Za-z0-9._-]*[$]?$</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.acl.provider.permission.pattern</name>
+    <value>^(default:)?(user|group|mask|other):[[A-Za-z_][A-Za-z0-9._-]]*:([rwx-]{3})?(,(default:)?(user|group|mask|other):[[A-Za-z_][A-Za-z0-9._-]]*:([rwx-]{3})?)*$</value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.filter</name>
+    <value>org.apache.hadoop.hdfs.web.AuthFilter</value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.kerberos.keytab</name><value></value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.kerberos.principal</name><value></value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.simple.anonymous.allowed</name><value></value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.rest-csrf.enabled</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.rest-csrf.custom-header</name>
+    <value>X-XSRF-HEADER</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.rest-csrf.methods-to-ignore</name>
+    <value>GET,OPTIONS,HEAD,TRACE</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.rest-csrf.browser-useragents-regex</name>
+    <value>^Mozilla.*,^Opera.*</value>
+  </property>
+
+
+</configuration>

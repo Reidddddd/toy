@@ -12,6 +12,7 @@
         <module>toy-hbase</module>
         <module>toy-common</module>
         <module>toy-java</module>
+        <module>toy-hdfs</module>
     </modules>
 
 
