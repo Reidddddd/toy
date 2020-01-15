@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  ~ Copyright (c) 2019 R.C
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+  <!-- HDFS NameNode's configuration. -->
+
+
+  <!--
+    NameNode, General configurations
+  -->
+  <property>
+    <name>dfs.nameservices</name><value></value>
+  </property>
+  <property>
+    <name>dfs.ha.namenode.id</name><value></value>
+  </property>
+  <property>
+    <name>dfs.ha.allow.stale.reads</name><value>false</value>
+  </property>
+  <property>
+    <name>hadoop.user.group.metrics.percentiles.intervals</name><value></value>
+  </property>
+  <property>
+    <name>dfs.metrics.percentiles.intervals</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.resource.du.reserved</name><value>104857600</value><description></description>
+  </property>
+  <property>
+    <name>dfs.namenode.resource.checked.volumes</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.resource.checked.volumes.minimum</name><value>1</value>
+  </property>
+  <property>
+    <name>dfs.namenode.plugins</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.metrics.logger.period.seconds</name><value>600</value>
+  </property>
+
+
+  <!--
+    NameNode.NameNodeHttpServer. Configurations are all about the web UI.
+  -->
+  <!-- About HTTP/HTTPS -->
+  <property>
+    <name>dfs.namenode.http-address</name><value>0.0.0.0:50070</value>
+  </property>
+  <property>
+    <name>dfs.namenode.http-bind-host</name><value></value>
+  </property>
+  <property>
+    <name>dfs.http.policy</name><value>HTTP_ONLY</value><description>HTTP_AND_HTTPS,HTTPS_ONLY</description>
+  </property>
+  <property>
+    <name>dfs.https.enable</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.namenode.https-address</name><value>0.0.0.0:50470</value>
+  </property>
+  <property>
+    <name>dfs.namenode.https-bind-host</name><value></value>
+  </property>
+  <property>
+    <name>dfs.cluster.administrators</name><value></value>
+  </property>
+  <property>
+    <name>dfs.https.server.keystore.resource</name><value>ssl-server.xml</value>
+  </property>
+  <property>
+    <name>ssl.server.truststore.location</name><value></value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.location</name><value></value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.password</name><value></value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.keypassword</name><value></value>
+  </property>
+  <property>
+    <name>dfs.client.https.need-auth</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.xframe.enabled</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.xframe.value</name><value>SAMEORIGIN</value>
+  </property>
+  <!-- About WebHDFS -->
+  <property>
+    <name>dfs.webhdfs.enabled</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.user.provider.user.pattern</name><value>^[A-Za-z_][A-Za-z0-9._-]*[$]?$</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.acl.provider.permission.pattern</name><value>^(default:)?(user|group|mask|other):[[A-Za-z_][A-Za-z0-9._-]]*:([rwx-]{3})?(,(default:)?(user|group|mask|other):[[A-Za-z_][A-Za-z0-9._-]]*:([rwx-]{3})?)*$</value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.filter</name><value>org.apache.hadoop.hdfs.web.AuthFilter</value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.kerberos.keytab</name><value></value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.kerberos.principal</name><value></value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.simple.anonymous.allowed</name><value></value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.rest-csrf.enabled</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.rest-csrf.custom-header</name><value>X-XSRF-HEADER</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.rest-csrf.methods-to-ignore</name><value>GET,OPTIONS,HEAD,TRACE</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.rest-csrf.browser-useragents-regex</name><value>^Mozilla.*,^Opera.*</value>
+  </property>
+
+
+  <!--
+    NameNode.NameNodeRpcServer. Configurations are about RPC.
+  -->
+  <property>
+    <name>dfs.namenode.min.supported.datanode.version</name><value>2.1.0-beta</value>
+  </property>
+  <!-- Service RPC, cluster internal oriented, like DataNode, JournalNode, NameNode -->
+  <property>
+    <name>dfs.namenode.servicerpc-address</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.servicerpc-bind-host</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.service.handler.count</name><value>10</value>
+  </property>
+  <!-- Lifeline RPC, HA oriented. -->
+  <property>
+    <name>dfs.namenode.lifeline.rpc-address</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.lifeline.rpc-bind-host</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.lifeline.handler.count</name><value>0</value>
+  </property>
+  <property>
+    <name>dfs.namenode.lifeline.handler.ratio</name><value>0.1f</value>
+  </property>
+  <!-- Client RPC, client oriented -->
+  <property>
+    <name>dfs.namenode.handler.count</name><value>10</value>
+  </property>
+  <property>
+    <name>dfs.namenode.rpc-address</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.rpc-bind-host</name><value></value>
+  </property>
+
+
+  <!--
+    NameNode.FSNameSystem. It is the core part of NameNode, and also the biggest
+  -->
+  <property>
+    <name>dfs.namenode.resource.check.interval</name><value>5000</value>
+  </property>
+  <property>
+    <name>dfs.namenode.max.objects</name><value>0</value>
+  </property>
+  <property>
+    <name>dfs.namenode.fs-limits.min-block-size</name><value>1048576</value><description>1MB</description>
+  </property>
+  <property>
+    <name>dfs.namenode.fs-limits.max-blocks-per-file</name><value>1048576</value>
+  </property>
+  <property>
+    <name>dfs.namenode.file.close.num-committed-allowed</name><value>0</value>
+  </property>
+  <property>
+    <name>dfs.support.append</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.namenode.max-corrupt-file-blocks-returned</name><value>100</value>
+  </property>
+  <property>
+    <name>dfs.ha.standby.checkpoints</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.namenode.edit.log.autoroll.multiplier.threshold</name><value>2.0</value>
+  </property>
+  <property>
+    <name>dfs.namenode.checkpoint.txns</name><value>1000000</value>
+  </property>
+  <property>
+    <name>dfs.namenode.edit.log.autoroll.check.interval.ms</name><value>300000</value><description>5 hours</description>
+  </property>
+  <property>
+    <name>dfs.namenode.lazypersist.file.scrub.interval.sec</name><value>300</value><description>5 mins</description>
+  </property>
+  <property>
+    <name>dfs.namenode.edekcacheloader.initial.delay.ms</name><value>3000</value>
+  </property>
+  <property>
+    <name>dfs.namenode.edekcacheloader.interval.ms</name><value>1000</value>
+  </property>
+  <property>
+    <name>dfs.namenode.lease-recheck-interval-ms</name><value>2000</value>
+  </property>
+  <property>
+    <name>dfs.namenode.max-lock-hold-to-release-lease-ms</name><value>25</value>
+  </property>
+  <property>
+    <name>dfs.namenode.delegation.token.always-use</name><value>false</value><description>For test only</description>
+  </property>
+  <property>
+    <name>dfs.namenode.inode.attributes.provider.class</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.list.openfiles.num.responses</name><value>1000</value>
+  </property>
+  <!-- FSImage, it contains three component: NameNode Storage, FS EdigLog, Retention Manager -->
+  <property>
+    <name>dfs.namenode.name.dir</name><value>file://${hadoop.tmp.dir}/dfs/name</value>
+  </property>
+  <property>
+    <name>dfs.namenode.shared.edits.dir</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.edits.dir</name><value>${dfs.namenode.name.dir}</value>
+  </property>
+  <property>
+    <name>dfs.namenode.name.dir.restore</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.namenode.edits.asynclogging</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.namenode.edits.dir.minimum</name><value>1</value>
+  </property>
+  <property>
+    <name>dfs.namenode.edits.dir.required</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.edits.noeditlogchannelflush</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.namenode.edits.journal-plugin.${scheme}</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.num.checkpoints.retained</name><value>2</value>
+  </property>
+  <property>
+    <name>dfs.namenode.num.extra.edits.retained</name><value>1000000</value>
+  </property>
+  <property>
+    <name>dfs.namenode.max.extra.edits.segments.retained</name><value>10000</value>
+  </property>
+  <!-- KMS, temporary skip -->
+  <!-- Lock -->
+  <property>
+    <name>dfs.namenode.fslock.fair</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.namenode.write-lock-reporting-threshold-ms</name><value>5000</value>
+  </property>
+  <property>
+    <name>dfs.namenode.read-lock-reporting-threshold-ms</name><value>5000</value>
+  </property>
+  <property>
+    <name>dfs.lock.suppress.warning.interval</name><value>10000</value><description>10s</description>
+  </property>
+  <property>
+    <name>dfs.namenode.lock.detailed-metrics.enabled</name><value>false</value>
+  </property>
+  <!-- BlockManager, it is also the core components, it maintains the block -> machine -->
+  <property>
+    <name>dfs.namenode.startup.delay.block.deletion.sec</name><value>0</value>
+  </property>
+  <property>
+    <name>dfs.namenode.replication.pending.timeout-sec</name><value>-1</value>
+  </property>
+  <property>
+    <name>dfs.corruptfilesreturned.max</name><value>500</value>
+  </property>
+  <property>
+    <name>dfs.replication.max</name><value>512</value>
+  </property>
+  <property>
+    <name>dfs.namenode.replication.min</name><value>1</value>
+  </property>
+  <property>
+    <name>dfs.namenode.replication.max-streams</name><value>2</value>
+  </property>
+  <property>
+    <name>dfs.namenode.replication.max-streams-hard-limit</name><value>4</value>
+  </property>
+  <property>
+    <name>dfs.namenode.invalidate.work.pct.per.iteration</name><value>0.32</value>
+  </property>
+  <property>
+    <name>dfs.namenode.replication.work.multiplier.per.iteration</name><value>2</value>
+  </property>
+  <property>
+    <name>dfs.namenode.replication.interval</name><value>3</value><description>seconds</description>
+  </property>
+  <property>
+    <name>dfs.encrypt.data.transfer</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.namenode.max-num-blocks-to-log</name><value>1000</value>
+  </property>
+  <property>
+    <name>dfs.block.misreplication.processing.limit</name><value>10000</value>
+  </property>
+  <property>
+    <name>dfs.balancer.getBlocks.min-block-size</name><value>10485760</value><description>10MB</description>
+  </property>
+  <property>
+    <name>dfs.namenode.maintenance.replication.min</name><value>1</value>
+  </property>
+    <!-- BlockReportLeaseManager -->
+    <property>
+      <name>dfs.namenode.max.full.block.report.leases</name><value>6</value>
+    </property>
+    <property>
+      <name>dfs.namenode.full.block.report.lease.length.ms</name><value>300000</value><description>5 mins</description>
+    </property>
+    <!-- BlockManagerSafeMode -->
+    <property>
+      <name>dfs.namenode.safemode.threshold-pct</name><value>0.999</value>
+    </property>
+    <property>
+      <name>dfs.namenode.safemode.min.datanodes</name><value>0</value>
+    </property>
+    <property>
+      <name>dfs.namenode.replication.min</name><value>1</value>
+    </property>
+    <property>
+      <name>dfs.namenode.safemode.replication.min</name><value></value>
+    </property>
+    <property>
+      <name>dfs.namenode.replqueue.threshold-pct</name><value>0.999</value>
+    </property>
+    <property>
+      <name>dfs.namenode.safemode.extension</name><value>30000</value>
+    </property>
+    <!-- DatanodeManager -->
+    <property>
+      <name>dfs.datanode.peer.stats.enabled</name><value>false</value>
+    </property>
+    <property>
+      <name>dfs.datanode.fileio.profiling.sampling.percentage</name><value>0</value>
+    </property>
+    <property>
+      <name>dfs.datanode.outliers.report.interval</name><value>1800000</value>
+    </property>
+    <property>
+      <name>dfs.use.dfs.network.topology</name><value>true</value>
+    </property>
+    <property>
+      <name>dfs.datanode.address</name><value>0.0.0.0:50010</value>
+    </property>
+    <property>
+      <name>dfs.datanode.http.address</name><value>0.0.0.0:50075</value>
+    </property>
+    <property>
+      <name>dfs.datanode.https.address</name><value>0.0.0.0:50475</value>
+    </property>
+    <property>
+      <name>dfs.datanode.ipc.address</name><value>0.0.0.0:50020</value>
+    </property>
+    <property>
+      <name>dfs.namenode.hosts.provider.classname</name><value>org.apache.hadoop.hdfs.server.blockmanagement.HostFileManager</value>
+    </property>
+    <property>
+      <name>dfs.namenode.reject-unresolved-dn-topology-mapping</name><value>false</value>
+    </property>
+    <property>
+      <name>dfs.heartbeat.interval</name><value>3</value><description>seconds</description>
+    </property>
+    <property>
+      <name>dfs.block.invalidate.limit</name><value>1000</value>
+    </property>
+    <property>
+      <name>dfs.namenode.datanode.registration.ip-hostname-check</name><value>true</value>
+    </property>
+    <property>
+      <name>dfs.namenode.avoid.read.stale.datanode</name><value>false</value>
+    </property>
+    <property>
+      <name>dfs.namenode.stale.datanode.minimum.interval</name><value>3</value>
+    </property>
+    <property>
+      <name>dfs.namenode.write.stale.datanode.ratio</name><value>0.5</value>
+    </property>
+    <property>
+      <name>dfs.namenode.path.based.cache.retry.interval.ms</name><value>30000</value>
+    </property>
+    <property>
+      <name>dfs.namenode.blocks.per.postponedblocks.rescan</name><value>10000</value>
+    </property>
+    <property>
+      <name>dfs.namenode.decommission.interval</name><value>30</value><description>seconds</description>
+    </property>
+    <property>
+      <name>dfs.namenode.decommission.blocks.per.interval</name><value>500000</value>
+    </property>
+    <property>
+      <name>dfs.namenode.decommission.max.concurrent.tracked.nodes</name><value>100</value>
+    </property>
+    <!-- HeartbeatManager -->
+    <property>
+      <name>dfs.namenode.avoid.write.stale.datanode</name><value>false</value>
+    </property>
+    <property>
+      <name>dfs.namenode.heartbeat.recheck-interval</name><value>300000</value><description>5 mins</description>
+    </property>
+    <property>
+      <name>dfs.namenode.stale.datanode.interval</name><value>30000</value><description>30 seconds</description>
+    </property>
+    <!-- BlockReplacement -->
+    <property>
+      <name>dfs.block.replicator.classname</name><value>org.apache.hadoop.hdfs.server.blockmanagement.BlockPlacementPolicyDefault</value>
+    </property>
+    <property>
+      <name>dfs.namenode.replication.considerLoad</name><value>true</value>
+    </property>
+    <property>
+      <name>dfs.namenode.replication.considerLoad.factor</name><value>2.0</value>
+    </property>
+    <property>
+      <name>dfs.namenode.tolerate.heartbeat.multiplier</name><value>4</value>
+    </property>
+    <property>
+      <name>dfs.namenode.block-placement-policy.default.prefer-local-node</name><value>true</value>
+    </property>
+    <!-- BlockTokenSecretManager -->
+    <property>
+      <name>dfs.block.access.token.enable</name><value>false</value>
+    </property>
+    <property>
+      <name>dfs.block.access.key.update.interval</name><value>600</value>
+    </property>
+    <property>
+      <name>dfs.block.access.token.lifetime</name><value>600</value>
+    </property>
+    <property>
+      <name>dfs.encrypt.data.transfer.algorithm</name><value></value>
+    </property>
+  <!-- FSServerDefault, some sever side default configurations, but can be overrided by client side -->
+  <property>
+    <name>dfs.blocksize</name><value>134217728</value><description>128M</description>
+  </property>
+  <property>
+    <name>dfs.bytes-per-checksum</name><value>512</value>
+  </property>
+  <property>
+    <name>dfs.client-write-packet-size</name><value>65536</value>
+  </property>
+  <property>
+    <name>dfs.replication</name><value>3</value>
+  </property>
+  <property>
+    <name>dfs.encrypt.data.transfer</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.checksum.type</name><value>CRC32C</value>
+  </property>
+  <!-- ReplaceDatanodeOnFailure, it is useful when client writes failed on part of nodes -->
+  <property>
+    <name>dfs.client.block.write.replace-datanode-on-failure.enable</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.client.block.write.replace-datanode-on-failure.policy</name><value>DEFAULT</value>
+  </property>
+  <property>
+    <name>dfs.client.block.write.replace-datanode-on-failure.best-effort</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.client.block.write.replace-datanode-on-failure.min-replication</name><value>0</value>
+  </property>
+  <!-- DelegationTokenSecretManager -->
+  <property>
+    <name>dfs.namenode.delegation.key.update-interval</name><value>86400000</value><description>1 day</description>
+  </property>
+  <property>
+    <name>dfs.namenode.delegation.token.max-lifetime</name><value>604800000</value><description>7 days</description>
+  </property>
+  <property>
+    <name>dfs.namenode.delegation.token.renew-interval</name><value>86400000</value><description>1 day</description>
+  </property>
+  <property>
+    <name>dfs.namenode.audit.log.token.tracking.id</name><value>false</value>
+  </property>
+  <!-- FSDirectory, it keeps the inode > block mapping. -->
+  <property>
+    <name>dfs.image.string-tables.expanded</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.permissions.enabled</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.permissions.superusergroup</name><value>supergroup</value>
+  </property>
+  <property>
+    <name>dfs.namenode.acls.enabled</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.namenode.xattrs.enabled</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.namenode.fs-limits.max-xattr-size</name><value>16384</value><description>16KB</description>
+  </property>
+  <property>
+    <name>dfs.namenode.accesstime.precision</name><value>3600000</value>
+  </property>
+  <property>
+    <name>dfs.storage.policy.enabled</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.quota.by.storage.type.enabled</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.ls.limit</name><value>1000</value>
+  </property>
+  <property>
+    <name>dfs.content-summary.limit</name><value>5000</value>
+  </property>
+  <property>
+    <name>dfs.content-summary.sleep-microsec</name><value>500</value>
+  </property>
+  <property>
+    <name>dfs.namenode.fs-limits.max-component-length</name><value>255</value>
+  </property>
+  <property>
+    <name>dfs.namenode.fs-limits.max-directory-items</name><value>1048576</value>
+  </property>
+  <property>
+    <name>dfs.namenode.fs-limits.max-xattrs-per-inode</name><value>32</value>
+  </property>
+  <property>
+    <name>fs.protected.directories</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.name.cache.threshold</name><value>10</value>
+  </property>
+  <property>
+    <name>dfs.namenode.list.encryption.zones.num.responses</name><value>100</value>
+  </property>
+  <property>
+    <name>dfs.namenode.quota.init-threads</name><value>4</value>
+  </property>
+  <property>
+    <name>dfs.namenode.inode.attributes.provider.bypass.users</name><value></value>
+  </property>
+  <!-- SnapshotManager -->
+  <property>
+    <name>dfs.namenode.snapshot.capture.openfiles</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.namenode.snapshot.skip.capture.accesstime-only-change</name><value>false</value>
+  </property>
+  <!-- CacheManager -->
+  <property>
+    <name>dfs.namenode.list.cache.pools.num.responses</name><value>100</value>
+  </property>
+  <property>
+    <name>dfs.namenode.list.cache.directives.num.responses</name><value>100</value>
+  </property>
+  <property>
+    <name>dfs.namenode.path.based.cache.refresh.interval.ms</name><value>30000</value>
+  </property>
+  <property>
+    <name>dfs.namenode.path.based.cache.block.map.allocation.percent</name><value>0.25</value>
+  </property>
+  <!-- NNTop -->
+  <property>
+    <name>dfs.namenode.top.enabled</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.namenode.top.windows.minutes</name><value>1,5,25</value>
+  </property>
+  <!-- AuditLogger -->
+  <property>
+    <name>dfs.namenode.audit.log.async</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.namenode.audit.loggers</name><value>default</value>
+  </property>
+  <property>
+    <name>hadoop.caller.context.enabled</name><value>false</value>
+  </property>
+  <property>
+    <name>hadoop.caller.context.max.size</name><value>128</value>
+  </property>
+  <property>
+    <name>hadoop.caller.context.signature.max.size</name><value>40</value>
+  </property>
+  <property>
+    <name>dfs.namenode.audit.log.token.tracking.id</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.namenode.audit.log.debug.cmdlist</name><value></value>
+  </property>
+  <!-- RetryCache -->
+  <property>
+    <name>dfs.namenode.enable.retrycache</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.namenode.retrycache.heap.percent</name><value>0.03</value>
+  </property>
+  <property>
+    <name>dfs.namenode.retrycache.expirytime.millis</name><value>600000</value><description>10 mins</description>
+  </property>
+
+
+  <!--
+    Standby NameNode
+  -->
+  <property>
+    <name>dfs.ha.log-roll.period</name><value>120</value><description>minutes</description>
+  </property>
+  <property>
+    <name>dfs.ha.tail-edits.period</name><value>60</value><description>1 minute</description>
+  </property>
+  <property>
+    <name>dfs.ha.tail-edits.rolledits.timeout</name><value>60</value><description>1 minute</description>
+  </property>
+  <property>
+    <name>dfs.ha.log-roll.rpc.timeout</name><value>20000</value><description>20s</description>
+  </property>
+
+</configuration>
