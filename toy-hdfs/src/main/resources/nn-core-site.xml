@@ -252,6 +252,10 @@
   <property>
     <name>fs.trash.interval</name><value>0</value>
   </property>
+  <!-- FSDirectory -->
+  <property>
+    <name>fs.protected.directories</name><value></value>
+  </property>
   <!-- BlockManager -->
   <property>
     <name>net.topology.impl</name><value>org.apache.hadoop.net.NetworkTopology</value>
