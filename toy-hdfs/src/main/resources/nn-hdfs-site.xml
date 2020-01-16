@@ -41,6 +41,9 @@
     <name>dfs.metrics.percentiles.intervals</name><value></value>
   </property>
   <property>
+    <name>dfs.metrics.session-id</name><value></value>
+  </property>
+  <property>
     <name>dfs.namenode.resource.du.reserved</name><value>104857600</value><description></description>
   </property>
   <property>
@@ -54,6 +57,17 @@
   </property>
   <property>
     <name>dfs.namenode.metrics.logger.period.seconds</name><value>600</value>
+  </property>
+
+
+  <!--
+    NameNode, Security related configuration: authentication, user identification
+  -->
+  <property>
+    <name>dfs.namenode.keytab.file</name><value></value>
+  </property>
+  <property>
+    <name>dfs.namenode.kerberos.principal</name><value></value>
   </property>
 
 
@@ -109,12 +123,6 @@
   <!-- About WebHDFS -->
   <property>
     <name>dfs.webhdfs.enabled</name><value>true</value>
-  </property>
-  <property>
-    <name>dfs.webhdfs.user.provider.user.pattern</name><value>^[A-Za-z_][A-Za-z0-9._-]*[$]?$</value>
-  </property>
-  <property>
-    <name>dfs.webhdfs.acl.provider.permission.pattern</name><value>^(default:)?(user|group|mask|other):[[A-Za-z_][A-Za-z0-9._-]]*:([rwx-]{3})?(,(default:)?(user|group|mask|other):[[A-Za-z_][A-Za-z0-9._-]]*:([rwx-]{3})?)*$</value>
   </property>
   <property>
     <name>dfs.web.authentication.filter</name><value>org.apache.hadoop.hdfs.web.AuthFilter</value>

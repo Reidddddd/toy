@@ -21,62 +21,12 @@
 <configuration>
   <!-- HDFS DataNode's configuration. -->
 
+
   <!--
     DataNode, General configurations
   -->
   <property>
     <name>dfs.datanode.data.dir</name><value>file://${hadoop.tmp.dir}/dfs/data</value>
-  </property>
-  <property>
-    <name>dfs.datanode.hostname</name><value></value>
-  </property>
-  <property>
-    <name>dfs.datanode.dns.interface</name><value>default</value>
-  </property>
-  <property>
-    <name>dfs.datanode.dns.nameserver</name><value>defautl</value>
-  </property>
-  <property>
-    <name>fs.trash.checkpoint.interval</name><value>0</value>
-  </property>
-  <property>
-    <name>hadoop.rpc.socket.factory.class.default</name><value>org.apache.hadoop.net.StandardSocketFactory</value>
-  </property>
-  <property>
-    <name>dfs.namenode.max-num-blocks-to-log</name><value>1000</value>
-  </property>
-  <property>
-    <name>dfs.block.local-path-access.user</name><value></value>
-  </property>
-  <property>
-    <name>dfs.datanode.use.datanode.hostname</name><value></value>
-  </property>
-  <property>
-    <name>dfs.datanode.hdfs-blocks-metadata.enabled</name><value>false</value>
-  </property>
-  <property>
-    <name>dfs.permissions.superusergroup</name><value>supergroup</value>
-  </property>
-  <property>
-    <name>dfs.permissions.enabled</name><value>true</value>
-  </property>
-  <property>
-    <name>dfs.pipeline.ecn</name><value>false</value>
-  </property>
-  <property>
-    <name>dfs.datanode.network.counts.cache.max.size</name><value>2147483647</value><description>Integer.MAX_VALUE</description>
-  </property>
-  <property>
-    <name>dfs.datanode.oob.timeout-ms</name><value>1500,0,0,0</value><description>???what is this</description>
-  </property>
-  <property>
-    <name>dfs.client.socket-timeout</name><value>60000</value><description>milliseconds</description>
-  </property>
-  <property>
-    <name>dfs.datanode.socket.reuse.keepalive</name><value>4000</value>
-  </property>
-  <property>
-    <name>dfs.datanode.transfer.socket.send.buffer.size</name><value>0</value>
   </property>
   <property>
     <name>dfs.datanode.transferTo.allowed</name><value>true</value>
@@ -85,25 +35,16 @@
     <name>dfs.datanode.readahead.bytes</name><value>4194304</value><description>4MB</description>
   </property>
   <property>
-    <name>dfs.datanode.drop.cache.behind.writes</name><value>false</value>
-  </property>
-  <property>
-    <name>dfs.datanode.sync.behind.writes</name><value>false</value>
-  </property>
-  <property>
-    <name>dfs.datanode.sync.behind.writes.in.background</name><value>false</value>
-  </property>
-  <property>
     <name>dfs.datanode.drop.cache.behind.reads</name><value>false</value>
   </property>
   <property>
-    <name>dfs.datanode.use.datanode.hostname</name><value>false</value>
+    <name>dfs.datanode.outliers.report.interval</name><value>1800000</value>
   </property>
   <property>
-    <name>dfs.blockreport.intervalMsec</name><value>2160000</value><description>6 hours</description>
+    <name>dfs.datanode.slow.io.warning.threshold.ms</name><value>300</value>
   </property>
   <property>
-    <name>dfs.datanode.peer.stats.enabled</name><value>false</value>
+    <name>dfs.datanode.max.locked.memory</name><value>0</value>
   </property>
 
 
@@ -111,74 +52,21 @@
     DataNode, Security related configuration: authentication, user identification
   -->
   <property>
-    <name>hadoop.security.authentication</name>
-    <value>simple</value>
-  </property>
-  <property>
-    <name>hadoop.user.group.metrics.percentiles.intervals</name><value></value>
-  </property>
-  <!-- Kerberos related -->
-  <property>
-    <name>hadoop.security.auth_to_local</name><value></value>
-  </property>
-  <property>
-    <name>hadoop.kerberos.min.seconds.before.relogin</name>
-    <value>60</value>
-    <description>seconds</description>
-  </property>
-  <property>
     <name>dfs.datanode.keytab.file</name><value></value>
   </property>
   <property>
     <name>dfs.datanode.kerberos.principal</name><value></value>
   </property>
-  <!-- User Group Information -->
-  <property>
-    <name>hadoop.security.group.mapping</name>
-    <value>org.apache.hadoop.security.ShellBasedUnixGroupsMapping</value>
-  </property>
-  <property>
-    <name>hadoop.security.groups.shell.command.timeout</name>
-    <value>0</value>
-    <description>1s,10s</description>
-  </property>
-  <property>
-    <name>hadoop.security.groups.cache.secs</name>
-    <value>300</value>
-    <description>seconds</description>
-  </property>
-  <property>
-    <name>hadoop.security.groups.negative-cache.secs</name>
-    <value>30</value>
-    <description>seconds</description>
-  </property>
-  <property>
-    <name>hadoop.security.groups.cache.warn.after.ms</name>
-    <value>5000</value>
-    <description>milliseconds</description>
-  </property>
-  <property>
-    <name>hadoop.security.groups.cache.background.reload</name>
-    <value>false</value>
-  </property>
-  <property>
-    <name>hadoop.security.groups.cache.background.reload.threads</name>
-    <value>3</value>
-  </property>
-  <property>
-    <name>hadoop.user.group.static.mapping.overrides</name>
-    <value>dr.who=;</value>
-  </property>
 
 
   <!--
-    DataNode, StorageLocationChecker.
+    DataNode, StorageLocationChecker && DatasetVolumeChecker
   -->
   <property>
     <name>dfs.datanode.disk.check.timeout</name><value>600000</value><description>10 mintues</description>
   </property>
   <property>
-    <name>dfs.datanode.data.dir.perm</name><value>700</value>
+    <name>dfs.datanode.data.dir.perm</name><value>700</value> <!-- DatasetVolumeChecker doesn't use this one-->
   </property>
   <property>
     <name>dfs.datanode.failed.volumes.tolerated</name><value>0</value>
@@ -186,85 +74,13 @@
   <property>
     <name>dfs.datanode.disk.check.min.gap</name><value>900000</value><description>15 minutes</description>
   </property>
-  <property>
-    <name>dfs.datanode.outliers.report.interval</name><value>1800000</value>
-  </property>
-  <property>
-    <name>dfs.blockreport.incremental.intervalMsec</name><value>0</value>
-  </property>
-  <property>
-    <name>dfs.blockreport.split.threshold</name><value>100000</value>
-  </property>
-  <property>
-    <name>dfs.cachereport.intervalMsec</name><value>10000</value>
-  </property>
-  <property>
-    <name>dfs.datanode.slow.io.warning.threshold.ms</name><value>300</value>
-  </property>
-  <property>
-    <name>dfs.blockreport.initialDelay</name><value>0</value>
-  </property>
-  <property>
-    <name>dfs.heartbeat.interval</name><value>3</value>
-  </property>
-  <property>
-    <name>dfs.datanode.lifeline.interval.seconds</name><value>9</value>
-  </property>
-  <property>
-    <name>dfs.datanode.synconclose</name><value>false</value>
-  </property>
-  <property>
-    <name>dfs.datanode.min.supported.namenode.version</name><value>2.1.0-beta</value>
-  </property>
-  <property>
-    <name>dfs.encrypt.data.transfer</name><value>false</value>
-  </property>
-  <property>
-    <name>dfs.encrypt.data.transfer.algorithm</name><value></value>
-  </property>
-  <property>
-    <name>dfs.trustedchannel.resolver.class</name><value></value>
-  </property>
-  <property>
-    <name>dfs.data.transfer.protection</name><value></value>
-  </property>
-  <property>
-    <name>hadoop.security.saslproperties.resolver.class</name><value>org.apache.hadoop.security.SaslPropertiesResolver</value>
-  </property>
-  <property>
-    <name>hadoop.rpc.protection</name><value>auth</value><description>auth-int,auth-conf</description>
-  </property>
-  <property>
-    <name>dfs.data.transfer.saslproperties.resolver.class</name><value>${hadoop.security.saslproperties.resolver.class}</value>
-  </property>
-  <property>
-    <name>ignore.secure.ports.for.testing</name><value>false</value>
-  </property>
-  <property>
-    <name>dfs.datanode.xceiver.stop.timeout.millis</name><value>60000</value>
-  </property>
-  <property>
-    <name>dfs.datanode.max.locked.memory</name><value>0</value>
-  </property>
-  <property>
-    <name>dfs.datanode.restart.replica.expiration</name><value>50</value><description>seconds</description>
-  </property>
-  <property>
-    <name>dfs.datanode.non.local.lazy.persist</name><value>false</value>
-  </property>
-  <property>
-    <name>dfs.datanode.bp-ready.timeout</name><value>20</value>
-  </property>
-  <property>
-    <name>dfs.block.access.token.enable</name><value>false</value>
-  </property>
 
 
   <!--
     DataNode, FileIoProvider
   -->
   <property>
-    <name>dfs.datanode.fileio.profiling.sampling.percentage</name><value>0</value>
+    <name>dfs.datanode.fileio.profiling.sampling.percentage</name><value>0</value> <!-- Disk Metrics -->
   </property>
   <property>
     <name>dfs.datanode.enable.fileio.fault.injection</name><value>false</value>
@@ -295,25 +111,8 @@
 
 
   <!--
-    DataNode, DatasetVolumeChecker. All its configurations are exactly the same as StorageLocationChecker
+    DataNode, DataXceiver
   -->
-
-
-  <!--
-    DataNode, DataXceiverServer
-  -->
-  <property>
-    <name>ipc.server.listen.queue.size</name><value>128</value>
-  </property>
-  <property>
-    <name>dfs.datanode.socket.write.timeout</name><value>480000</value><description>milliseconds</description>
-  </property>
-  <property>
-    <name>dfs.datanode.address</name><value>0.0.0.0:50010</value>
-  </property>
-  <property>
-    <name>dfs.datanode.transfer.socket.recv.buffer.size</name><value>0</value>
-  </property>
   <property>
     <name>dfs.datanode.max.transfer.threads</name><value>4096</value>
   </property>
@@ -326,18 +125,49 @@
   <property>
     <name>dfs.datanode.balance.max.concurrent.moves</name><value>50</value>
   </property>
-  <!-- Shortcircuit related -->
+  <property>
+    <name>dfs.datanode.socket.reuse.keepalive</name><value>4000</value>
+  </property>
+  <property>
+    <name>dfs.datanode.transfer.socket.send.buffer.size</name><value>0</value>
+  </property>
+  <property>
+    <name>dfs.datanode.drop.cache.behind.writes</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.datanode.sync.behind.writes</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.datanode.sync.behind.writes.in.background</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.datanode.synconclose</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.datanode.xceiver.stop.timeout.millis</name><value>60000</value>
+  </property>
+  <property>
+    <name>dfs.datanode.restart.replica.expiration</name><value>50</value><description>seconds</description>
+  </property>
+  <property>
+    <name>dfs.datanode.non.local.lazy.persist</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.datanode.bp-ready.timeout</name><value>20</value>
+  </property>
+  <!-- TCPPeerServer -->
+  <property>
+    <name>dfs.datanode.socket.write.timeout</name><value>480000</value><description>milliseconds</description>
+  </property>
+  <property>
+    <name>dfs.datanode.address</name><value>0.0.0.0:50010</value>
+  </property>
+  <property>
+    <name>dfs.datanode.transfer.socket.recv.buffer.size</name><value>0</value> <!-- DomainPeerServer also use this one -->
+  </property>
+  <!-- DomainPeerServer -->
   <property>
     <name>dfs.client.read.shortcircuit</name><value>false</value>
-  </property>
-  <property>
-    <name>dfs.client.read.shortcircuit.skip.checksum</name><value>false</value>
-  </property>
-  <property>
-    <name>dfs.client.read.shortcircuit.streams.cache.size</name><value>256</value>
-  </property>
-  <property>
-    <name>dfs.client.read.shortcircuit.streams.cache.expiry.ms</name><value>300000</value>
   </property>
   <property>
     <name>dfs.client.domain.socket.data.traffic</name><value>false</value>
@@ -354,145 +184,221 @@
   </property>
 
 
-
-  <property>
-    <name>ipc.server.read.connection-queue.size</name>
-    <value>100</value>
-  </property>
-  <property>
-    <name>hadoop.security.authorization</name>
-    <value>false</value>
-  </property>
-  <property>
-    <name>ipc.server.tcpnodelay</name>
-    <value>true</value>
-  </property>
-  <property>
-    <name>ipc.server.log.slow.rpc</name>
-    <value>false</value>
-  </property>
-  <!-- Differente RPC Service(Client|Server|Lifeline) is dintigushed by port number -->
-  <property>
-    <name>ipc.${service_port}.callqueue.impl</name>
-    <value>java.util.concurrent.LinkedBlockingQueue</value>
-  </property>
-  <property>
-    <name>ipc.${service_port}.scheduler.impl</name>
-    <value>org.apache.hadoop.ipc.DefaultRpcScheduler</value>
-  </property>
-  <property>
-    <name>ipc.${service_port}.backoff.enable</name>
-    <value>false</value>
-  </property>
-  <property>
-    <name>ipc.${service_port}.faircallqueue.priority-levels</name>
-    <value>0</value>
-  </property>
-  <property>
-    <name>ipc.${service_port}.scheduler.priority.levels</name>
-    <value>4</value>
-  </property>
-  <!-- Listener -->
-
-  <!-- ConnectionManager -->
-  <property>
-    <name>ipc.client.idlethreshold</name>
-    <value>4000</value>
-  </property>
-  <property>
-    <name>ipc.client.connection.idle-scan-interval.ms</name>
-    <value>10000</value>
-  </property>
-  <property>
-    <name>ipc.client.connection.maxidletime</name>
-    <value>10000</value>
-  </property>
-  <property>
-    <name>ipc.client.kill.max</name>
-    <value>10</value>
-  </property>
-  <property>
-    <name>ipc.server.max.connections</name>
-    <value>0</value>
-  </property>
-  <!-- RPC Metric -->
-  <property>
-    <name>rpc.metrics.percentiles.intervals</name><value></value>
-  </property>
-  <property>
-    <name>rpc.metrics.quantile.enable</name>
-    <value>false</value>
-  </property>
-  <!-- SASL -->
-
-
   <!--
-    DataNode.JVM Monitor
+    DataNode, InfoServer
   -->
   <property>
-    <name>jvm.pause.warn-threshold.ms</name>
-    <value>10000</value>
-    <description>milliseconds</description>
+    <name>dfs.webhdfs.rest-csrf.enabled</name><value>false</value>
   </property>
   <property>
-    <name>jvm.pause.info-threshold.ms</name>
-    <value>1000</value>
-    <description>milliseconds</description>
+    <name>dfs.webhdfs.rest-csrf.custom-header</name><value>X-XSRF-HEADER</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.rest-csrf.methods-to-ignore</name><value>GET,OPTIONS,HEAD,TRACE</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.rest-csrf.browser-useragents-regex</name><value>^Mozilla.*,^Opera.*</value>
+  </property>
+  <property>
+    <name>dfs.datanode.http.max-threads</name><value>10</value>
+  </property>
+  <property>
+    <name>dfs.datanode.http.internal-proxy.port</name><value>0</value>
+  </property>
+  <property>
+    <name>dfs.cluster.administrators</name><value></value>
+  </property>
+  <property>
+    <name>dfs.datanode.http.address</name><value>0.0.0.0:50075</value>
+  </property>
+  <property>
+    <name>dfs.datanode.https.address</name><value>0.0.0.0:50475</value>
+  </property>
+  <property>
+    <name>dfs.xframe.enabled</name><value>true</value>
+  </property>
+  <property>
+    <name>dfs.xframe.value</name><value>SAMEORIGIN</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.ugi.expire.after.access</name><value>600000</value><description>10 mins</description>
+  </property>
+  <property>
+    <name>dfs.http.policy</name><value>HTTP_ONLY</value><description>HTTP_AND_HTTPS,HTTPS_ONLY</description>
+  </property>
+  <property>
+    <name>dfs.https.enable</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.user.provider.user.pattern</name><value>^[A-Za-z_][A-Za-z0-9._-]*[$]?$</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.acl.provider.permission.pattern</name><value>^(default:)?(user|group|mask|other):[[A-Za-z_][A-Za-z0-9._-]]*:([rwx-]{3})?(,(default:)?(user|group|mask|other):[[A-Za-z_][A-Za-z0-9._-]]*:([rwx-]{3})?)*$</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.netty.high.watermark</name><value>65535</value>
+  </property>
+  <property>
+    <name>dfs.webhdfs.netty.high.watermark</name><value>65535</value>
   </property>
 
 
   <!--
-    NameNode.FSNamesystem
+    DataNode, IPC/RPC Server
   -->
-  <!-- KMS, related to encryption zone, temporary skip -->
   <property>
-    <name>hadoop.security.key.provider.path</name><value></value>
+    <name>dfs.datanode.ipc.address</name><value>0.0.0.0:50020</value>
   </property>
   <property>
-    <name>hadoop.ssl.require.client.cert</name>
-    <value>false</value>
+    <name>dfs.datanode.handler.count</name><value>10</value>
+  </property>
+
+
+  <!--
+    DataNode, Metrics
+  -->
+  <property>
+    <name>dfs.metrics.percentiles.intervals</name><value></value>
   </property>
   <property>
-    <name>hadoop.ssl.keystores.factory.class</name>
-    <value>org.apache.hadoop.security.ssl.FileBasedKeyStoresFactory</value>
+    <name>dfs.metrics.session-id</name><value></value>
   </property>
   <property>
-    <name>hadoop.ssl.enabled.protocols</name>
-    <value>TLSv1,SSLv2Hello,TLSv1.1,TLSv1.2</value>
+    <name>dfs.datanode.peer.stats.enabled</name><value>false</value>
   </property>
   <property>
-    <name>hadoop.ssl.client.conf</name>
-    <value>ssl-client.xml</value>
+    <name>dfs.datanode.metrics.logger.period.seconds</name><value>600</value>
+  </property>
+
+
+  <!--
+    DataNode, BlockRecoveryWorker
+  -->
+  <property>
+    <name>dfs.client.socket-timeout</name><value>60000</value><description>milliseconds</description>
   </property>
   <property>
-    <name>hadoop.ssl.server.conf</name>
-    <value>ssl-server.xml</value>
+    <name>dfs.datanode.use.datanode.hostname</name><value>false</value>
+  </property>
+
+
+  <!--
+    DataNode, BlockPoolManager
+  -->
+  <property>
+    <name>dfs.nameservices</name><value></value>
   </property>
   <property>
-    <name>ssl.server.exclude.cipher.list</name><value></value>
-  </property>
-  <!-- FSServerDefault, some sever side default configurations, but can be overrided by client side -->
-  <property>
-    <name>io.file.buffer.size</name>
-    <value>4096</value>
-    <description>4KB</description>
+    <name>dfs.namenode.servicerpc-address</name><value></value>
   </property>
   <property>
-    <name>fs.trash.interval</name>
-    <value>0</value>
-  </property>
-  <!-- BlockManager -->
-  <property>
-    <name>net.topology.impl</name><value>org.apache.hadoop.net.NetworkTopology</value>
+    <name>dfs.namenode.servicerpc-bind-host</name><value></value>
   </property>
   <property>
-    <name>net.topology.node.switch.mapping.impl</name><value>org.apache.hadoop.net.ScriptBasedMapping</value>
+    <name>dfs.blockreport.intervalMsec</name><value>2160000</value><description>6 hours</description>
   </property>
   <property>
-    <name>net.topology.script.file.name</name><value></value>
+    <name>dfs.blockreport.incremental.intervalMsec</name><value>0</value>
   </property>
   <property>
-    <name>net.topology.script.number.args</name><value>100</value>
+    <name>dfs.blockreport.split.threshold</name><value>100000</value>
+  </property>
+  <property>
+    <name>dfs.cachereport.intervalMsec</name><value>10000</value>
+  </property>
+  <property>
+    <name>dfs.blockreport.initialDelay</name><value>0</value>
+  </property>
+  <property>
+    <name>dfs.heartbeat.interval</name><value>3</value>
+  </property>
+  <property>
+    <name>dfs.datanode.lifeline.interval.seconds</name><value>9</value>
+  </property>
+  <property>
+    <name>dfs.datanode.min.supported.namenode.version</name><value>2.1.0-beta</value>
+  </property>
+
+
+  <!--
+    DataNode, SASLDataTransfer
+  -->
+  <property>
+    <name>dfs.data.transfer.protection</name><value></value>
+  </property>
+  <property>
+    <name>hadoop.security.saslproperties.resolver.class</name><value>org.apache.hadoop.security.SaslPropertiesResolver</value>
+  </property>
+  <property>
+    <name>dfs.data.transfer.saslproperties.resolver.class</name><value>${hadoop.security.saslproperties.resolver.class}</value>
+  </property>
+  <property>
+    <name>dfs.trustedchannel.resolver.class</name><value>org.apache.hadoop.hdfs.protocol.datatransfer.TrustedChannelResolver</value>
+  </property>
+  <property>
+    <name>dfs.encrypt.data.transfer.cipher.suites</name><value></value>
+  </property>
+  <property>
+    <name>hadoop.security.crypto.codec.classes.aes.ctr.nopadding</name><value>org.apache.hadoop.crypto.OpensslAesCtrCryptoCodec,org.apache.hadoop.crypto.JceAesCtrCryptoCodec</value>
+  </property>
+  <property>
+    <name>dfs.encrypt.data.transfer</name><value>false</value>
+  </property>
+  <property>
+    <name>ignore.secure.ports.for.testing</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.encrypt.data.transfer.algorithm</name><value></value>
+  </property>
+
+
+  <!--
+    DataNode, FsDatasetImpl
+  -->
+  <property>
+    <name>dfs.lock.suppress.warning.interval</name><value>10000</value><description>10s</description>
+  </property>
+  <property>
+    <name>dfs.datanode.ram.disk.replica.tracker</name><value>org.apache.hadoop.hdfs.server.datanode.fsdataset.impl.RamDiskReplicaLruTracker</value>
+  </property>
+  <property>
+    <name>dfs.datanode.fsdataset.volume.choosing.policy</name><value>org.apache.hadoop.hdfs.server.datanode.fsdataset.RoundRobinVolumeChoosingPolicy</value>
+  </property>
+  <property>
+    <name>dfs.datanode.lazywriter.interval.sec</name><value>60</value>
+  </property>
+  <property>
+    <name>dfs.datanode.block-pinning.enabled</name><value>false</value>
+  </property>
+  <property>
+    <name>fs.df.interval</name><value>60000</value>
+  </property>
+  <property>
+    <name>dfs.datanode.du.reserved.calculator</name><value>org.apache.hadoop.hdfs.server.datanode.fsdataset.impl.ReservedSpaceCalculator$ReservedSpaceCalculatorAbsolute</value>
+  </property>
+  <property>
+    <name>dfs.datanode.du.reserved</name><value>0</value>
+  </property>
+  <property>
+    <name>dfs.datanode.du.reserved.pct</name><value>0</value>
+  </property>
+  <property>
+    <name>dfs.datanode.duplicate.replica.deletion</name><value>false</value>
+  </property>
+  <property>
+    <name>dfs.datanode.cached-dfsused.check.interval.ms</name><value>600000</value>
+  </property>
+  <property>
+    <name>dfs.support.append</name><value>true</value>
+  </property>
+  <property>
+    <name></name><value></value>
+  </property>
+  <property>
+    <name></name><value></value>
+  </property>
+  <property>
+    <name></name><value></value>
   </property>
 
 

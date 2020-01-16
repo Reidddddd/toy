@@ -21,6 +21,7 @@
 <configuration>
   <!-- HDFS NameNode's configuration. -->
 
+
   <!--
     NameNode, General configurations
   -->
@@ -43,12 +44,12 @@
     <name>hadoop.rpc.socket.factory.class.default</name><value>org.apache.hadoop.net.StandardSocketFactory</value>
   </property>
 
+
   <!--
     NameNode, Security related configuration: authentication, user identification
   -->
   <property>
-    <name>hadoop.security.authentication</name>
-    <value>simple</value>
+    <name>hadoop.security.authentication</name><value>simple</value>
   </property>
   <property>
     <name>hadoop.user.group.metrics.percentiles.intervals</name><value></value>
@@ -58,52 +59,32 @@
     <name>hadoop.security.auth_to_local</name><value></value>
   </property>
   <property>
-    <name>hadoop.kerberos.min.seconds.before.relogin</name>
-    <value>60</value>
-    <description>seconds</description>
-  </property>
-  <property>
-    <name>dfs.namenode.keytab.file</name><value></value>
-  </property>
-  <property>
-    <name>dfs.namenode.kerberos.principal</name><value></value>
+    <name>hadoop.kerberos.min.seconds.before.relogin</name><value>60</value><description>seconds</description>
   </property>
   <!-- User Group Information -->
   <property>
-    <name>hadoop.security.group.mapping</name>
-    <value>org.apache.hadoop.security.ShellBasedUnixGroupsMapping</value>
+    <name>hadoop.security.group.mapping</name><value>org.apache.hadoop.security.ShellBasedUnixGroupsMapping</value>
   </property>
   <property>
-    <name>hadoop.security.groups.shell.command.timeout</name>
-    <value>0</value>
-    <description>1s,10s</description>
+    <name>hadoop.security.groups.shell.command.timeout</name><value>0</value><description>1s,10s</description>
   </property>
   <property>
-    <name>hadoop.security.groups.cache.secs</name>
-    <value>300</value>
-    <description>seconds</description>
+    <name>hadoop.security.groups.cache.secs</name><value>300</value><description>seconds</description>
   </property>
   <property>
-    <name>hadoop.security.groups.negative-cache.secs</name>
-    <value>30</value>
-    <description>seconds</description>
+    <name>hadoop.security.groups.negative-cache.secs</name><value>30</value><description>seconds</description>
   </property>
   <property>
-    <name>hadoop.security.groups.cache.warn.after.ms</name>
-    <value>5000</value>
-    <description>milliseconds</description>
+    <name>hadoop.security.groups.cache.warn.after.ms</name><value>5000</value><description>milliseconds</description>
   </property>
   <property>
-    <name>hadoop.security.groups.cache.background.reload</name>
-    <value>false</value>
+    <name>hadoop.security.groups.cache.background.reload</name><value>false</value>
   </property>
   <property>
-    <name>hadoop.security.groups.cache.background.reload.threads</name>
-    <value>3</value>
+    <name>hadoop.security.groups.cache.background.reload.threads</name><value>3</value>
   </property>
   <property>
-    <name>hadoop.user.group.static.mapping.overrides</name>
-    <value>dr.who=;</value>
+    <name>hadoop.user.group.static.mapping.overrides</name><value>dr.who=;</value>
   </property>
 
 
@@ -112,51 +93,40 @@
   -->
   <!-- About HttpServer -->
   <property>
-    <name>hadoop.http.authentication.type</name>
-    <value>simple</value>
+    <name>hadoop.http.authentication.type</name><value>simple</value>
   </property>
   <property>
-    <name>hadoop.http.authentication.token.validity</name>
-    <value>36000</value>
+    <name>hadoop.http.authentication.token.validity</name><value>36000</value>
   </property>
   <property>
-    <name>hadoop.http.authentication.signature.secret.file</name>
-    <value>${user.home}/hadoop-http-auth-signature-secret</value>
+    <name>hadoop.http.authentication.signature.secret.file</name><value>${user.home}/hadoop-http-auth-signature-secret</value>
   </property>
   <property>
     <name>hadoop.http.authentication.cookie.domain</name><value></value>
   </property>
   <property>
-    <name>hadoop.http.authentication.simple.anonymous.allowed</name>
-    <value>true</value>
+    <name>hadoop.http.authentication.simple.anonymous.allowed</name><value>true</value>
   </property>
   <property>
-    <name>hadoop.http.authentication.kerberos.principal</name>
-    <value>HTTP/_HOST@LOCALHOST</value>
+    <name>hadoop.http.authentication.kerberos.principal</name><value>HTTP/_HOST@LOCALHOST</value>
   </property>
   <property>
-    <name>hadoop.http.authentication.kerberos.keytab</name>
-    <value>${user.home}/hadoop.keytab</value>
+    <name>hadoop.http.authentication.kerberos.keytab</name><value>${user.home}/hadoop.keytab</value>
   </property>
   <property>
-    <name>hadoop.http.max.threads</name>
-    <value>-1</value>
+    <name>hadoop.http.max.threads</name><value>-1</value>
   </property>
   <property>
-    <name>hadoop.http.logs.enabled</name>
-    <value>true</value>
+    <name>hadoop.http.logs.enabled</name><value>true</value>
   </property>
   <property>
-    <name>hadoop.jetty.logs.serve.aliases</name>
-    <value>true</value>
+    <name>hadoop.jetty.logs.serve.aliases</name><value>true</value>
   </property>
   <property>
-    <name>hadoop.http.filter.initializers</name>
-    <value>org.apache.hadoop.http.lib.StaticUserWebFilter</value>
+    <name>hadoop.http.filter.initializers</name><value>org.apache.hadoop.http.lib.StaticUserWebFilter</value>
   </property>
   <property>
-    <name>hadoop.http.staticuser.user</name>
-    <value>dr.who</value>
+    <name>hadoop.http.staticuser.user</name><value>dr.who</value>
   </property>
 
 
@@ -164,103 +134,78 @@
     NameNode.NameNodeRpcServer. Configurations are about IPC here
   -->
   <property>
-    <name>ipc.maximum.data.length</name>
-    <value>67108864</value>
-    <description>64MB</description>
+    <name>ipc.maximum.data.length</name><value>67108864</value><description>64MB</description>
   </property>
   <property>
-    <name>ipc.server.handler.queue.size</name>
-    <value>100</value>
+    <name>ipc.server.handler.queue.size</name><value>100</value>
   </property>
   <property>
-    <name>ipc.server.max.response.size</name>
-    <value>1048576</value>
-    <description>1MB</description>
+    <name>ipc.server.max.response.size</name><value>1048576</value><description>1MB</description>
   </property>
   <property>
-    <name>ipc.server.read.threadpool.size</name>
-    <value>1</value>
+    <name>ipc.server.read.threadpool.size</name><value>1</value>
   </property>
   <property>
-    <name>ipc.server.read.connection-queue.size</name>
-    <value>100</value>
+    <name>ipc.server.read.connection-queue.size</name><value>100</value>
   </property>
   <property>
-    <name>hadoop.security.authorization</name>
-    <value>false</value>
+    <name>hadoop.security.authorization</name><value>false</value>
   </property>
   <property>
-    <name>ipc.server.tcpnodelay</name>
-    <value>true</value>
+    <name>ipc.server.tcpnodelay</name><value>true</value>
   </property>
   <property>
-    <name>ipc.server.log.slow.rpc</name>
-    <value>false</value>
+    <name>ipc.server.log.slow.rpc</name><value>false</value>
   </property>
   <!-- Differente RPC Service(Client|Server|Lifeline) is dintigushed by port number -->
   <property>
-    <name>ipc.${service_port}.callqueue.impl</name>
-    <value>java.util.concurrent.LinkedBlockingQueue</value>
+    <name>ipc.${service_port}.callqueue.impl</name><value>java.util.concurrent.LinkedBlockingQueue</value>
   </property>
   <property>
-    <name>ipc.${service_port}.scheduler.impl</name>
-    <value>org.apache.hadoop.ipc.DefaultRpcScheduler</value>
+    <name>ipc.${service_port}.scheduler.impl</name><value>org.apache.hadoop.ipc.DefaultRpcScheduler</value>
   </property>
   <property>
-    <name>ipc.${service_port}.backoff.enable</name>
-    <value>false</value>
+    <name>ipc.${service_port}.backoff.enable</name><value>false</value>
   </property>
   <property>
-    <name>ipc.${service_port}.faircallqueue.priority-levels</name>
-    <value>0</value>
+    <name>ipc.${service_port}.faircallqueue.priority-levels</name><value>0</value>
   </property>
   <property>
-    <name>ipc.${service_port}.scheduler.priority.levels</name>
-    <value>4</value>
+    <name>ipc.${service_port}.scheduler.priority.levels</name><value>4</value>
   </property>
   <!-- Listener -->
   <property>
-    <name>ipc.server.listen.queue.size</name>
-    <value>128</value>
+    <name>ipc.server.listen.queue.size</name><value>128</value>
   </property>
   <!-- ConnectionManager -->
   <property>
-    <name>ipc.client.idlethreshold</name>
-    <value>4000</value>
+    <name>ipc.client.idlethreshold</name><value>4000</value>
   </property>
   <property>
-    <name>ipc.client.connection.idle-scan-interval.ms</name>
-    <value>10000</value>
+    <name>ipc.client.connection.idle-scan-interval.ms</name><value>10000</value>
   </property>
   <property>
-    <name>ipc.client.connection.maxidletime</name>
-    <value>10000</value>
+    <name>ipc.client.connection.maxidletime</name><value>10000</value>
   </property>
   <property>
-    <name>ipc.client.kill.max</name>
-    <value>10</value>
+    <name>ipc.client.kill.max</name><value>10</value>
   </property>
   <property>
-    <name>ipc.server.max.connections</name>
-    <value>0</value>
+    <name>ipc.server.max.connections</name><value>0</value>
   </property>
   <!-- RPC Metric -->
   <property>
     <name>rpc.metrics.percentiles.intervals</name><value></value>
   </property>
   <property>
-    <name>rpc.metrics.quantile.enable</name>
-    <value>false</value>
+    <name>rpc.metrics.quantile.enable</name><value>false</value>
   </property>
   <!-- SASL -->
   <property>
-    <name>hadoop.security.saslproperties.resolver.class</name>
-    <value>org.apache.hadoop.security.SaslPropertiesResolver</value>
+    <name>hadoop.security.saslproperties.resolver.class</name><value>org.apache.hadoop.security.SaslPropertiesResolver</value>
   </property>
   <property>
-    <name>hadoop.rpc.protection</name>
-    <value>auth</value>
-    <description>auth-int,auth-conf</description>
+    <name>hadoop.rpc.protection</name><value>auth</value><description>auth-int,auth-conf</description>
   </property>
 
 
@@ -268,14 +213,10 @@
     NameNode.JVM Monitor
   -->
   <property>
-    <name>jvm.pause.warn-threshold.ms</name>
-    <value>10000</value>
-    <description>milliseconds</description>
+    <name>jvm.pause.warn-threshold.ms</name><value>10000</value><description>milliseconds</description>
   </property>
   <property>
-    <name>jvm.pause.info-threshold.ms</name>
-    <value>1000</value>
-    <description>milliseconds</description>
+    <name>jvm.pause.info-threshold.ms</name><value>1000</value><description>milliseconds</description>
   </property>
 
 
@@ -287,37 +228,29 @@
     <name>hadoop.security.key.provider.path</name><value></value>
   </property>
   <property>
-    <name>hadoop.ssl.require.client.cert</name>
-    <value>false</value>
+    <name>hadoop.ssl.require.client.cert</name><value>false</value>
   </property>
   <property>
-    <name>hadoop.ssl.keystores.factory.class</name>
-    <value>org.apache.hadoop.security.ssl.FileBasedKeyStoresFactory</value>
+    <name>hadoop.ssl.keystores.factory.class</name><value>org.apache.hadoop.security.ssl.FileBasedKeyStoresFactory</value>
   </property>
   <property>
-    <name>hadoop.ssl.enabled.protocols</name>
-    <value>TLSv1,SSLv2Hello,TLSv1.1,TLSv1.2</value>
+    <name>hadoop.ssl.enabled.protocols</name><value>TLSv1,SSLv2Hello,TLSv1.1,TLSv1.2</value>
   </property>
   <property>
-    <name>hadoop.ssl.client.conf</name>
-    <value>ssl-client.xml</value>
+    <name>hadoop.ssl.client.conf</name><value>ssl-client.xml</value>
   </property>
   <property>
-    <name>hadoop.ssl.server.conf</name>
-    <value>ssl-server.xml</value>
+    <name>hadoop.ssl.server.conf</name><value>ssl-server.xml</value>
   </property>
   <property>
     <name>ssl.server.exclude.cipher.list</name><value></value>
   </property>
   <!-- FSServerDefault, some sever side default configurations, but can be overrided by client side -->
   <property>
-    <name>io.file.buffer.size</name>
-    <value>4096</value>
-    <description>4KB</description>
+    <name>io.file.buffer.size</name><value>4096</value><description>4KB</description>
   </property>
   <property>
-    <name>fs.trash.interval</name>
-    <value>0</value>
+    <name>fs.trash.interval</name><value>0</value>
   </property>
   <!-- BlockManager -->
   <property>
@@ -332,7 +265,6 @@
   <property>
     <name>net.topology.script.number.args</name><value>100</value>
   </property>
-
 
 
 </configuration>
