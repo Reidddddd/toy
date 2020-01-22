@@ -46,9 +46,9 @@ public final class ConfigurationFactory {
    * @throws NotDirectoryException if passes in parameter is not a directory
    * @throws FileNotFoundException if dir doesn't contain hbase-site.xml
    */
-  public static synchronized final Configuration createHBaseConfiguration(String dir_of_conf_file)
+  public static synchronized final Configuration createHBaseConfiguration(@Nullable String dir_of_conf_file)
       throws NotDirectoryException, FileNotFoundException {
-    @Nullable Optional<File> config_file = getConfigurationFileFor(dir_of_conf_file, Project.HBASE);
+    Optional<File> config_file = getConfigurationFileFor(dir_of_conf_file, Project.HBASE);
     if (!config_file.isPresent()) {
       throw new FileNotFoundException("hbase-site.xml doesn't exist");
     }
@@ -65,9 +65,9 @@ public final class ConfigurationFactory {
    * @throws NotDirectoryException if passes in parameter is not a directory
    * @throws FileNotFoundException if dir doesn't contain toy-site.conf
    */
-  public static synchronized final org.apache.toy.Configuration createJavaConfiguration(String dir_of_conf_file)
+  public static synchronized final org.apache.toy.Configuration createJavaConfiguration(@Nullable String dir_of_conf_file)
       throws NotDirectoryException, FileNotFoundException {
-    @Nullable Optional<File> config_file = getConfigurationFileFor(dir_of_conf_file, Project.JAVA);
+    Optional<File> config_file = getConfigurationFileFor(dir_of_conf_file, Project.JAVA);
     if (!config_file.isPresent()) {
       throw new FileNotFoundException("toy-site.conf for Java toy doesn't exist");
     }

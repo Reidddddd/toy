@@ -86,7 +86,7 @@ public final class Configuration {
   }
 
   public String[] getStrings(String key) {
-    @Nullable Optional<String> value = Optional.ofNullable(get(key));
+    Optional<String> value = Optional.ofNullable(get(key));
     return value.isPresent() ? value.get().split(",") : null;
   }
 

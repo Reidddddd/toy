@@ -102,8 +102,8 @@ public final class Parameter<T> {
    * @param value a nullable value
    * @return true it is not null and set, false otherwise
    */
-  public boolean checkAndSet(T value) {
-    @Nullable Optional<T> v = Optional.ofNullable(value);
+  public boolean checkAndSet(@Nullable T value) {
+    Optional<T> v = Optional.ofNullable(value);
     if (v.isPresent()) {
       setValue(value);
       return true;
