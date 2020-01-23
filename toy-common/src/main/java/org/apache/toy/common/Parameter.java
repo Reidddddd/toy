@@ -35,11 +35,11 @@ public final class Parameter<T> {
 
   private Parameter() {}
 
-  private Parameter(String key, String description, boolean required, Class<?> type) {
+  private Parameter(String key, String description, boolean required, Class<?> type, T value) {
     this.key = key;
     this.description = description;
     this.required = required;
-    this.value = null;
+    this.value = value;
     this.type = type;
   }
 
@@ -100,36 +100,36 @@ public final class Parameter<T> {
   /**
    * Check value and set if value is not null.
    * @param value a nullable value
-   * @return true it is not null and set, false otherwise
    */
-  public boolean checkAndSet(@Nullable T value) {
+  public void checkAndSet(@Nullable T value) {
     Optional<T> v = Optional.ofNullable(value);
     if (v.isPresent()) {
       setValue(value);
-      return true;
     }
-    return false;
   }
 
   /**
    * A builder for creating parameter.
+   * @param <T> type
    * @return a builder
    */
-  public static Builder newBuilder() {
-    return new Builder();
+  public static <T> Builder<T> newBuilder() {
+    return new Builder<>();
   }
 
-  public static class Builder {
+  public static class Builder<T> {
 
     private String key;
     private String description;
     private boolean required;
     private Class<?> type;
+    private T value;
 
     private Builder() {
       key = "";
       description = "";
       required = false;
+      value = null;
     }
 
     /**
@@ -137,7 +137,7 @@ public final class Parameter<T> {
      * @param key key
      * @return builder itself
      */
-    public Builder setKey(String key) {
+    public Builder<T> setKey(String key) {
       this.key = key;
       return this;
     }
@@ -147,7 +147,7 @@ public final class Parameter<T> {
      * @param description description
      * @return builder itself
      */
-    public Builder setDescription(String description) {
+    public Builder<T> setDescription(String description) {
       this.description = description.toLowerCase();
       return this;
     }
@@ -157,7 +157,7 @@ public final class Parameter<T> {
      * @param required true or false
      * @return builder itself
      */
-    public Builder setRequired(boolean required) {
+    public Builder<T> setRequired(boolean required) {
       this.required = required;
       return this;
     }
@@ -165,20 +165,29 @@ public final class Parameter<T> {
     /**
      * Set type of value.
      * @param type type of value
-     * @return builder itself
+     * @return buildser itself
      */
-    public Builder setType(Class<?> type) {
+    public Builder<T> setType(Class<?> type) {
       this.type = type;
       return this;
     }
 
     /**
+     * Set default value of this parameter
+     * @param value default value
+     * @return builder itself
+     */
+    public Builder<T> setDefaultValue(T value) {
+      this.value = value;
+      return this;
+    }
+
+    /**
      * Create a parameter.
-     * @param <T> type of value
      * @return A parameter
      */
-    public <T> Parameter<T> opt() {
-      return new Parameter<>(key, description, required, type);
+    public Parameter<T> opt() {
+      return new Parameter<>(key, description, required, type, value);
     }
 
   }

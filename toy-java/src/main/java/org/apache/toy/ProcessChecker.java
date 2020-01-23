@@ -30,15 +30,18 @@ import java.util.Set;
 
 public final class ProcessChecker extends AbstractJavaToy {
 
-  private final Parameter<String> process_check_file = Parameter.newBuilder().setKey("process_check_file").setType(String.class)
-                                                                .setRequired(true).setDescription("file contains process information to checked")
-                                                                .opt();
-  private final Parameter<String> section_delimiter = Parameter.newBuilder().setKey("section_delimiter").setType(String.class)
-                                                               .setRequired(true).setDescription("section separator")
-                                                               .opt();
-  private final Parameter<String[]> normal_processes = Parameter.newBuilder().setKey("normal_processes").setType(String[].class)
-                                                                .setRequired(true).setDescription("normal processes")
-                                                                .opt();
+  private final Parameter<String> process_check_file =
+      Parameter.<String >newBuilder().setKey("process_check_file").setType(String.class)
+                                     .setRequired(true).setDescription("file contains process information to checked")
+                                     .opt();
+  private final Parameter<String> section_delimiter =
+      Parameter.<String>newBuilder().setKey("section_delimiter").setType(String.class)
+                                    .setRequired(true).setDescription("section separator")
+                                    .opt();
+  private final Parameter<String[]> normal_processes =
+      Parameter.<String[]>newBuilder().setKey("normal_processes").setType(String[].class)
+                                      .setRequired(true).setDescription("normal processes")
+                                      .opt();
 
   public ProcessChecker() {}
 

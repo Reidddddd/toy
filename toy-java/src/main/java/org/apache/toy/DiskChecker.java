@@ -23,18 +23,22 @@ import java.util.BitSet;
 
 public class DiskChecker extends AbstractJavaToy {
 
-  private final Parameter<String> disk_check_file = Parameter.newBuilder().setKey("disk_check_file").setRequired(true)
-                                                             .setType(String.class).setDescription("file contains disk information to be checked")
-                                                             .opt();
-  private final Parameter<Integer> num_of_disk = Parameter.newBuilder().setKey("number_of_disk").setRequired(true)
-                                                          .setType(Integer.class).setDescription("number of disks")
-                                                          .opt();
-  private final Parameter<String> disk_seperator = Parameter.newBuilder().setKey("disk_seperator").setRequired(true)
-                                                            .setType(String.class).setDescription("prefix of disk")
-                                                            .opt();
-  private final Parameter<String> section_delimiter = Parameter.newBuilder().setKey("section_delimiter").setRequired(true)
-                                                               .setType(String.class).setDescription("section separator")
-                                                               .opt();
+  private final Parameter<String> disk_check_file =
+      Parameter.<String>newBuilder().setKey("disk_check_file").setRequired(true)
+                                    .setType(String.class).setDescription("file contains disk information to be checked")
+                                    .opt();
+  private final Parameter<Integer> num_of_disk =
+      Parameter.<Integer>newBuilder().setKey("number_of_disk").setRequired(true)
+                                     .setType(Integer.class).setDescription("number of disks")
+                                     .opt();
+  private final Parameter<String> disk_seperator =
+      Parameter.<String>newBuilder().setKey("disk_seperator").setRequired(true)
+                                    .setType(String.class).setDescription("prefix of disk")
+                                    .opt();
+  private final Parameter<String> section_delimiter =
+      Parameter.<String>newBuilder().setKey("section_delimiter").setRequired(true)
+                                    .setType(String.class).setDescription("section separator")
+                                    .opt();
 
   @Override
   public void init() {
@@ -131,7 +135,7 @@ public class DiskChecker extends AbstractJavaToy {
     void listAbnormalOnly() {
       StringBuilder builder = new StringBuilder(hostname + " lacks ");
       for (int i = normal_disk.nextClearBit(0); i < size; i = normal_disk.nextClearBit(i + 1)) {
-        builder.append(i + " ");
+        builder.append(i).append("\\s");
       }
       System.out.println(builder.toString());
     }
