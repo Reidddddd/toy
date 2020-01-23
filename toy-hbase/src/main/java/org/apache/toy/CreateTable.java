@@ -83,7 +83,7 @@ public class CreateTable extends AbstractHBaseToy {
         return new byte[0][];
       }
 
-    }
+    };
   }
 
   @Override

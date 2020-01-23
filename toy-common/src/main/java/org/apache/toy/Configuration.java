@@ -16,7 +16,6 @@
 
 package org.apache.toy;
 
-import org.apache.toy.annotation.Nullable;
 import org.apache.toy.annotation.ThreadSafe;
 import org.apache.toy.common.FileLineIterator;
 

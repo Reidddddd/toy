@@ -16,10 +16,7 @@
 
 package org.apache.toy;
 
-import org.apache.toy.common.Parameter;
-
 import java.io.PrintStream;
-import java.util.List;
 
 /**
  * Definition of a toy.

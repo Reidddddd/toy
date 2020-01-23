@@ -26,8 +26,6 @@ import java.util.List;
  */
 public abstract class AbstractHBaseToy extends AbstractToy<Configuration> {
 
-  protected Configuration configuration;
-
   @Override
   protected final void preCheck(Configuration configuration, List<Parameter<?>> requisites) {
     for (Parameter parameter : requisites) {

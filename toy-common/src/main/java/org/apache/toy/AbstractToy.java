@@ -18,7 +18,6 @@ package org.apache.toy;
 
 import org.apache.toy.common.HelpPrinter;
 import org.apache.toy.common.Parameter;
-import sun.security.krb5.internal.PAData;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
