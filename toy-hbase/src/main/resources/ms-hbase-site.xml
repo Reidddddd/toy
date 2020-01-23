@@ -25,6 +25,11 @@
 
 
   <property>
+    <name>hbase.master.buffer.for.rs.fatals</name>
+    <value>1*1024*1024</value>
+    <description>1MB</description>
+  </property>
+  <property>
     <name>hbase.rootdir</name>
     <value></value>
   </property>
@@ -32,6 +37,9 @@
     <name>hbase.cluster.distributed</name>
     <value></value>
   </property>
+
+  <!-- Replication, skip -->
+
   <property>
     <name>hbase.master.check.compression</name>
     <value>true</value>
@@ -59,6 +67,10 @@
   <property>
     <name>hbase.status.published</name>
     <value>false</value>
+  </property>
+  <property>
+    <name>hbase.status.publisher.class</name>
+    <value>MulticastPublisher</value>
   </property>
   <property>
     <name>hbase.status.publish.period</name>
@@ -93,6 +105,10 @@
     <value></value>
   </property>
   <property>
+    <name>hbase.unsafe.stream.capability.enforce</name>
+    <value></value>
+  </property>
+  <property>
     <name>hbase.rootdir.perms</name>
     <value></value>
   </property>
@@ -101,8 +117,32 @@
     <value></value>
   </property>
   <property>
+    <name>hbase.security.authentication</name>
+    <value>simple</value>
+  </property>
+  <property>
+    <name>hbase.server.thread.wakefrequency</name>
+    <value>10000</value>
+  </property>
+  <property>
+    <name>hbase.server.versionfile.writeattempts</name>
+    <value>3</value>
+  </property>
+  <property>
     <name>hbase.filesystem.reorder.blocks</name>
     <value>true</value>
+  </property>
+  <property>
+    <name>hbase.splitlog.zk.retries</name>
+    <value>3</value>
+  </property>
+  <property>
+    <name>hbase.splitlog.max.resubmit</name>
+    <value>3</value>
+  </property>
+  <property>
+    <name>hbase.splitlog.manager.timeout</name>
+    <value>120000</value>
   </property>
   <property>
     <name>hbase.splitlog.manager.unassigned.timeout</name>
@@ -132,55 +172,428 @@
     <name>hbase.master.ping.server.retry.sleep.interval</name>
     <value>100</value>
   </property>
+
+  <!-- Balancer -->
   <property>
-    <name></name>
+    <name>hbase.master.loadbalancer.class</name>
+    <value>StochasticLoadBalancer</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.uselocality</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.maxSteps</name>
+    <value>1000000</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.stepsPerRegion</name>
+    <value>800</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.maxRunningTime</name>
+    <value>30000</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.runMaxSteps</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.numRegionLoadsToRemember</name>
+    <value>15</value>
+  </property>
+  <property>
+    <name>hbase.master.loadbalance.bytable</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.minCostNeedBalance</name>
+    <value>0.05f</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.localityCost</name>
+    <value>25</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.rackLocalityCost</name>
+    <value>15</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.readRequestCost</name>
+    <value>5</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.writeRequestCost</name>
+    <value>5</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.memstoreSizeCost</name>
+    <value>5</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.storefileSizeCost</name>
+    <value>5</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.regionReplicaHostCostKey</name>
+    <value>100000</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.regionReplicaRackCostKey</name>
+    <value>10000</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.regionCountCost</name>
+    <value>500</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.primaryRegionCountCost</name>
+    <value>500</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.moveCost</name>
+    <value>7</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.maxMovePercent</name>
+    <value>0.25f</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.tableSkewCost</name>
+    <value>35</value>
+  </property>
+  <property>
+    <name>hbase.master.balancer.stochastic.additionalCostFunctions</name>
     <value></value>
   </property>
   <property>
-    <name></name>
+    <name>hbase.regions.slop</name>
+    <value>0.001F</value>
+  </property>
+
+  <!-- -->
+  <property>
+    <name>hbase.master.normalizer.class</name>
+    <value>SimpleRegionNormalizer</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.switch.split</name>
+    <value>split</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.switch.merge</name>
+    <value>merge</value>
+  </property>
+
+  <!-- AssignmentManager -->
+  <property>
+    <name>hbase.assignment.usezk.migrating</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hbase.assignment.maximum.attempts</name>
+    <value>10</value>
+  </property>
+  <property>
+    <name>hbase.meta.assignment.retry.sleeptime</name>
+    <value>1000</value>
+  </property>
+  <property>
+    <name>hbase.assignment.threads.max</name>
+    <value>30</value>
+  </property>
+  <property>
+    <name>hbase.master.maximum.logsplit.keeptime</name>
+    <value>7200000L</value>
+  </property>
+  <property>
+    <name>hbase.assignment.usezk</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.bulk.assignment.waittillallassigned</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hbase.bulk.assignment.threshold.regions</name>
+    <value>7</value>
+  </property>
+  <property>
+    <name>hbase.bulk.assignment.threshold.servers</name>
+    <value>3</value>
+  </property>
+  <property>
+    <name>hbase.bulk.assignment.perregion.open.time</name>
+    <value>10000</value>
+  </property>
+  <property>
+    <name>hbase.assignment.zkevent.workers</name>
+    <value>20</value>
+  </property>
+  <property>
+    <name>hbase.assignment.retry.sleep.initial</name>
+    <value>0</value>
+  </property>
+  <property>
+    <name>hbase.assignment.retry.sleep.max</name>
     <value></value>
   </property>
   <property>
-    <name></name>
+    <name>hbase.assignment.failed.open.retry.period</name>
+    <value>300000</value>
+  </property>
+
+  <!-- SnapshotManager -->
+  <property>
+    <name>hbase.snapshot.enabled</name>
     <value></value>
   </property>
   <property>
-    <name></name>
+    <name>hbase.snapshot.master.wakeMillis</name>
+    <value>500</value>
+  </property>
+  <property>
+    <name>hbase.snapshot.master.timeout.millis</name>
+    <value>60000 * 5</value>
+  </property>
+  <property>
+    <name>hbase.snapshot.master.threads</name>
+    <value>1</value>
+  </property>
+
+  <!-- -->
+  <property>
+    <name>hbase.flush.master.timeoutMillis</name>
+    <value>60000</value>
+  </property>
+  <property>
+    <name>hbase.flush.master.wakeMillis</name>
+    <value>500</value>
+  </property>
+  <property>
+    <name>hbase.flush.procedure.master.threads</name>
+    <value>1</value>
+  </property>
+
+  <!-- Skip TableCFsUpdater -->
+
+
+  <property>
+    <name>hbase.coprocessor.enabled</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.coprocessor.master.classes</name>
     <value></value>
   </property>
   <property>
-    <name></name>
+    <name>hbase.master.executor.openregion.threads</name>
+    <value>5</value>
+  </property>
+  <property>
+    <name>hbase.master.executor.closeregion.threads</name>
+    <value>5</value>
+  </property>
+  <property>
+    <name>hbase.master.executor.serverops.threads</name>
+    <value>5</value>
+  </property>
+  <property>
+    <name>hbase.master.executor.meta.serverops.threads</name>
+    <value>5</value>
+  </property>
+  <property>
+    <name>hbase.master.executor.logreplayops.threads</name>
+    <value>10</value>
+  </property>
+  <property>
+    <name>hbase.snapshot.master.threads</name>
+    <value>1</value>
+  </property>
+  <property>
+    <name>hbase.master.procedure.queue.meta.table.priority</name>
+    <value>3</value>
+  </property>
+  <property>
+    <name>hbase.master.procedure.queue.system.table.priority</name>
+    <value>2</value>
+  </property>
+  <property>
+    <name>hbase.master.procedure.queue.user.table.priority</name>
+    <value>1</value>
+  </property>
+  <property>
+    <name>hbase.wal.storage.policy</name>
+    <value>NONE</value>
+  </property>
+  <property>
+    <name>hbase.procedure.cleaner.interval</name>
+    <value>30000</value>
+  </property>
+  <property>
+    <name>hbase.procedure.cleaner.evict.ttl</name>
+    <value>900000</value>
+  </property>
+  <property>
+    <name>hbase.procedure.cleaner.acked.evict.ttl</name>
+    <value>300000</value>
+  </property>
+  <property>
+    <name>hbase.master.procedure.threads</name>
+    <value>4</value>
+  </property>
+  <property>
+    <name>hbase.procedure.abort.on.corruption</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hbase.cleaner.scan.dir.concurrent.size</name>
+    <value>0.25</value>
+  </property>
+  <property>
+    <name>hbase.master.cleaner.interval</name>
+    <value>600000</value>
+  </property>
+  <property>
+    <name>hbase.master.logcleaner.plugins</name>
     <value></value>
   </property>
   <property>
-    <name></name>
+    <name>hbase.oldwals.cleaner.thread.size</name>
+    <value>2</value>
+  </property>
+  <property>
+    <name>hbase.oldwals.cleaner.thread.timeout.msec</name>
+    <value>60000</value>
+  </property>
+  <property>
+    <name>hbase.oldwals.cleaner.thread.check.interval.msec</name>
+    <value>500</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.thread.hfilecleaner.throttle</name>
+    <value>64 * 1024 * 1024</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.hfilecleaner.large.queue.size</name>
+    <value>10240</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.hfilecleaner.small.queue.size</name>
+    <value>10240</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.hfilecleaner.large.thread.count</name>
+    <value>1</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.hfilecleaner.small.thread.count</name>
+    <value>1</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.hfilecleaner.thread.timeout.msec</name>
+    <value>60000</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.hfilecleaner.thread.check.interval.msec</name>
+    <value>1000</value>
+  </property>
+  <property>
+    <name>hbase.regions.recovery.store.file.ref.count</name>
+    <value>-1</value>
+  </property>
+  <property>
+    <name>hbase.master.regions.recovery.check.interval</name>
+    <value>1200 * 1000</value>
+  </property>
+  <property>
+    <name>hbase.regions.recovery.store.file.ref.count</name>
+    <value>-1</value>
+  </property>
+  <property>
+    <name>hbase.master.cleaner.snapshot.interval</name>
+    <value>1800 * 1000</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.useMulti</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.replication.zk.deadrs.lock.ttl</name>
+    <value>60 * 10 * 1000</value>
+  </property>
+
+  <!-- -->
+  <property>
+    <name>hbase.master.wait.on.regionservers.interval</name>
+    <value>1500</value>
+  </property>
+  <property>
+    <name>hbase.master.wait.on.regionservers.timeout</name>
+    <value>4500</value>
+  </property>
+  <property>
+    <name>hbase.balancer.tablesOnMaster</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hbase.master.wait.on.regionservers.mintostart</name>
+    <value>-1</value>
+  </property>
+  <property>
+    <name>hbase.master.wait.on.regionservers.maxtostart</name>
+    <value>Integer.MAX_VALUE</value>
+  </property>
+  <property>
+    <name>hbase.hlog.split.skip.errors</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hbase.hlog.split.failure.retry.interval</name>
+    <value>30 * 1000</value>
+  </property>
+  <property>
+    <name>hbase.catalog.verification.timeout</name>
+    <value>1000</value>
+  </property>
+  <property>
+    <name>hbase.MetaMigrationConvertingToPB</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.balancer.statusPeriod</name>
+    <value>60000</value>
+  </property>
+  <property>
+    <name>hbase.normalizer.period</name>
+    <value>300000</value>
+  </property>
+  <property>
+    <name>hbase.catalogjanitor.interval</name>
+    <value>300000</value>
+  </property>
+  <property>
+    <name>hbase.master.namespace.init.timeout</name>
+    <value>300000</value>
+  </property>
+  <property>
+    <name>hbase.namespace.quota.maxtables</name>
     <value></value>
   </property>
   <property>
-    <name></name>
-    <value></value>
-  </property>
-  <property>
-    <name></name>
-    <value></value>
-  </property>
-  <property>
-    <name></name>
-    <value></value>
-  </property>
-  <property>
-    <name></name>
-    <value></value>
-  </property>
-  <property>
-    <name></name>
-    <value></value>
-  </property>
-  <property>
-    <name></name>
+    <name>hbase.namespace.quota.maxregions</name>
     <value></value>
   </property>
 
+  <!-- -->
+  <property>
+    <name>hbase.superuser</name>
+    <value></value>
+  </property>
+  <property>
+    <name>hbase.coordinated.state.manager.class</name>
+    <value>ZkCoordinatedStateManager</value>
+  </property>
 
 
 </configuration>
