@@ -16,10 +16,9 @@
 
 package org.apache.toy;
 
-import org.apache.toy.common.HelpPrinter;
 import org.apache.toy.common.Parameter;
 
-import java.io.PrintStream;
+import java.util.List;
 
 /**
  * Java toy's base implementation. Java configuration is inititlized in this class.
@@ -27,14 +26,8 @@ import java.io.PrintStream;
 public abstract class AbstractJavaToy extends AbstractToy<Configuration> {
 
   @Override
-  public int howToPlay(PrintStream out) {
-    HelpPrinter.printUsage(out, this.getClass(), parameters);
-    return RETURN_CODE.HELP.code();
-  }
-
-  @Override
-  protected void preCheck(Configuration configuration) {
-    for (Parameter parameter : parameters) {
+  protected final void preCheck(Configuration configuration, List<Parameter<?>> requisites) {
+    for (Parameter parameter : requisites) {
            if (parameter.type().equals(String.class)) parameter.checkAndSet(configuration.get(parameter.key()));
       else if (parameter.type().equals(Integer.class)) parameter.checkAndSet(configuration.getInt(parameter.key()));
       else if (parameter.type().equals(String[].class)) parameter.checkAndSet(configuration.getStrings(parameter.key()));
@@ -47,10 +40,15 @@ public abstract class AbstractJavaToy extends AbstractToy<Configuration> {
   }
 
   @Override
-  public final int play(String dir_of_conf_file) throws Exception {
+  public final int play(String dir_of_conf_file, List<Parameter<?>> requisites) throws Exception {
     Configuration configuration = ConfigurationFactory.createJavaConfiguration(dir_of_conf_file);
-    preCheck(configuration);
-    return haveFun();
+    preCheck(configuration, requisites);
+    buildToy(configuration);
+    try {
+      return haveFun();
+    } finally {
+      destroyToy();
+    }
   }
 
 }

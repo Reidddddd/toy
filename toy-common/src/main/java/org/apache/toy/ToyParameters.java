@@ -25,14 +25,18 @@ import java.util.Optional;
 
 public final class ToyParameters {
 
-  private static final Parameter<Boolean> help = Parameter.newBuilder().setKey("--help").setDescription("help message of toy")
-                                                          .setType(Boolean.class).opt();
-  private static final Parameter<String> clazz = Parameter.newBuilder().setKey("--class").setType(String.class)
-                                                          .setDescription("class to be run").setRequired(true)
-                                                          .opt();
-  private static final Parameter<String> conf = Parameter.newBuilder().setKey("--conf_dir").setDescription("directory of configuration")
-                                                         .setRequired(true).setType(String.class)
-                                                         .opt();
+  private static final Parameter<Boolean> help =
+      Parameter.<Boolean>newBuilder().setKey("--help").setDescription("help message of toy")
+                                     .setType(Boolean.class)
+                                     .opt();
+  private static final Parameter<String> clazz =
+      Parameter.<String>newBuilder().setKey("--class").setType(String.class)
+                                    .setDescription("class to be run").setRequired(true)
+                                    .opt();
+  private static final Parameter<String> conf =
+      Parameter.<String>newBuilder().setKey("--conf_dir").setDescription("directory of configuration")
+                                    .setRequired(true).setType(String.class)
+                                    .opt();
   private static final List<Parameter<?>> parameters = new ArrayList<>();
 
   static {

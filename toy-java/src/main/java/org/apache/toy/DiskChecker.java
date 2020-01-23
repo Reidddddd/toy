@@ -20,6 +20,7 @@ import org.apache.toy.common.FileLineIterator;
 import org.apache.toy.common.Parameter;
 
 import java.util.BitSet;
+import java.util.List;
 
 public class DiskChecker extends AbstractJavaToy {
 
@@ -41,15 +42,20 @@ public class DiskChecker extends AbstractJavaToy {
                                     .opt();
 
   @Override
-  public void init() {
-    parameters.add(disk_check_file);
-    parameters.add(num_of_disk);
-    parameters.add(disk_seperator);
-    parameters.add(section_delimiter);
+  protected void requisite(List<Parameter<?>> requisites) {
+    requisites.add(disk_check_file);
+    requisites.add(num_of_disk);
+    requisites.add(disk_seperator);
+    requisites.add(section_delimiter);
   }
 
   @Override
-  public int haveFun() throws Exception {
+  protected void buildToy(Configuration configuration) throws Exception {
+    // no-op
+  }
+
+  @Override
+  public int haveFun() {
     try (FileLineIterator fli = new FileLineIterator(disk_check_file.value())) {
       boolean first_section = true;
       MachineDisk md = new MachineDisk(num_of_disk.value());
@@ -76,6 +82,11 @@ public class DiskChecker extends AbstractJavaToy {
       }
     }
     return RETURN_CODE.SUCCESS.code();
+  }
+
+  @Override
+  protected void destroyToy() throws Exception {
+    // no-op
   }
 
   private int getDiskIndex(String line) {

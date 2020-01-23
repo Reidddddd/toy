@@ -17,10 +17,8 @@
 package org.apache.toy;
 
 import org.apache.toy.common.FileLineIterator;
-import org.apache.toy.common.HelpPrinter;
 import org.apache.toy.common.Parameter;
 
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,16 +44,15 @@ public final class ProcessChecker extends AbstractJavaToy {
   public ProcessChecker() {}
 
   @Override
-  public void init() {
-    parameters.add(process_check_file);
-    parameters.add(section_delimiter);
-    parameters.add(normal_processes);
+  protected void requisite(List<Parameter<?>> requisites) {
+    requisites.add(process_check_file);
+    requisites.add(section_delimiter);
+    requisites.add(normal_processes);
   }
 
   @Override
-  public int howToPlay(PrintStream out) {
-    HelpPrinter.printUsage(out, this.getClass(), parameters);
-    return RETURN_CODE.HELP.code();
+  protected void buildToy(Configuration configuration) throws Exception {
+    // no-op
   }
 
   @Override
@@ -88,6 +85,11 @@ public final class ProcessChecker extends AbstractJavaToy {
     return RETURN_CODE.SUCCESS.code();
   }
 
+  @Override
+  protected void destroyToy() throws Exception {
+    // no-op
+  }
+
   private class MachineProcesses {
     String hostname = "";
     Map<String, Boolean> normal = new HashMap<>();
@@ -105,7 +107,7 @@ public final class ProcessChecker extends AbstractJavaToy {
     }
 
     boolean abnormal() {
-      return !others.isEmpty() || normal.values().contains(Boolean.FALSE);
+      return !others.isEmpty() || normal.containsValue(Boolean.FALSE);
     }
 
     void init() {
@@ -119,11 +121,11 @@ public final class ProcessChecker extends AbstractJavaToy {
       if (others.isEmpty()) {
         b.append(" no abnormal processes.");
       } else {
-        others.forEach(s -> b.append(" " + s + ","));
+        others.forEach(s -> b.append("\\s").append(s).append(","));
       }
       normal.forEach((k, v) -> {
         if (!v) {
-          b.append(" lacks " + k);
+          b.append(" lacks ").append(k);
         }
       });
       System.out.println(b.toString());
@@ -133,10 +135,10 @@ public final class ProcessChecker extends AbstractJavaToy {
     public String toString() {
       StringBuilder b = new StringBuilder("Host: " + hostname + " ");
       normal.forEach((k, v) -> {
-        if (!v) b.append("doesn't contain " + k + " ");
-        else b.append("contains " + k);
+        if (!v) b.append("doesn't contain ").append(k).append("\\s");
+        else b.append("contains ").append(k);
       });
-      others.forEach(s -> b.append(" also contains " + s));
+      others.forEach(s -> b.append(" also contains ").append(s));
       return b.toString();
     }
   }

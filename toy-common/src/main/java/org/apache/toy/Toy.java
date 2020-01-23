@@ -16,7 +16,10 @@
 
 package org.apache.toy;
 
+import org.apache.toy.common.Parameter;
+
 import java.io.PrintStream;
+import java.util.List;
 
 /**
  * Definition of a toy.
@@ -24,7 +27,7 @@ import java.io.PrintStream;
 public interface Toy {
 
   /**
-   * Initialzation before playing toy, please add all user-defined parameters in this method.
+   * Initialzation before playing toy.
    */
   void init();
 
