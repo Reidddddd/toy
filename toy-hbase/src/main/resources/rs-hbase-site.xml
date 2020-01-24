@@ -23,6 +23,269 @@
 <configuration>
   <!-- RegionServer's configuration -->
 
+  <!--
+    General
+  -->
+  <property>
+    <name>hbase.server.thread.wakefrequency</name>
+    <value>10000</value>
+  </property>
+  <property>
+    <name>hbase.client.retries.number</name>
+    <value>31</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.msginterval</name>
+    <value>3000</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.nonces.enabled</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.server.hashNonce.gracePeriod</name>
+    <value>30 * 60 * 1000</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.numregionstoreport</name>
+    <value>10</value>
+  </property>
+  <property>
+    <name>hbase.client.scanner.timeout.period</name>
+    <value>60000</value>
+  </property>
+  <property>
+    <name>hbase.server.scanner.max.result.size</name>
+    <value>100 * 1024 * 1024</value>
+  </property>
+  <property>
+    <name>hbase.rpc.timeout</name>
+    <value>60000</value>
+  </property>
+  <property>
+    <name>hbase.region.server.rpc.minimum.scan.time.limit.delta</name>
+    <value>10</value>
+  </property>
+  <property>
+    <name>hbase.client.pause</name>
+    <value>100</value>
+  </property>
+  <property>
+    <name>hbase.client.pause.cqtbe</name>
+    <value>100</value>
+  </property>
+  <property>
+    <name>hbase.client.start.log.errors.counter</name>
+    <value>9</value>
+  </property>
+  <property>
+    <name>hbase.client.backpressure.enabled</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hbase.assignment.usezk</name>
+    <value>true</value>
+  </property>
+
+
+  <!--
+    ZK related
+  -->
+  <property>
+    <name>hbase.zookeeper.property.clientPort</name>
+    <value>2181</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value></value>
+  </property>
+  <property>
+    <name>zookeeper.znode.parent</name>
+    <value>/hbase</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.metaserver</name>
+    <value>meta-region-server</value>
+  </property>
+  <property>
+    <name>hbase.meta.replica.count</name>
+    <value>1</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.rs</name>
+    <value>rs</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.draining.rs</name>
+    <value>draining</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.master</name>
+    <value>master</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.backup.masters</name>
+    <value>backup-masters</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.state</name>
+    <value>running</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.unassigned</name>
+    <value>region-in-transition</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.tableEnableDisable</name>
+    <value>table</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.clusterId</name>
+    <value>hbaseid</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.splitlog</name>
+    <value>splitWAL</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.balancer</name>
+    <value>balancer</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.regionNormalizer</name>
+    <value>normalizer</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.switch</name>
+    <value>switch</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.tableLock</name>
+    <value>table-lock</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.snapshot.cleanup</name>
+    <value>snapshot-cleanup</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.recovering.regions</name>
+    <value>recovering-regions</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.namespace</name>
+    <value>namespace</value>
+  </property>
+  <property>
+    <name>zookeeper.znode.masterMaintenance</name>
+    <value>master-maintenance</value>
+  </property>
+  <property>
+    <name>zookeeper.session.timeout</name>
+    <value>180 * 1000</value>
+  </property>
+  <property>
+    <name>zookeeper.recovery.retry</name>
+    <value>3</value>
+  </property>
+  <property>
+    <name>zookeeper.recovery.retry.intervalmill</name>
+    <value>1000</value>
+  </property>
+  <property>
+    <name>zookeeper.recovery.retry.maxsleeptime</name>
+    <value>60000</value>
+  </property>
+  <property>
+    <name>zookeeper.dump.connection.timeout</name>
+    <value>1000</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.authfailed.retries.number</name>
+    <value>15</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.authfailed.pause</name>
+    <value>100</value>
+  </property>
+  <property>
+    <name>zookeeper.multi.max.size</name>
+    <value>1024*1024</value>
+  </property>
+  <property>
+    <name>zookeeper.factory.class</name>
+    <value>DefaultZooKeeperFactory</value>
+  </property>
+
+
+  <!--
+    TableLockManager
+  -->
+  <property>
+    <name>hbase.table.lock.enable</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.table.write.lock.timeout.ms</name>
+    <value>600 * 1000</value>
+  </property>
+  <property>
+    <name>hbase.table.read.lock.timeout.ms</name>
+    <value>600 * 1000</value>
+  </property>
+  <property>
+    <name>hbase.table.lock.expire.ms</name>
+    <value>600 * 1000</value>
+  </property>
+  <property>
+    <name>hbase.security.authorization</name>
+    <value></value>
+  </property>
+  <property>
+    <name></name>
+    <value></value>
+  </property>
+  <property>
+    <name></name>
+    <value></value>
+  </property>
+  <property>
+    <name></name>
+    <value></value>
+  </property>
+  <property>
+    <name></name>
+    <value></value>
+  </property>
+  <property>
+    <name></name>
+    <value></value>
+  </property>
+  <property>
+    <name></name>
+    <value></value>
+  </property>
+
+
+  <!--
+    FileSystem
+  -->
+  <property>
+    <name>hbase.regionserver.checksum.verify</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.filesystem.reorder.blocks</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.meta.versions</name>
+    <value>3</value>
+  </property>
+  <property>
+    <name>hbase.meta.blocksize</name>
+    <value>8 * 1024</value>
+  </property>
+
 
   <!--
     Memstore & Flush related
@@ -113,6 +376,14 @@
   <property>
     <name>hbase.hstore.flush.retries.number</name>
     <value>10</value>
+  </property>
+  <property>
+    <name>hbase.client.operation.timeout</name>
+    <value>1200000</value>
+  </property>
+  <property>
+    <name>hbase.rpc.shortoperation.timeout</name>
+    <value>10000</value>
   </property>
 
 
@@ -415,6 +686,14 @@
     <value></value>
   </property>
   <property>
+    <name>hbase.splitlog.zk.retries</name>
+    <value>3</value>
+  </property>
+  <property>
+    <name>hbase.splitlog.max.resubmit</name>
+    <value>3</value>
+  </property>
+  <property>
     <name>hbase.splitlog.manager.timeout</name>
     <value>120000</value>
   </property>
@@ -573,6 +852,29 @@
   <!--
     RPC Service
   -->
+  <property>
+    <name>hbase.rpc.controllerfactory.class</name>
+    <value>RpcControllerFactory.class</value>
+  </property>
+  <property>
+    <name>hbase.rpc.callerfactory.class</name>
+    <value>RpcRetryingCallerFactory.class</value>
+  </property>
+  <property>
+    <name>hbase.client.serverside.retries.multiplier</name>
+    <value>10</value>
+  </property>
+  <property>
+    <name>hbase.ipc.server.scan.vtime.weight</name>
+    <value>1.0f</value>
+  </property>
+  <property>
+    <name></name>
+  </property>
+  <property>
+    <name>hbase.rpc.rows.warning.threshold</name>
+    <value>5000</value>
+  </property>
   <property>
     <name>hbase.region.server.rpc.scheduler.factory.class</name>
     <value>SimpleRpcSchedulerFactory</value>
