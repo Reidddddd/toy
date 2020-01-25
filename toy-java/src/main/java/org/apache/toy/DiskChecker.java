@@ -25,24 +25,28 @@ import java.util.List;
 public class DiskChecker extends AbstractJavaToy {
 
   private final Parameter<String> disk_check_file =
-      Parameter.<String>newBuilder().setKey("disk_check_file").setRequired(true)
-                                    .setType(String.class).setDescription("file contains disk information to be checked")
-                                    .opt();
+      Parameter.<String>newBuilder()
+               .setKey("disk_check_file").setRequired(true)
+               .setType(String.class).setDescription("file contains disk information to be checked")
+               .opt();
   private final Parameter<Integer> num_of_disk =
-      Parameter.<Integer>newBuilder().setKey("number_of_disk").setRequired(true)
-                                     .setType(Integer.class).setDescription("number of disks")
-                                     .opt();
+      Parameter.<Integer>newBuilder()
+               .setKey("number_of_disk").setRequired(true)
+               .setType(Integer.class).setDescription("number of disks")
+               .opt();
   private final Parameter<String> disk_seperator =
-      Parameter.<String>newBuilder().setKey("disk_seperator").setRequired(true)
-                                    .setType(String.class).setDescription("prefix of disk")
-                                    .opt();
+      Parameter.<String>newBuilder()
+               .setKey("disk_seperator").setRequired(true)
+               .setType(String.class).setDescription("prefix of disk")
+               .opt();
   private final Parameter<String> section_delimiter =
-      Parameter.<String>newBuilder().setKey("section_delimiter").setRequired(true)
-                                    .setType(String.class).setDescription("section separator")
-                                    .opt();
+      Parameter.<String>newBuilder()
+               .setKey("section_delimiter").setRequired(true)
+               .setType(String.class).setDescription("section separator")
+               .opt();
 
   @Override
-  protected void requisite(List<Parameter<?>> requisites) {
+  protected void requisite(@SuppressWarnings("rawtypes") List<Parameter> requisites) {
     requisites.add(disk_check_file);
     requisites.add(num_of_disk);
     requisites.add(disk_seperator);

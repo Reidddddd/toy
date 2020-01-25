@@ -27,21 +27,24 @@ import java.util.List;
 public abstract class AbstractHBaseToy extends AbstractToy<Configuration> {
 
   @Override
-  protected final void preCheck(Configuration configuration, List<Parameter<?>> requisites) {
-    for (Parameter parameter : requisites) {
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  protected final void preCheck(Configuration configuration, List<Parameter> requisites) {
+    requisites.forEach(parameter -> {
            if (parameter.type().equals(String.class)) parameter.checkAndSet(configuration.get(parameter.key()));
       else if (parameter.type().equals(Integer.class)) parameter.checkAndSet(configuration.getInt(parameter.key(), (Integer) parameter.value()));
       else if (parameter.type().equals(String[].class)) parameter.checkAndSet(configuration.getStrings(parameter.key()));
+      else if (parameter.type().isEnum()) parameter.checkAndSet(configuration.getEnum(parameter.key(), (Enum) parameter.value()));
 
       if (parameter.required() && parameter.empty()) {
         howToPlay(System.out);
         throw new IllegalArgumentException(parameter.key() + " is not set");
       }
-    }
+    });
   }
 
   @Override
-  protected final int play(String dir_of_conf_file, List<Parameter<?>> requisites) throws Exception {
+  protected final int play(String dir_of_conf_file,
+                           @SuppressWarnings("rawtypes") List<Parameter> requisites) throws Exception {
     Configuration configuration = ConfigurationFactory.createHBaseConfiguration(dir_of_conf_file);
     preCheck(configuration, requisites);
     buildToy(configuration);

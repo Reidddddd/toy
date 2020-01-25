@@ -44,7 +44,7 @@ public final class ProcessChecker extends AbstractJavaToy {
   public ProcessChecker() {}
 
   @Override
-  protected void requisite(List<Parameter<?>> requisites) {
+  protected void requisite(@SuppressWarnings("rawtypes") List<Parameter> requisites) {
     requisites.add(process_check_file);
     requisites.add(section_delimiter);
     requisites.add(normal_processes);

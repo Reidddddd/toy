@@ -16,6 +16,7 @@
 
 package org.apache.toy;
 
+import org.apache.toy.annotation.Nullable;
 import org.apache.toy.annotation.ThreadSafe;
 import org.apache.toy.common.FileLineIterator;
 
@@ -80,13 +81,20 @@ public final class Configuration {
     return Integer.parseInt(configurations.get(key));
   }
 
+  @Nullable
   public String get(String key) {
     return configurations.get(key);
   }
 
+  @Nullable
   public String[] getStrings(String key) {
     Optional<String> value = Optional.ofNullable(get(key));
-    return value.isPresent() ? value.get().split(",") : null;
+    return value.map(v -> v.split(",")).orElse(null);
+  }
+
+  public <T extends Enum<T>> T getEnum(String key, T def_value) {
+    Optional<String> value = Optional.ofNullable(get(key));
+    return value.map(v -> Enum.valueOf(def_value.getDeclaringClass(), v)).orElse(def_value);
   }
 
 }

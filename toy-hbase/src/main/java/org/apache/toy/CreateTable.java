@@ -30,28 +30,38 @@ import java.util.List;
 /**
  * A class for creating table.
  */
+@SuppressWarnings("rawtypes")
 public class CreateTable extends AbstractHBaseToy {
 
   private final Parameter<String> table_name =
-      Parameter.<String>newBuilder().setKey("table_name").setRequired(true)
-                                    .setType(String.class).setDescription("table name")
-                                    .opt();
+      Parameter.<String>newBuilder()
+               .setKey("table_name").setRequired(true)
+               .setType(String.class).setDescription("table name")
+               .opt();
   private final Parameter<String[]> families =
-      Parameter.<String[]>newBuilder().setKey("families_name").setRequired(true)
-                                      .setType(String[].class).setDescription("A family or families delimited by ','")
-                                      .opt();
-  private final Parameter<String> split_algorithm =
-      Parameter.<String>newBuilder().setKey("split_algorithm").setDefaultValue("NONE")
-                                    .setType(String.class).setDescription("Split algorithm, so far suport HEX and Num")
-                                    .opt();
+      Parameter.<String[]>newBuilder()
+               .setKey("families_name").setRequired(true)
+               .setType(String[].class).setDescription("A family or families delimited by ','")
+               .opt();
+  private final Parameter<Enum> split_algorithm =
+      Parameter.<Enum>newBuilder()
+               .setKey("split_algorithm").setDefaultValue(ALGORITHM.NONE)
+               .setType(ALGORITHM.class).setDescription("Split algorithm, so far suport HEX and NUM")
+               .opt();
   private final Parameter<Integer> hex_split_regions =
-      Parameter.<Integer>newBuilder().setKey("hex_split_regions").setType(Integer.class).setDefaultValue(15)
-                                     .setDescription("Number of regions expecting when using hex split algorithm, upper bound is 256")
-                                     .opt();
+      Parameter.<Integer>newBuilder()
+               .setKey("hex_split_regions").setType(Integer.class)
+               .setDescription("Number of regions expecting when using hex split algorithm, upper bound is 256")
+               .addConstraint(Parameter.Condition.GREATER_EQUAL, 1)
+               .addConstraint(Parameter.Condition.LESS_EQUAL, 256)
+               .opt();
   private final Parameter<Integer> num_split_regions =
-      Parameter.<Integer>newBuilder().setKey("num_split_regions").setType(Integer.class)
-                                     .setDescription("Number of regions expecting when using number split algorithm, left padded with zeros")
-                                     .opt();
+      Parameter.<Integer>newBuilder()
+               .setKey("num_split_regions").setType(Integer.class)
+               .addConstraint(Parameter.Condition.GREATER_EQUAL, 1)
+               .addConstraint(Parameter.Condition.LESS_EQUAL, 1000)
+               .setDescription("Number of regions expecting when using number split algorithm, left padded with zeros")
+               .opt();
 
   private TableName table;
   private Connection connection;
@@ -59,7 +69,7 @@ public class CreateTable extends AbstractHBaseToy {
   private SplitAlgorithm split;
 
   @Override
-  protected void requisite(List<Parameter<?>> requisites) {
+  protected void requisite(List<Parameter> requisites) {
     requisites.add(table_name);
     requisites.add(families);
     requisites.add(split_algorithm);
@@ -72,7 +82,7 @@ public class CreateTable extends AbstractHBaseToy {
     table = TableName.valueOf(table_name.value());
     connection = ConnectionFactory.createConnection(configuration);
     admin = connection.getAdmin();
-    split = buildSplitAlgorithm(ALGORITHM.parse(split_algorithm.value()));
+    split = buildSplitAlgorithm(split_algorithm.value());
   }
 
   @Override
@@ -91,7 +101,8 @@ public class CreateTable extends AbstractHBaseToy {
     return descriptor;
   }
 
-  private SplitAlgorithm buildSplitAlgorithm(ALGORITHM algorithm) {
+  private SplitAlgorithm buildSplitAlgorithm(Enum raw_algorithm) {
+    ALGORITHM algorithm = (ALGORITHM) raw_algorithm;
     switch (algorithm) {
       case HEX:
         return new HexSplitAlgorithm(hex_split_regions.value());
@@ -104,23 +115,7 @@ public class CreateTable extends AbstractHBaseToy {
   }
 
   enum ALGORITHM {
-    NONE("NONE"), HEX("HEX"), NUMBER("NUMBER");
-
-    String name;
-
-    ALGORITHM(String name) {
-      this.name = name;
-    }
-
-    static ALGORITHM parse(String name) {
-      String algorithm = name.toUpperCase();
-      switch (algorithm) {
-        case "NONE": return NONE;
-        case "HEX": return HEX;
-        case "NUMBER": return NUMBER;
-        default: return NONE;
-      }
-    }
+    NONE, HEX, NUMBER
   }
 
   @Override

@@ -27,9 +27,10 @@ import java.util.List;
  * An abstract toy.
  * @param <T> configuration type, based on what kind of toy
  */
+@SuppressWarnings("rawtypes")
 public abstract class AbstractToy<T> implements Toy {
 
-  private final List<Parameter<?>> parameters = new ArrayList<>();
+  private final List<Parameter> parameters = new ArrayList<>();
 
   @Override
   public final void init() {
@@ -51,7 +52,7 @@ public abstract class AbstractToy<T> implements Toy {
    * Please add all user-defined parameters in this method.
    * @param requisites parameters to be added to
    */
-  protected abstract void requisite(List<Parameter<?>> requisites);
+  protected abstract void requisite(List<Parameter> requisites);
 
   /**
    * This method is used for checking parameters needed for playing toy. Toy should throw IllegalArgumentException
@@ -59,7 +60,7 @@ public abstract class AbstractToy<T> implements Toy {
    * @param configuration configuration file for reading parameter
    * @param requisites requisites to be checked
    */
-  protected abstract void preCheck(T configuration, List<Parameter<?>> requisites);
+  protected abstract void preCheck(T configuration, List<Parameter> requisites);
 
   /**
    * Build up toys.
@@ -74,7 +75,7 @@ public abstract class AbstractToy<T> implements Toy {
    * @param dir_of_conf_file directory of configuration
    * @param requisites parameters
    */
-  protected abstract int play(String dir_of_conf_file, List<Parameter<?>> requisites) throws Exception;
+  protected abstract int play(String dir_of_conf_file, List<Parameter> requisites) throws Exception;
 
   /**
    * Actual toy playing.

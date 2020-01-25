@@ -32,7 +32,8 @@ public final class HelpPrinter {
     out.print("\\s\\s\\s\\s\\s\\s");
   }
 
-  private static void printParameters(PrintStream out, List<Parameter<?>> parameters, boolean required) {
+  private static void printParameters(PrintStream out,
+                                      @SuppressWarnings("rawtypes") List<Parameter> parameters, boolean required) {
     printIndents(out);
     out.println(required ? "Required:" : "Optional:");
     parameters.forEach(p -> {
@@ -46,9 +47,10 @@ public final class HelpPrinter {
     out.println("Parameter key: " + parameter.key() + ", description: " + parameter.description() + ", required: " + parameter.required());
   }
 
-  public static void printUsage(PrintStream out, Class<?> clazz, List<Parameter<?>> args) {
-    List<Parameter<?>> required = new ArrayList<>();
-    List<Parameter<?>> optional = new ArrayList<>();
+  @SuppressWarnings("rawtypes")
+  public static void printUsage(PrintStream out, Class<?> clazz, List<Parameter> args) {
+    List<Parameter> required = new ArrayList<>();
+    List<Parameter> optional = new ArrayList<>();
     args.forEach(arg -> {
       if (arg.required()) required.add(arg);
       else optional.add(arg);
