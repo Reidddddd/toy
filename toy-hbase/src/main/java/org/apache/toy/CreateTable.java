@@ -53,14 +53,16 @@ public class CreateTable extends AbstractHBaseToy {
       Parameter.<Integer>newBuilder()
                .setKey("hex_split_regions").setType(Integer.class)
                .setDescription("Number of regions expecting when using hex split algorithm, upper bound is 256")
-               .addConstraint(Parameter.Condition.GREATER, 1)
-               .addConstraint(Parameter.Condition.LESS_EQUAL, 256)
+               .addConstraint(v -> v > 1)
+               .addConstraint(v -> v <= 256)
+               .addConstraint(v -> v % 16 == 0)
                .opt();
   private final Parameter<Integer> num_split_regions =
       Parameter.<Integer>newBuilder()
                .setKey("num_split_regions").setType(Integer.class)
-               .addConstraint(Parameter.Condition.GREATER, 1)
-               .addConstraint(Parameter.Condition.LESS_EQUAL, 1000)
+               .addConstraint(v -> v > 1)
+               .addConstraint(v -> v <= 1000)
+               .addConstraint(v -> 1000 % v == 0)
                .setDescription("Number of regions expecting when using number split algorithm, left padded with zeros")
                .opt();
 
@@ -208,20 +210,4 @@ public class CreateTable extends AbstractHBaseToy {
 
   }
 
-  public static void main(String[] args) {
-    CreateTable ct = new CreateTable();
-
-    //System.out.println(ct.paddingWithZero(3, String.valueOf(100)));
-    DecSplitAlgorithm nsa = ct.new DecSplitAlgorithm(40);
-    for (byte[] b : nsa.getSplitsKeys()) {
-      System.out.println(Bytes.toString(b));
-    }
-
-
-    HexSplitAlgorithm hsa = ct.new HexSplitAlgorithm(2);
-    for (byte[] b : hsa.getSplitsKeys()) {
-      System.out.println(Bytes.toString(b));
-    }
-
-  }
 }
