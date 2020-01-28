@@ -54,7 +54,7 @@ public final class ConfigurationFactory {
     }
 
     Configuration configuration = HBaseConfiguration.create();
-    configuration.addResource(new Path("file://") + config_file.get().getAbsolutePath());
+    configuration.addResource(new Path("file://" + config_file.get().getAbsolutePath()));
     return configuration;
   }
 

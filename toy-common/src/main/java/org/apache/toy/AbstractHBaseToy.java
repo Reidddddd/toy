@@ -21,6 +21,8 @@ import org.apache.toy.common.Parameter;
 
 import java.util.List;
 
+import static org.apache.toy.common.Parameter.UNSET;
+
 /**
  * HBase toy's base implementation. HBase configuration is inititlized in this class.
  */
@@ -31,7 +33,7 @@ public abstract class AbstractHBaseToy extends AbstractToy<Configuration> {
   protected final void preCheck(Configuration configuration, List<Parameter> requisites) {
     requisites.forEach(parameter -> {
            if (parameter.type().equals(String.class)) parameter.checkAndSet(configuration.get(parameter.key()));
-      else if (parameter.type().equals(Integer.class)) parameter.checkAndSet(configuration.getInt(parameter.key(), (Integer) parameter.value()));
+      else if (parameter.type().equals(Integer.class)) parameter.checkAndSet(configuration.getInt(parameter.key(), (Integer) UNSET));
       else if (parameter.type().equals(String[].class)) parameter.checkAndSet(configuration.getStrings(parameter.key()));
       else if (parameter.type().isEnum()) parameter.checkAndSet(configuration.getEnum(parameter.key(), (Enum) parameter.value()));
 

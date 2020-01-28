@@ -63,7 +63,7 @@ public class CreateTable extends AbstractHBaseToy {
                .addConstraint(v -> v > 1)
                .addConstraint(v -> v <= 1000)
                .addConstraint(v -> 1000 % v == 0)
-               .setDescription("Number of regions expecting when using number split algorithm, left padded with zeros")
+               .setDescription("Number of regions expecting when using number split algorithm, upper bound is 1000")
                .opt();
 
   private TableName table;

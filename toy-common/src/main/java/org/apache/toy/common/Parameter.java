@@ -27,6 +27,8 @@ import java.util.*;
  */
 public final class Parameter<T> {
 
+  public static final Number UNSET = -99;
+
   private String key;
   private T value;
   private String description;

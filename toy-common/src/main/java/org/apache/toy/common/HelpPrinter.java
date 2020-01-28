@@ -29,7 +29,7 @@ public final class HelpPrinter {
 
   private static void printIndents(PrintStream out) {
     // 6 spaces
-    out.print("\\s\\s\\s\\s\\s\\s");
+    out.print("      ");
   }
 
   private static void printParameters(PrintStream out,
