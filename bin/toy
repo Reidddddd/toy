@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# Deal with parameters
+if [ "$#" -lt 6 ]
+then
+  echo ""
+  echo "Usage: toy --kind [java|hbase|hdfs] --class [name of class without package] --conf_dir [configuration's directory] --help (optional)"
+  echo ""
+  exit 1
+fi
+
+get_value() {
+  k=$1
+  v=$2
+  if [[ $k == "--kind" ]]
+  then
+    kind=$v
+  elif [[ $k == "--class" ]]
+  then
+    toy_name=$v
+  elif [[ $k == "--conf_dir" ]]
+  then
+    conf_dir=$v
+  elif [[ $k == "--help" ]]
+  then
+    help="true"
+  fi
+}
+
+get_value "$1" "$2"
+get_value "$3" "$4"
+get_value "$5" "$6"
+get_value "$7"
+
+# Get script directory
+bin=`dirname $0`
+bin=`cd "$bin">/dev/null; pwd`
+
+# Set environment parameters
+. $bin/toy-env.sh
+java_cmd=$JAVA_HOME/bin/java
+hbase_home=$HBASE_HOME
+hdfs_home=$HDFS_HOME
+
+grep_thin_jar() {
+  for jar in $1
+  do
+    if [[ $jar == *"jar-with-dependencies"* ]]
+    then
+      continue
+    fi
+    exe_jar=$jar
+  done
+}
+
+# Extract client executable jars
+# toy-common jar
+grep_thin_jar "$bin/../toy-common/target/toy-common-[0-9]*.[0-9]*.jar"
+execute_jar=$exe_jar
+# toy-java jar
+grep_thin_jar "$bin/../toy-java/target/toy-java-[0-9]*.[0-9]*.jar"
+execute_jar=$execute_jar:$exe_jar
+# toy-hbase jar
+grep_thin_jar "$bin/../toy-hbase/target/toy-hbase-[0-9]*.[0-9]*.jar"
+execute_jar=$execute_jar:$exe_jar
+
+# Extract external dependency
+if [[ kind == "hbase" ]]
+then
+  execute_jar=$execute_jar:`$hbase_home/bin/hbase classpath`
+elif [[ kind == "hdfs" ]]
+then
+  execute_jar=$execute_jar:`$hdfs_home/bin/hdfs classpath`
+fi
+echo "Execution classpath: $execute_jar"
+
+if [[ $help == "true" ]]
+then
+  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --class org.apache.toy.$toy_name --conf_dir $conf_dir --help 
+else
+  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --class org.apache.toy.$toy_name --conf_dir $conf_dir 
+fi
+
