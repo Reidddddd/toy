@@ -202,7 +202,7 @@ public final class Parameter<T> {
       constraints.add(new Constraint(cond, expect) {
 
         @Override boolean satisfyContraint(Object exact_value) {
-          return cond.satisfyContraint(expect_value, exact_value);
+          return condition.satisfyContraint(expect_value, exact_value);
         }
 
       });

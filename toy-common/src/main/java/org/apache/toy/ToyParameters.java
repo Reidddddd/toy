@@ -37,7 +37,7 @@ public final class ToyParameters {
       Parameter.<String>newBuilder().setKey("--conf_dir").setDescription("directory of configuration")
                                     .setRequired(true).setType(String.class)
                                     .opt();
-  private static final List<Parameter<?>> parameters = new ArrayList<>();
+  private static final List<Parameter> parameters = new ArrayList<>();
 
   static {
     parameters.add(help);
