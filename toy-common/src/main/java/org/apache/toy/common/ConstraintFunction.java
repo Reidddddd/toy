@@ -20,7 +20,7 @@ package org.apache.toy.common;
  * Constrain function for parameter
  * @param <T>
  */
-public interface ConstrainFunction<T> {
+public interface ConstraintFunction<T> {
 
   /**
    * If exact value satisfies constrain, return true

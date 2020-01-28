@@ -32,11 +32,11 @@ public final class Parameter<T> {
   private String description;
   private boolean required;
   private Class<?> type;
-  private List<ConstrainFunction<T>> constraints;
+  private List<ConstraintFunction<T>> constraints;
 
   private Parameter() {}
 
-  private Parameter(String key, String description, boolean required, Class<?> type, T value, List<ConstrainFunction<T>> constraints) {
+  private Parameter(String key, String description, boolean required, Class<?> type, T value, List<ConstraintFunction<T>> constraints) {
     this.key = key;
     this.description = description;
     this.required = required;
@@ -106,9 +106,9 @@ public final class Parameter<T> {
   public void checkAndSet(@Nullable T value) {
     Optional<T> v = Optional.ofNullable(value);
     if (v.isPresent()) {
-      for (ConstrainFunction<T> constraint : constraints) {
+      for (ConstraintFunction<T> constraint : constraints) {
         if (!constraint.satisfy(value)) {
-          throw new IllegalArgumentException(value + " doesn't satisfy one of the constrains.");
+          throw new IllegalArgumentException(value + " doesn't satisfy one of the parameter constrains.");
         }
       }
       setValue(value);
@@ -131,7 +131,7 @@ public final class Parameter<T> {
     private boolean required;
     private Class<?> type;
     private T value;
-    private List<ConstrainFunction<T>> constraints;
+    private List<ConstraintFunction<T>> constraints;
 
     private Builder() {
       key = "";
@@ -197,7 +197,7 @@ public final class Parameter<T> {
      * @param cond condition to be checked
      * @return builder itself
      */
-    public Builder<T> addConstraint(ConstrainFunction<T> cond) {
+    public Builder<T> addConstraint(ConstraintFunction<T> cond) {
       constraints.add(cond);
       return this;
     }
