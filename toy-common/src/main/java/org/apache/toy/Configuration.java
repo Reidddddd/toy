@@ -97,4 +97,9 @@ public final class Configuration {
     return value.map(v -> Enum.valueOf(def_value.getDeclaringClass(), v)).orElse(def_value);
   }
 
+  public boolean getBoolean(String key, boolean def_value) {
+    Optional<String> value = Optional.ofNullable(get(key));
+    return value.map(Boolean::parseBoolean).orElse(def_value);
+  }
+
 }

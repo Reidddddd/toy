@@ -18,7 +18,9 @@ package org.apache.toy.common;
 
 import org.apache.toy.annotation.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * A class defines parameter. Use {@link Builder} to create a Parameter.
@@ -35,6 +37,7 @@ public final class Parameter<T> {
   private boolean required;
   private Class<?> type;
   private List<ConstraintFunction<T>> constraints;
+  private T default_value;
 
   private Parameter() {}
 
@@ -43,6 +46,7 @@ public final class Parameter<T> {
     this.description = description;
     this.required = required;
     this.value = value;
+    this.default_value = value;
     this.type = type;
     this.constraints = constraints;
   }
@@ -95,7 +99,7 @@ public final class Parameter<T> {
   }
 
   /**
-   * @return true is value is empty, false otherwise
+   * @return true is value is empty or unset from client, false otherwise
    */
   public boolean empty() {
     return value == null;
@@ -115,6 +119,14 @@ public final class Parameter<T> {
       }
       setValue(value);
     }
+  }
+
+  /**
+   * Check if value is the same as default value
+   * @return true if it is a default value, false otherwise
+   */
+  public boolean unset() {
+    return value.equals(default_value);
   }
 
   /**

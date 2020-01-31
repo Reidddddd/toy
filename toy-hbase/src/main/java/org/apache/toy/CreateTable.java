@@ -17,12 +17,16 @@
 package org.apache.toy;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableExistsException;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.io.compress.Compression;
+import org.apache.hadoop.hbase.io.encoding.DataBlockEncoding;
+import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.toy.common.Parameter;
 
@@ -65,6 +69,52 @@ public class CreateTable extends AbstractHBaseToy {
                .addConstraint(v -> 1000 % v == 0)
                .setDescription("Number of regions expecting when using number split algorithm, upper bound is 1000")
                .opt();
+  private final Parameter<String> table_owners =
+      Parameter.<String>newBuilder()
+               .setKey("table_owners").setType(String.class)
+               .setRequired(true).setDescription("Whom the table is under in charge by, delimited by ','")
+               .opt();
+  // Column family parameters
+  private final Parameter<Enum> compression =
+      Parameter.<Enum>newBuilder()
+               .setKey("compresss").setType(Compression.Algorithm.class)
+               .setDescription("Compression algorithm will be used in flush and compactions")
+               .setDefaultValue(Compression.Algorithm.NONE)
+               .opt();
+  private final Parameter<Boolean> cache_data_on_write =
+      Parameter.<Boolean>newBuilder()
+               .setKey("cache_data_on_write").setType(Boolean.class)
+               .setDescription("Cache data even when write, it is useful if your access pattern is read recently.")
+               .setDefaultValue(Boolean.FALSE)
+               .opt();
+  private final Parameter<Boolean> cache_data_in_l1 =
+      Parameter.<Boolean>newBuilder()
+               .setKey("cache_data_in_L1").setType(Boolean.class)
+               .setDescription("L1 is the fastest cache, but with the smallest size")
+               .setDefaultValue(Boolean.FALSE)
+               .opt();
+  private final Parameter<Integer> time_to_live =
+      Parameter.<Integer>newBuilder()
+               .setKey("time_to_live").setType(Integer.class)
+               .setDescription("Time to live for cells under a specific family")
+               .opt();
+  private final Parameter<Enum> bloom_type =
+      Parameter.<Enum>newBuilder()
+               .setKey("bloom_filter_type").setType(BloomType.class)
+               .setDescription("Bloom filter is useful for row get or column get. set it ROW or ROWCOL")
+               .setDefaultValue(BloomType.NONE)
+               .opt();
+  private final Parameter<Integer> min_versions =
+      Parameter.<Integer>newBuilder()
+               .setKey("min_versions").setType(Integer.class)
+               .setDescription("Min versions of a cell, 1 by default.")
+               .opt();
+  private final Parameter<Enum> data_block_encoding =
+      Parameter.<Enum>newBuilder()
+               .setKey("data_block_encoding").setType(DataBlockEncoding.class)
+               .setDescription("Encoding method for data block. Supporting type: PREFIX, DIFF, FAST_DIFF, ROW_INDEX_V1")
+               .setDefaultValue(DataBlockEncoding.NONE)
+               .opt();
 
   private TableName table;
   private Connection connection;
@@ -78,6 +128,14 @@ public class CreateTable extends AbstractHBaseToy {
     requisites.add(split_algorithm);
     requisites.add(hex_split_regions);
     requisites.add(num_split_regions);
+    requisites.add(table_owners);
+    requisites.add(compression);
+    requisites.add(cache_data_on_write);
+    requisites.add(cache_data_in_l1);
+    requisites.add(time_to_live);
+    requisites.add(bloom_type);
+    requisites.add(min_versions);
+    requisites.add(data_block_encoding);
   }
 
   @Override
@@ -95,24 +153,37 @@ public class CreateTable extends AbstractHBaseToy {
     }
 
     HTableDescriptor descriptor = buildTableDescriptor();
+    for (String f : families.value()) {
+      descriptor.addFamily(buildFamilyDescriptor(f));
+    }
     admin.createTable(descriptor, split.getSplitsKeys());
     return RETURN_CODE.SUCCESS.code();
   }
 
   private HTableDescriptor buildTableDescriptor() {
     HTableDescriptor descriptor = new HTableDescriptor(table);
+    descriptor.setValue(Bytes.toBytes("TABLE_OWNERS"), Bytes.toBytes(table_owners.value()));
+    return descriptor;
+  }
+
+  private HColumnDescriptor buildFamilyDescriptor(String family) {
+    HColumnDescriptor descriptor = new HColumnDescriptor(family);
+    if (!compression.unset())         descriptor.setCompressionType((Compression.Algorithm)compression.value());
+    if (!cache_data_on_write.unset()) descriptor.setCacheDataOnWrite(true);
+    if (!cache_data_in_l1.unset())    descriptor.setCacheDataInL1(true);
+    if (!time_to_live.empty())        descriptor.setTimeToLive(time_to_live.value());
+    if (!bloom_type.unset())          descriptor.setBloomFilterType((BloomType)bloom_type.value());
+    if (!min_versions.empty())        descriptor.setMinVersions(min_versions.value());
+    if (!data_block_encoding.unset()) descriptor.setDataBlockEncoding((DataBlockEncoding)data_block_encoding.value());
     return descriptor;
   }
 
   private SplitAlgorithm buildSplitAlgorithm(Enum raw_algorithm) {
     ALGORITHM algorithm = (ALGORITHM) raw_algorithm;
     switch (algorithm) {
-      case HEX:
-        return new HexSplitAlgorithm(hex_split_regions.value());
-      case NUMBER:
-        return new DecSplitAlgorithm(num_split_regions.value());
-      default:
-        return new NoneSplitAlgorithm();
+      case HEX:     return new HexSplitAlgorithm(hex_split_regions.value());
+      case NUMBER:  return new DecSplitAlgorithm(num_split_regions.value());
+      default:      return new NoneSplitAlgorithm();
     }
   }
 
@@ -156,12 +227,12 @@ public class CreateTable extends AbstractHBaseToy {
       if (radix == 10) {
         pad_size = interval % 100 == 0 ? 1 : interval % 10 == 0 ? 2 : 3;
         interval = interval % 100 == 0 ? interval / 100 :
-                   interval % 10 == 0 ? interval / 10 :
+                   interval % 10 == 0  ? interval / 10 :
                    interval;
       } else if (radix == 16) {
         pad_size = interval % 256 == 0 ? 2 : interval % 16 == 0 ? 1 : 2;
         interval = interval % 256 == 0 ? interval / 256 :
-                   interval % 16 == 0 ? interval / 16 :
+                   interval % 16 == 0  ? interval / 16 :
                    interval;
       }
     }

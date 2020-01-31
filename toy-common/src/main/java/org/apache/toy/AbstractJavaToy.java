@@ -32,7 +32,8 @@ public abstract class AbstractJavaToy extends AbstractToy<Configuration> {
            if (parameter.type().equals(String.class)) parameter.checkAndSet(configuration.get(parameter.key()));
       else if (parameter.type().equals(Integer.class)) parameter.checkAndSet(configuration.getInt(parameter.key()));
       else if (parameter.type().equals(String[].class)) parameter.checkAndSet(configuration.getStrings(parameter.key()));
-      else if (parameter.type().isEnum()) parameter.checkAndSet(configuration.getEnum(parameter.key(), (Enum) parameter.value()));
+      else if (parameter.type().isEnum()) parameter.checkAndSet(configuration.getEnum(parameter.key(), (Enum)parameter.value()));
+      else if (parameter.type().equals(Boolean.class)) parameter.checkAndSet(configuration.getBoolean(parameter.key(), (Boolean)parameter.value()));
 
       if (parameter.required() && parameter.empty()) {
         howToPlay(System.out);
