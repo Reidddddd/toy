@@ -18,6 +18,7 @@ package org.apache.toy;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableExistsException;
 import org.apache.hadoop.hbase.TableName;
@@ -97,6 +98,8 @@ public class CreateTable extends AbstractHBaseToy {
       Parameter.<Integer>newBuilder()
                .setKey("time_to_live").setType(Integer.class)
                .setDescription("Time to live for cells under a specific family")
+               .addConstraint(v -> v > 0)
+               .setDefaultValue(HConstants.FOREVER)
                .opt();
   private final Parameter<Enum> bloom_type =
       Parameter.<Enum>newBuilder()
@@ -108,6 +111,7 @@ public class CreateTable extends AbstractHBaseToy {
       Parameter.<Integer>newBuilder()
                .setKey("min_versions").setType(Integer.class)
                .setDescription("Min versions of a cell, 1 by default.")
+               .setDefaultValue(1)
                .opt();
   private final Parameter<Enum> data_block_encoding =
       Parameter.<Enum>newBuilder()
