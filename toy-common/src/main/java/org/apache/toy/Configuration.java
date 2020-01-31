@@ -102,4 +102,8 @@ public final class Configuration {
     return value.map(Boolean::parseBoolean).orElse(def_value);
   }
 
+  public boolean checkKey(String key) {
+    return configurations.containsKey(key);
+  }
+
 }

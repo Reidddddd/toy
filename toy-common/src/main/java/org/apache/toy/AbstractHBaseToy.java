@@ -19,40 +19,57 @@ package org.apache.toy;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.toy.common.Parameter;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.apache.toy.common.Parameter.UNSET;
 
 /**
  * HBase toy's base implementation. HBase configuration is inititlized in this class.
  */
 public abstract class AbstractHBaseToy extends AbstractToy<Configuration> {
 
+  private Set<String> keys_set = new HashSet<>();
+
   @Override
   @SuppressWarnings({"rawtypes", "unchecked"})
   protected final void preCheck(Configuration configuration, List<Parameter> requisites) {
-    requisites.forEach(parameter -> {
-           if (parameter.type().equals(String.class))   parameter.checkAndSet(configuration.get(parameter.key()));
-      else if (parameter.type().equals(String[].class)) parameter.checkAndSet(configuration.getStrings(parameter.key()));
-      else if (parameter.type().isEnum())               parameter.checkAndSet(configuration.getEnum(parameter.key(), (Enum)parameter.value()));
-      else if (parameter.type().equals(Integer.class))  parameter.checkAndSet(configuration.getInt(parameter.key(), (Integer)parameter.value()));
-      else if (parameter.type().equals(Boolean.class))  parameter.checkAndSet(configuration.getBoolean(parameter.key(), (Boolean)parameter.value()));
-
-      if (parameter.required() && parameter.empty()) {
-        howToPlay(System.out);
-        throw new IllegalArgumentException(parameter.key() + " is not set");
+    for (Parameter p : requisites) {
+      if (!keys_set.contains(p.key())) {
+        if (p.required()) {
+          howToPlay(System.out);
+          throw new IllegalArgumentException(p.key() + " is not set");
+        }
+        continue;
       }
-    });
+           if (p.type().equals(String.class))   p.checkAndSet(configuration.get(p.key()));
+      else if (p.type().equals(String[].class)) p.checkAndSet(configuration.getStrings(p.key()));
+      else if (p.type().isEnum())               p.checkAndSet(configuration.getEnum(p.key(), (Enum)p.value()));
+      else if (p.type().equals(Integer.class))  p.checkAndSet(configuration.getInt(p.key(), (Integer)UNSET));
+      else if (p.type().equals(Boolean.class))  p.checkAndSet(configuration.getBoolean(p.key(), (Boolean)p.value()));
+    }
   }
 
   @Override
   protected final int play(String dir_of_conf_file,
                            @SuppressWarnings("rawtypes") List<Parameter> requisites) throws Exception {
     Configuration configuration = ConfigurationFactory.createHBaseConfiguration(dir_of_conf_file);
+    cacheConfigurations(configuration.iterator());
     preCheck(configuration, requisites);
     buildToy(configuration);
     try {
       return haveFun();
     } finally {
       destroyToy();
+    }
+  }
+
+  private void cacheConfigurations(Iterator<Map.Entry<String, String>> iterator) {
+    while (iterator.hasNext()) {
+      keys_set.add(iterator.next().getKey());
     }
   }
 

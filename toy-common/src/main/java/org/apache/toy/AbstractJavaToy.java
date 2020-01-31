@@ -28,18 +28,20 @@ public abstract class AbstractJavaToy extends AbstractToy<Configuration> {
   @Override
   @SuppressWarnings({"rawtypes", "unchecked"})
   protected final void preCheck(Configuration configuration, List<Parameter> requisites) {
-    requisites.forEach(parameter -> {
-           if (parameter.type().equals(String.class)) parameter.checkAndSet(configuration.get(parameter.key()));
-      else if (parameter.type().equals(Integer.class)) parameter.checkAndSet(configuration.getInt(parameter.key()));
-      else if (parameter.type().equals(String[].class)) parameter.checkAndSet(configuration.getStrings(parameter.key()));
-      else if (parameter.type().isEnum()) parameter.checkAndSet(configuration.getEnum(parameter.key(), (Enum)parameter.value()));
-      else if (parameter.type().equals(Boolean.class)) parameter.checkAndSet(configuration.getBoolean(parameter.key(), (Boolean)parameter.value()));
-
-      if (parameter.required() && parameter.empty()) {
-        howToPlay(System.out);
-        throw new IllegalArgumentException(parameter.key() + " is not set");
+    for (Parameter p : requisites) {
+      if (!configuration.checkKey(p.key())) {
+        if (p.required()) {
+          howToPlay(System.out);
+          throw new IllegalArgumentException(p.key() + " is not set");
+        }
+        continue;
       }
-    });
+           if (p.type().equals(String.class))   p.checkAndSet(configuration.get(p.key()));
+      else if (p.type().equals(String[].class)) p.checkAndSet(configuration.getStrings(p.key()));
+      else if (p.type().isEnum())               p.checkAndSet(configuration.getEnum(p.key(), (Enum)p.value()));
+      else if (p.type().equals(Integer.class))  p.checkAndSet(configuration.getInt(p.key()));
+      else if (p.type().equals(Boolean.class))  p.checkAndSet(configuration.getBoolean(p.key(), (Boolean)p.value()));
+    }
   }
 
   @Override
