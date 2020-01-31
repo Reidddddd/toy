@@ -65,10 +65,10 @@ grep_thin_jar "$bin/../toy-hbase/target/toy-hbase-[0-9]*.[0-9]*.jar"
 execute_jar=$execute_jar:$exe_jar
 
 # Extract external dependency
-if [[ kind == "hbase" ]]
+if [[ $kind == "hbase" ]]
 then
   execute_jar=$execute_jar:`$hbase_home/bin/hbase classpath`
-elif [[ kind == "hdfs" ]]
+elif [[ $kind == "hdfs" ]]
 then
   execute_jar=$execute_jar:`$hdfs_home/bin/hdfs classpath`
 fi
@@ -76,8 +76,8 @@ echo "Execution classpath: $execute_jar"
 
 if [[ $help == "true" ]]
 then
-  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --class org.apache.toy.$toy_name --conf_dir $conf_dir --help 
+  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --class org.apache.toy.$toy_name --conf_dir $conf_dir --help
 else
-  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --class org.apache.toy.$toy_name --conf_dir $conf_dir 
+  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --class org.apache.toy.$toy_name --conf_dir $conf_dir
 fi
 

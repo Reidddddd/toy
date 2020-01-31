@@ -114,7 +114,7 @@ public final class Parameter<T> {
     if (v.isPresent()) {
       for (ConstraintFunction<T> constraint : constraints) {
         if (!constraint.satisfy(value)) {
-          throw new IllegalArgumentException(value + " doesn't satisfy one of the parameter constrains.");
+          throw new IllegalArgumentException(key + "'s value " +  value + " doesn't satisfy one of the parameter constrains.");
         }
       }
       setValue(value);
