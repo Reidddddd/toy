@@ -26,7 +26,7 @@ import java.util.Optional;
 public final class ToyPlayer {
 
   public static void main(String[] args) throws Exception {
-    ToyParameters tp = ToyParameters.parse(Optional.ofNullable(args));
+    ToyParameters tp = ToyParameters.parse(args);
     Toy toy = (Toy) Class.forName(tp.getClassName()).newInstance();
     toy.init();
     System.exit(tp.needHelp() ? toy.howToPlay(System.out) : toy.play(tp.getConfDirectory()));

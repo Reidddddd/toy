@@ -16,6 +16,7 @@
 
 package org.apache.toy;
 
+import org.apache.toy.annotation.Nullable;
 import org.apache.toy.common.HelpPrinter;
 import org.apache.toy.common.Parameter;
 
@@ -26,17 +27,20 @@ import java.util.Optional;
 public final class ToyParameters {
 
   private static final Parameter<Boolean> help =
-      Parameter.<Boolean>newBuilder().setKey("--help").setDescription("help message of toy")
-                                     .setType(Boolean.class)
-                                     .opt();
+      Parameter.<Boolean>newBuilder()
+               .setKey("--help").setDescription("help message of toy")
+               .setType(Boolean.class)
+               .opt();
   private static final Parameter<String> clazz =
-      Parameter.<String>newBuilder().setKey("--class").setType(String.class)
-                                    .setDescription("class to be run").setRequired(true)
-                                    .opt();
+      Parameter.<String>newBuilder()
+               .setKey("--class").setType(String.class)
+               .setDescription("class to be run").setRequired(true)
+               .opt();
   private static final Parameter<String> conf =
-      Parameter.<String>newBuilder().setKey("--conf_dir").setDescription("directory of configuration")
-                                    .setRequired(true).setType(String.class)
-                                    .opt();
+      Parameter.<String>newBuilder()
+               .setKey("--conf_dir").setDescription("directory of configuration")
+               .setRequired(true).setType(String.class)
+               .opt();
   private static final List<Parameter> parameters = new ArrayList<>();
 
   static {
@@ -69,7 +73,8 @@ public final class ToyParameters {
     return conf_dir;
   }
 
-  public static ToyParameters parse(Optional<String[]> optional_args) {
+  public static ToyParameters parse(@Nullable String[] main_args) {
+    Optional<String[]> optional_args = Optional.ofNullable(main_args);
     if (!optional_args.isPresent()) {
       throw new IllegalArgumentException("Found no argument");
     }
