@@ -78,7 +78,7 @@ public class CreateTable extends AbstractHBaseToy {
   // Column family parameters
   private final Parameter<Enum> compression =
       Parameter.<Enum>newBuilder()
-               .setKey("compresss").setType(Compression.Algorithm.class)
+               .setKey("compression").setType(Compression.Algorithm.class)
                .setDescription("Compression algorithm will be used in flush and compactions")
                .setDefaultValue(Compression.Algorithm.NONE)
                .opt();
@@ -119,6 +119,12 @@ public class CreateTable extends AbstractHBaseToy {
                .setDescription("Encoding method for data block. Supporting type: PREFIX, DIFF, FAST_DIFF, ROW_INDEX_V1")
                .setDefaultValue(DataBlockEncoding.NONE)
                .opt();
+  private final Parameter<Boolean> in_memory =
+      Parameter.<Boolean>newBuilder()
+               .setKey("in_memory").setType(Boolean.class)
+               .setDescription("data cached in memory region of block cache.")
+               .setDefaultValue(Boolean.FALSE)
+               .opt();
 
   private TableName table;
   private Connection connection;
@@ -140,6 +146,7 @@ public class CreateTable extends AbstractHBaseToy {
     requisites.add(bloom_type);
     requisites.add(max_versions);
     requisites.add(data_block_encoding);
+    requisites.add(in_memory);
   }
 
   @Override
@@ -180,15 +187,16 @@ public class CreateTable extends AbstractHBaseToy {
     if (!bloom_type.unset())          descriptor.setBloomFilterType((BloomType)bloom_type.value());
     if (!max_versions.empty())        descriptor.setMaxVersions(max_versions.value());
     if (!data_block_encoding.unset()) descriptor.setDataBlockEncoding((DataBlockEncoding)data_block_encoding.value());
+    if (!in_memory.unset())           descriptor.setInMemory(true);
     return descriptor;
   }
 
   private SplitAlgorithm buildSplitAlgorithm(Enum raw_algorithm) {
     ALGORITHM algorithm = (ALGORITHM) raw_algorithm;
     switch (algorithm) {
-      case HEX:     return new HexSplitAlgorithm(hex_split_regions.value());
-      case DEC:  return new DecSplitAlgorithm(dec_split_regions.value());
-      default:      return new NoneSplitAlgorithm();
+      case HEX: return new HexSplitAlgorithm(hex_split_regions.value());
+      case DEC: return new DecSplitAlgorithm(dec_split_regions.value());
+      default:  return new NoneSplitAlgorithm();
     }
   }
 
