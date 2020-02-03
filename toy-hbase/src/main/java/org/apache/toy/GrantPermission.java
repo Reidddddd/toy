@@ -45,7 +45,7 @@ public class GrantPermission extends AbstractHBaseToy {
       Parameter.<String>newBuilder()
                .setKey("permissions").setType(String.class)
                .setRequired(true)
-               .setDescription("Permissions are RWXCA, R for read, W for write, X for execute endpoint, C for create, D for admin.")
+               .setDescription("Permissions are RWXCA, R for read, W for write, X for execute endpoint, C for create, A for admin.")
                .opt();
   private final Parameter<String[]> columns_permissions =
       Parameter.<String[]>newBuilder()
@@ -106,9 +106,8 @@ public class GrantPermission extends AbstractHBaseToy {
     try {
            if (!administrator.unset())          grantGlobalPermissions();
       else if (!namespace.empty())              grantNamespacePermissions();
-      else if (!columns_permissions.empty()) {
+      else if (!columns_permissions.empty())
                for (String column : columns)    grantTableColumnPermissions(column);
-      }
       else                                      grantTablePermissions();
     } catch (Throwable throwable) {
       throw new RuntimeException(throwable);
