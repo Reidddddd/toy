@@ -60,7 +60,7 @@ public class CreateTable extends AbstractHBaseToy {
                .setDescription("Number of regions expecting when using hex split algorithm, upper bound is 256")
                .addConstraint(v -> v > 1)
                .addConstraint(v -> v <= 256)
-               .addConstraint(v -> v % 16 == 0)
+               .addConstraint(v -> 256 % v == 0)
                .opt();
   private final Parameter<Integer> num_split_regions =
       Parameter.<Integer>newBuilder()
@@ -107,9 +107,9 @@ public class CreateTable extends AbstractHBaseToy {
                .setDescription("Bloom filter is useful for row get or column get. set it ROW or ROWCOL")
                .setDefaultValue(BloomType.NONE)
                .opt();
-  private final Parameter<Integer> min_versions =
+  private final Parameter<Integer> max_versions =
       Parameter.<Integer>newBuilder()
-               .setKey("min_versions").setType(Integer.class)
+               .setKey("versions").setType(Integer.class)
                .setDescription("Min versions of a cell, 1 by default.")
                .setDefaultValue(1)
                .opt();
@@ -138,7 +138,7 @@ public class CreateTable extends AbstractHBaseToy {
     requisites.add(cache_data_in_l1);
     requisites.add(time_to_live);
     requisites.add(bloom_type);
-    requisites.add(min_versions);
+    requisites.add(max_versions);
     requisites.add(data_block_encoding);
   }
 
@@ -178,7 +178,7 @@ public class CreateTable extends AbstractHBaseToy {
     if (!cache_data_in_l1.unset())    descriptor.setCacheDataInL1(true);
     if (!time_to_live.empty())        descriptor.setTimeToLive(time_to_live.value());
     if (!bloom_type.unset())          descriptor.setBloomFilterType((BloomType)bloom_type.value());
-    if (!min_versions.empty())        descriptor.setMinVersions(min_versions.value());
+    if (!max_versions.empty())        descriptor.setMaxVersions(max_versions.value());
     if (!data_block_encoding.unset()) descriptor.setDataBlockEncoding((DataBlockEncoding)data_block_encoding.value());
     return descriptor;
   }
@@ -187,13 +187,13 @@ public class CreateTable extends AbstractHBaseToy {
     ALGORITHM algorithm = (ALGORITHM) raw_algorithm;
     switch (algorithm) {
       case HEX:     return new HexSplitAlgorithm(hex_split_regions.value());
-      case NUMBER:  return new DecSplitAlgorithm(num_split_regions.value());
+      case DEC:  return new DecSplitAlgorithm(num_split_regions.value());
       default:      return new NoneSplitAlgorithm();
     }
   }
 
   enum ALGORITHM {
-    NONE, HEX, NUMBER
+    NONE, HEX, DEC
   }
 
   @Override
