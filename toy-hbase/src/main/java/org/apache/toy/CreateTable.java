@@ -62,9 +62,9 @@ public class CreateTable extends AbstractHBaseToy {
                .addConstraint(v -> v <= 256)
                .addConstraint(v -> 256 % v == 0)
                .opt();
-  private final Parameter<Integer> num_split_regions =
+  private final Parameter<Integer> dec_split_regions =
       Parameter.<Integer>newBuilder()
-               .setKey("num_split_regions").setType(Integer.class)
+               .setKey("dec_split_regions").setType(Integer.class)
                .addConstraint(v -> v > 1)
                .addConstraint(v -> v <= 1000)
                .addConstraint(v -> 1000 % v == 0)
@@ -131,7 +131,7 @@ public class CreateTable extends AbstractHBaseToy {
     requisites.add(families);
     requisites.add(split_algorithm);
     requisites.add(hex_split_regions);
-    requisites.add(num_split_regions);
+    requisites.add(dec_split_regions);
     requisites.add(table_owners);
     requisites.add(compression);
     requisites.add(cache_data_on_write);
@@ -187,7 +187,7 @@ public class CreateTable extends AbstractHBaseToy {
     ALGORITHM algorithm = (ALGORITHM) raw_algorithm;
     switch (algorithm) {
       case HEX:     return new HexSplitAlgorithm(hex_split_regions.value());
-      case DEC:  return new DecSplitAlgorithm(num_split_regions.value());
+      case DEC:  return new DecSplitAlgorithm(dec_split_regions.value());
       default:      return new NoneSplitAlgorithm();
     }
   }
