@@ -30,12 +30,11 @@ public class TestConfiguration {
   private static File toy_site_conf;
   private static Configuration configuration;
 
-  enum TEST {
+  public enum TEST {
     DEFAULT, SPECIFIC
   }
 
-  @BeforeClass
-  public static void setup() throws Exception {
+  @BeforeClass public static void setup() throws Exception {
     toy_site_conf = new File("./toy-site.conf");
     Assert.assertTrue(toy_site_conf.createNewFile());
     Assert.assertNotNull(toy_site_conf);
@@ -51,25 +50,21 @@ public class TestConfiguration {
     configuration = ConfigurationFactory.createJavaConfiguration(".");
   }
 
-  @AfterClass
-  public static void teardown() {
+  @AfterClass public static void teardown() {
     if (toy_site_conf.exists()) {
       Assert.assertTrue(toy_site_conf.delete());
     }
   }
 
-  @Test
-  public void testGetInt() {
+  @Test public void testGetInt() {
     Assert.assertEquals(1, configuration.getInt("a"));
   }
 
-  @Test
-  public void testGetString() {
+  @Test public void testGetString() {
     Assert.assertEquals("foo", configuration.get("b"));
   }
 
-  @Test
-  public void testGetStrings() {
+  @Test public void testGetStrings() {
     String[] values = configuration.getStrings("c");
     Assert.assertEquals(3, values.length);
     Assert.assertEquals("what", values[0]);
@@ -77,16 +72,23 @@ public class TestConfiguration {
     Assert.assertEquals("strings", values[2]);
   }
 
-  @Test
-  public void testGetBoolean() {
+  @Test public void testGetBoolean() {
     Assert.assertEquals(Boolean.TRUE, configuration.getBoolean("d", Boolean.FALSE));
   }
 
-  @Test
-  public void testGetEnum() {
+  @Test public void testGetEnum() {
     Enum test = configuration.getEnum("e", TEST.DEFAULT);
     Assert.assertTrue(test instanceof TEST);
     Assert.assertEquals(TEST.SPECIFIC, test);
+  }
+
+  @Test public void testCheckKey() {
+    Assert.assertTrue(configuration.checkKey("a"));
+    Assert.assertTrue(configuration.checkKey("b"));
+    Assert.assertTrue(configuration.checkKey("c"));
+    Assert.assertTrue(configuration.checkKey("d"));
+    Assert.assertTrue(configuration.checkKey("e"));
+    Assert.assertFalse(configuration.checkKey("f"));
   }
 
 }

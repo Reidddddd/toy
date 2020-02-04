@@ -68,26 +68,22 @@ public final class ConfigurationFactory {
   public static synchronized final org.apache.toy.Configuration createJavaConfiguration(@Nullable String dir_of_conf_file)
       throws NotDirectoryException, FileNotFoundException {
     Optional<File> config_file = getConfigurationFileFor(dir_of_conf_file, Project.JAVA);
-    if (!config_file.isPresent()) {
-      throw new FileNotFoundException("toy-site.conf for Java toy doesn't exist");
-    }
+    if (!config_file.isPresent()) throw new FileNotFoundException("toy-site.conf for Java toy doesn't exist");
 
     org.apache.toy.Configuration configuration = org.apache.toy.Configuration.createConfiguration(config_file.get());
     return configuration;
   }
 
   @Nullable
-  private static Optional<File> getConfigurationFileFor(String dir_of_conf_file, Project project)
+  private static Optional<File> getConfigurationFileFor(@Nullable String dir_of_conf_file, Project project)
       throws NotDirectoryException {
     File dir = new File(dir_of_conf_file);
     Optional<File[]> files = Optional.ofNullable(dir.listFiles());
-    if (!files.isPresent()) {
-      throw new NotDirectoryException(dir + " maybe not a directory?.");
-    }
+    if (!files.isPresent()) throw new NotDirectoryException(dir + " maybe not a directory?");
 
     for (File file : files.get()) {
-      if (project == Project.HBASE && file.getName().contains("hbase-site.xml")) return Optional.of(file);
-      else if (project == Project.JAVA && file.getName().contains("toy-site.conf")) return Optional.of(file);
+           if (project == Project.HBASE && file.getName().contains("hbase-site.xml")) return Optional.of(file);
+      else if (project == Project.JAVA && file.getName().contains("toy-site.conf"))   return Optional.of(file);
     }
     return Optional.empty();
   }

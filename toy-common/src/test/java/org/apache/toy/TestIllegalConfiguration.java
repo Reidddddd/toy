@@ -16,7 +16,11 @@
 
 package org.apache.toy;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.BufferedWriter;
@@ -30,8 +34,7 @@ public class TestIllegalConfiguration {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  @Before
-  public void setup() throws Exception {
+  @Before public void setup() throws Exception {
     toy_site_conf = new File("./toy-site.conf");
     Assert.assertTrue(toy_site_conf.createNewFile());
     Assert.assertNotNull(toy_site_conf);
@@ -45,15 +48,13 @@ public class TestIllegalConfiguration {
     writer.close();
   }
 
-  @After
-  public void teardown() {
+  @After public void teardown() {
     if (toy_site_conf.exists()) {
       Assert.assertTrue(toy_site_conf.delete());
     }
   }
 
-  @Test
-  public void testIllegalConfiguration() throws Exception {
+  @Test public void testIllegalConfiguration() throws Exception {
     expectedException.expect(RuntimeException.class);
     expectedException.expectMessage("Unauthorized toy-site.conf");
     ConfigurationFactory.createJavaConfiguration(".");
