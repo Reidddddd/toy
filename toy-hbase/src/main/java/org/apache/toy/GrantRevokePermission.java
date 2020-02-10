@@ -45,7 +45,7 @@ public class GrantRevokePermission extends AbstractHBaseToy {
                .opt();
   private final Parameter<String> table_name =
       Parameter.<String>newBuilder()
-               .setKey("table_name").setType(String.class)
+               .setKey("gv_table_name").setType(String.class)
                .setRequired(true).setDescription("Target table.")
                .opt();
   private final Parameter<String> permissions =

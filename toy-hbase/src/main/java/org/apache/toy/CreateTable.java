@@ -41,7 +41,7 @@ public class CreateTable extends AbstractHBaseToy {
 
   private final Parameter<String> table_name =
       Parameter.<String>newBuilder()
-               .setKey("table_name").setRequired(true)
+               .setKey("create_table_name").setRequired(true)
                .setType(String.class).setDescription("table name")
                .opt();
   private final Parameter<String[]> families =
