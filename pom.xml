@@ -13,6 +13,7 @@
         <module>toy-common</module>
         <module>toy-java</module>
         <module>toy-hdfs</module>
+      <module>toy-phoenix</module>
     </modules>
 
 
