@@ -89,6 +89,7 @@ public class GrantRevokePermission extends AbstractHBaseToy {
     requisites.add(permissions);
     requisites.add(columns_permissions);
     requisites.add(administrator);
+    requisites.add(namespace);
   }
 
   @Override

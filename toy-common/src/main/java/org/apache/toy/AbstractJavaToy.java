@@ -45,7 +45,6 @@ public abstract class AbstractJavaToy extends AbstractToy<Configuration> {
   }
 
   @Override
-
   public final int play(String dir_of_conf_file,
                         @SuppressWarnings("rawtypes") List<Parameter> requisites) throws Exception {
     Configuration configuration = ConfigurationFactory.createJavaConfiguration(dir_of_conf_file);
