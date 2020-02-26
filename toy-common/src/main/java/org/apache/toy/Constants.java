@@ -16,18 +16,22 @@
 
 package org.apache.toy;
 
-/**
- * Usage of this class:
- * java -cp jarA:jarB --toy|-t full.class.name --conf_dir|-cd conf_dir --help|-h
- * Other runtime parameters please set them in respective configuration file, for simplicity.
- */
-public final class ToyPlayer {
+public final class Constants {
 
-  public static void main(String[] args) throws Exception {
-    ToyParameters tp = ToyParameters.parse(args);
-    Toy toy = (Toy) Class.forName(tp.getToyName()).newInstance();
-    toy.init();
-    System.exit(tp.needHelp() ? toy.howToPlay(System.out) : toy.play(tp.getConfDirectory()));
-  }
+  public static final String UNSET_STRING = "";
+
+  public static final String[] UNSET_STRINGS = new String[0];
+
+  public static final int UNSET_INT = -99;
+
+  public static final long UNSET_LONG = -999L;
+
+  public static final double UNSET_DOUBLE = -9.9D;
+
+  public static final float UNSET_FLOAT = -9.9F;
+
+  public static final boolean UNSET_TRUE = true;
+
+  public static final boolean UNSET_FALSE = false;
 
 }

@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package org.apache.toy;
+package org.apache.toy.common;
 
-/**
- * Usage of this class:
- * java -cp jarA:jarB --toy|-t full.class.name --conf_dir|-cd conf_dir --help|-h
- * Other runtime parameters please set them in respective configuration file, for simplicity.
- */
-public final class ToyPlayer {
+public final class FloatParameter {
 
-  public static void main(String[] args) throws Exception {
-    ToyParameters tp = ToyParameters.parse(args);
-    Toy toy = (Toy) Class.forName(tp.getToyName()).newInstance();
-    toy.init();
-    System.exit(tp.needHelp() ? toy.howToPlay(System.out) : toy.play(tp.getConfDirectory()));
+  /**
+   * A builder for creating float parameter.
+   * @param key key name for this parameter
+   * @return a float parameter builder
+   */
+  public static FloatBuilder newBuilder(String key) {
+    return new FloatBuilder(key);
+  }
+
+  private FloatParameter() {}
+
+  public static class FloatBuilder extends AbstractTypeBuilderWithValue<Float> {
+
+    private FloatBuilder(String key) {
+      builder.setKey(key).setType(Float.class);
+    }
+
   }
 
 }

@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package org.apache.toy;
+package org.apache.toy.common;
 
-/**
- * Usage of this class:
- * java -cp jarA:jarB --toy|-t full.class.name --conf_dir|-cd conf_dir --help|-h
- * Other runtime parameters please set them in respective configuration file, for simplicity.
- */
-public final class ToyPlayer {
+public final class IntParameter {
 
-  public static void main(String[] args) throws Exception {
-    ToyParameters tp = ToyParameters.parse(args);
-    Toy toy = (Toy) Class.forName(tp.getToyName()).newInstance();
-    toy.init();
-    System.exit(tp.needHelp() ? toy.howToPlay(System.out) : toy.play(tp.getConfDirectory()));
+  /**
+   * A builder for creating int parameter.
+   * @param key key name for this parameter
+   * @return a int parameter builder
+   */
+  public static IntBuilder newBuilder(String key) {
+    return new IntBuilder(key);
+  }
+
+  private IntParameter() {}
+
+  public static class IntBuilder extends AbstractTypeBuilderWithValue<Integer> {
+
+    private IntBuilder(String key) {
+      builder.setKey(key).setType(Integer.class);
+    }
+
   }
 
 }

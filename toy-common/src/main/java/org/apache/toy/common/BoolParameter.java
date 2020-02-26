@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package org.apache.toy;
+package org.apache.toy.common;
 
-/**
- * Usage of this class:
- * java -cp jarA:jarB --toy|-t full.class.name --conf_dir|-cd conf_dir --help|-h
- * Other runtime parameters please set them in respective configuration file, for simplicity.
- */
-public final class ToyPlayer {
+public final class BoolParameter {
 
-  public static void main(String[] args) throws Exception {
-    ToyParameters tp = ToyParameters.parse(args);
-    Toy toy = (Toy) Class.forName(tp.getToyName()).newInstance();
-    toy.init();
-    System.exit(tp.needHelp() ? toy.howToPlay(System.out) : toy.play(tp.getConfDirectory()));
+  /**
+   * A builder for creating boolean parameter.
+   * @param key key name for this parameter
+   * @param value default value
+   * @return a boolean parameter builder
+   */
+  public static BoolBuilder newBuilder(String key, boolean value) {
+    return new BoolBuilder(key, value);
+  }
+
+  private BoolParameter() {}
+
+  public static class BoolBuilder extends AbstractTypeBuilder<Boolean> {
+
+    private BoolBuilder(String key, boolean value) {
+      builder.setKey(key).setType(Boolean.class).setDefaultValue(value);
+    }
+
   }
 
 }

@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package org.apache.toy;
+package org.apache.toy.common;
 
-/**
- * Usage of this class:
- * java -cp jarA:jarB --toy|-t full.class.name --conf_dir|-cd conf_dir --help|-h
- * Other runtime parameters please set them in respective configuration file, for simplicity.
- */
-public final class ToyPlayer {
+public final class DoubleParameter {
 
-  public static void main(String[] args) throws Exception {
-    ToyParameters tp = ToyParameters.parse(args);
-    Toy toy = (Toy) Class.forName(tp.getToyName()).newInstance();
-    toy.init();
-    System.exit(tp.needHelp() ? toy.howToPlay(System.out) : toy.play(tp.getConfDirectory()));
+  /**
+   * A builder for creating double parameter.
+   * @param key key name for this parameter
+   * @return a double parameter builder
+   */
+  public static DoubleBuilder newBuilder(String key) {
+    return new DoubleBuilder(key);
+  }
+
+  private DoubleParameter() {}
+
+  public static class DoubleBuilder extends AbstractTypeBuilderWithValue<Double> {
+
+    private DoubleBuilder(String key) {
+      builder.setKey(key).setType(Double.class);
+    }
+
   }
 
 }

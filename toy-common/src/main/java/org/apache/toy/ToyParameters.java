@@ -19,6 +19,7 @@ package org.apache.toy;
 import org.apache.toy.annotation.Nullable;
 import org.apache.toy.common.HelpPrinter;
 import org.apache.toy.common.Parameter;
+import org.apache.toy.common.StringParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,38 +27,36 @@ import java.util.Optional;
 
 public final class ToyParameters {
 
-  private static final Parameter<Boolean> help =
-      Parameter.<Boolean>newBuilder()
-               .setKey("--help").setDescription("help message of toy")
-               .setType(Boolean.class)
-               .opt();
-  private static final Parameter<String> clazz =
-      Parameter.<String>newBuilder()
-               .setKey("--class").setType(String.class)
-               .setDescription("class to be run").setRequired(true)
-               .opt();
+  private static final Parameter<String> help =
+      StringParameter.newBuilder("--help").setDescription("help message of toy").opt();
+  private static final Parameter<String> toy =
+      StringParameter.newBuilder("--toy").setDescription("toy to be run").opt();
   private static final Parameter<String> conf =
-      Parameter.<String>newBuilder()
-               .setKey("--conf_dir").setDescription("directory of configuration")
-               .setRequired(true).setType(String.class)
-               .opt();
+      StringParameter.newBuilder("--conf_dir").setDescription("directory of configuration").opt();
+
   private static final List<Parameter> parameters = new ArrayList<>();
 
   static {
     parameters.add(help);
-    parameters.add(clazz);
+    parameters.add(toy);
     parameters.add(conf);
   }
 
   private boolean need_help;
-  private String class_name;
+  private String toy_name;
   private String conf_dir;
 
-  private ToyParameters() {}
+  private ToyParameters(String toy_name, String conf_dir) {
+    this(Constants.UNSET_FALSE, toy_name, conf_dir);
+  }
 
-  private ToyParameters(boolean need_help, String class_name, String conf_dir) {
+  private ToyParameters() {
+    this(true, Constants.UNSET_STRING, Constants.UNSET_STRING);
+  }
+
+  private ToyParameters(boolean need_help, String toy_name, String conf_dir) {
     this.need_help = need_help;
-    this.class_name = class_name;
+    this.toy_name = toy_name;
     this.conf_dir =  conf_dir;
   }
 
@@ -65,8 +64,8 @@ public final class ToyParameters {
     return need_help;
   }
 
-  public String getClassName() {
-    return class_name;
+  public String getToyName() {
+    return toy_name;
   }
 
   public String getConfDirectory() {
@@ -80,36 +79,24 @@ public final class ToyParameters {
     }
 
     String[] args = optional_args.get();
-    help.setValue(false);
 
     for (int i = 0; i < args.length; i++) {
-      if (args[i].equals(clazz.key())) {
-        if (++i == args.length) {
-          throw new ArrayIndexOutOfBoundsException("Value for " + clazz.key() + " is not set.");
-        }
-        clazz.setValue(args[i]);
-        continue;
-      }
-      if (args[i].equals(conf.key())) {
-        if (++i == args.length) {
-          throw new ArrayIndexOutOfBoundsException("Value for " + conf.key() + " is not set.");
-        }
+      if (args[i].equals(help.key())) return new ToyParameters();
+
+      if (args[i].equals(toy.key())) {
+        if (++i == args.length) throw new ArrayIndexOutOfBoundsException("Value for " + toy.key() + " is not set.");
+        toy.setValue(args[i]);
+      } else if (args[i].equals(conf.key())) {
+        if (++i == args.length) throw new ArrayIndexOutOfBoundsException("Value for " + conf.key() + " is not set.");
         conf.setValue(args[i]);
-        continue;
-      }
-      if (args[i].equals(help.key())) {
-        help.setValue(true);
       }
     }
 
-    for (Parameter parameter : parameters) {
-      if (parameter.required() && parameter.empty()) {
-        HelpPrinter.printUsage(System.out, ToyParameters.class, parameters);
-        throw new IllegalArgumentException(parameter.key() + " is not set");
-      }
+    if (toy.empty() || conf.empty()) {
+      HelpPrinter.printUsage(System.out, ToyParameters.class, parameters);
+      throw new IllegalArgumentException(toy.key() + " or " + conf.key() + " is not set");
     }
-
-    return new ToyParameters(help.value(), clazz.value(), conf.value());
+    return new ToyParameters(toy.value(), conf.value());
   }
 
 }

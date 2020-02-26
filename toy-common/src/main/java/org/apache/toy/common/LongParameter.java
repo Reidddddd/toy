@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package org.apache.toy;
+package org.apache.toy.common;
 
-/**
- * Usage of this class:
- * java -cp jarA:jarB --toy|-t full.class.name --conf_dir|-cd conf_dir --help|-h
- * Other runtime parameters please set them in respective configuration file, for simplicity.
- */
-public final class ToyPlayer {
+public final class LongParameter {
 
-  public static void main(String[] args) throws Exception {
-    ToyParameters tp = ToyParameters.parse(args);
-    Toy toy = (Toy) Class.forName(tp.getToyName()).newInstance();
-    toy.init();
-    System.exit(tp.needHelp() ? toy.howToPlay(System.out) : toy.play(tp.getConfDirectory()));
+  /**
+   * A builder for creating long parameter.
+   * @param key key name for this parameter
+   * @return a long parameter builder
+   */
+  public static LongBuilder newBuilder(String key) {
+    return new LongBuilder(key);
+  }
+
+  private LongParameter() {}
+
+  public static class LongBuilder extends AbstractTypeBuilderWithValue<Long> {
+
+    private LongBuilder(String key) {
+      builder.setKey(key).setType(Long.class);
+    }
+
   }
 
 }
