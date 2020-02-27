@@ -78,25 +78,26 @@ public final class ToyParameters {
       throw new IllegalArgumentException("Found no argument");
     }
 
+    String toy_name = Constants.UNSET_STRING;
+    String conf_dir = Constants.UNSET_STRING;
     String[] args = optional_args.get();
-
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals(help.key())) return new ToyParameters();
 
       if (args[i].equals(toy.key())) {
         if (++i == args.length) throw new ArrayIndexOutOfBoundsException("Value for " + toy.key() + " is not set.");
-        toy.setValue(args[i]);
+       toy_name = args[i];
       } else if (args[i].equals(conf.key())) {
         if (++i == args.length) throw new ArrayIndexOutOfBoundsException("Value for " + conf.key() + " is not set.");
-        conf.setValue(args[i]);
+        conf_dir = args[i];
       }
     }
 
-    if (toy.empty() || conf.empty()) {
+    if (toy_name.equals(Constants.UNSET_STRING) || conf_dir.equals(Constants.UNSET_STRING)) {
       HelpPrinter.printUsage(System.out, ToyParameters.class, parameters);
       throw new IllegalArgumentException(toy.key() + " or " + conf.key() + " is not set");
     }
-    return new ToyParameters(toy.value(), conf.value());
+    return new ToyParameters(toy_name, conf_dir);
   }
 
 }
