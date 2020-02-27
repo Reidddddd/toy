@@ -23,7 +23,11 @@ import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.security.access.AccessControlClient;
 import org.apache.hadoop.hbase.security.access.Permission;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.toy.common.BoolParameter;
+import org.apache.toy.common.EnumParameter;
 import org.apache.toy.common.Parameter;
+import org.apache.toy.common.StringArrayParameter;
+import org.apache.toy.common.StringParameter;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,43 +37,18 @@ public class GrantRevokePermission extends AbstractHBaseToy {
 
   @SuppressWarnings("rawtypes")
   private final Parameter<Enum> grant_revoke =
-      Parameter.<Enum>newBuilder()
-               .setKey("grant_or_revoke").setType(G_V.class)
-               .setRequired(true).setDescription("Grant or revoke action")
-               .setDefaultValue(G_V.G)
-               .opt();
+      EnumParameter.newBuilder("gv.grant_or_revoke", G_V.G, G_V.class).setDescription("Grant or revoke action").setRequired().opt();
   private final Parameter<String> user_name =
-      Parameter.<String>newBuilder()
-               .setKey("user_name").setType(String.class)
-               .setRequired(true).setDescription("User to be granted permissions.")
-               .opt();
+      StringParameter.newBuilder("gv.user_name").setRequired().setDescription("User to be granted/revoked permissions").opt();
   private final Parameter<String> table_name =
-      Parameter.<String>newBuilder()
-               .setKey("gv_table_name").setType(String.class)
-               .setRequired(true).setDescription("Target table.")
-               .opt();
+      StringParameter.newBuilder("gv.table_name").setDescription("Target table").opt();
   private final Parameter<String> permissions =
-      Parameter.<String>newBuilder()
-               .setKey("permissions").setType(String.class)
-               .setRequired(true)
-               .setDescription("Permissions are RWXCA, R for read, W for write, X for execute endpoint, C for create, A for admin.")
-               .opt();
+      StringParameter.newBuilder("gv.permissions").setDescription("Permissions are RWXCA, R for read, W for write, X for execute endpoint, C for create, A for admin").opt();
   private final Parameter<String[]> columns_permissions =
-      Parameter.<String[]>newBuilder()
-               .setKey("columns").setType(String[].class)
-               .setDescription("Permissions for columns, delimited by ','. e.g. 'c1:q1,c2:q2' or 'c1,c2,c3'.")
-               .opt();
-  private final Parameter<Boolean> administrator =
-      Parameter.<Boolean>newBuilder()
-               .setKey("global").setType(Boolean.class)
-               .setDescription("Grant global permissions.")
-               .setDefaultValue(Boolean.FALSE)
-               .opt();
+      StringArrayParameter.newBuilder("gv.columns").setDescription("Permissions for columns, delimited by ','. e.g. 'c1:q1,c2:q2' or 'c1,c2,c3'").opt();
+  private final Parameter<Boolean> administrator = BoolParameter.newBuilder("gv.global", false).setDescription("Global permissions").opt();
   private final Parameter<String> namespace =
-      Parameter.<String>newBuilder()
-               .setKey("namespace").setType(String.class)
-               .setDescription("Grant namespace permissions.")
-               .opt();
+      StringParameter.newBuilder("gv.namespace").setDefaultValue("Namespace permissions").opt();
 
   enum G_V {
     G, V
@@ -121,7 +100,7 @@ public class GrantRevokePermission extends AbstractHBaseToy {
     if (!AccessControlClient.isAccessControllerRunning(connection)) return RETURN_CODE.FAILURE.code();
 
     try {
-           if (!administrator.unset())          performGlobalPermissions(act);
+           if (!administrator.empty())          performGlobalPermissions(act);
       else if (!namespace.empty())              performNamespacePermissions(act);
       else if (!columns_permissions.empty())
                for (String column : columns)    performTableColumnPermissions(act, column);

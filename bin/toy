@@ -4,7 +4,7 @@
 if [ "$#" -lt 6 ]
 then
   echo ""
-  echo "Usage: toy --kind [java|hbase|hdfs] --class [name of class without package] --conf_dir [configuration's directory] --help (optional)"
+  echo "Usage: toy --kind [java|hbase|hdfs] --toy [name of toy] --conf_dir [configuration's directory] --help"
   echo ""
   exit 1
 fi
@@ -15,7 +15,7 @@ get_value() {
   if [[ $k == "--kind" ]]
   then
     kind=$v
-  elif [[ $k == "--class" ]]
+  elif [[ $k == "--toy" ]]
   then
     toy_name=$v
   elif [[ $k == "--conf_dir" ]]
@@ -76,8 +76,8 @@ echo "Execution classpath: $execute_jar"
 
 if [[ $help == "true" ]]
 then
-  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --class org.apache.toy.$toy_name --conf_dir $conf_dir --help
+  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --help
 else
-  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --class org.apache.toy.$toy_name --conf_dir $conf_dir
+  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --toy org.apache.toy.$toy_name --conf_dir $conf_dir
 fi
 

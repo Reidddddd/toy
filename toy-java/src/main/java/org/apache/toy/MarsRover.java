@@ -16,10 +16,59 @@
 
 package org.apache.toy;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.toy.common.EnumParameter;
+import org.apache.toy.common.Parameter;
+import org.apache.toy.common.StringArrayParameter;
 
-public class MarsRover {
+import java.util.List;
+
+public class MarsRover extends AbstractJavaToy {
+  private final Parameter<String[]> commands =
+      StringArrayParameter.newBuilder("mr.commands").setDescription("movements for rover").setRequired().opt();
+  private final Parameter<String[]> plateau_point =
+      StringArrayParameter.newBuilder("mr.plateau").setDescription("plateau").setRequired().setRequired().opt();
+  private final Parameter<String[]> start_point =
+      StringArrayParameter.newBuilder("mr.start").setDescription("start point for rover").setRequired().opt();
+  private final Parameter<Enum> direction =
+      EnumParameter.newBuilder("mr.direction", Direction.N, Direction.class).setDescription("start direction").setRequired().opt();
+
+  @Override
+  protected void requisite(List<Parameter> requisites) {
+    requisites.add(commands);
+    requisites.add(plateau_point);
+    requisites.add(start_point);
+    requisites.add(direction);
+  }
+
+  private Plateau plateau;
+  private Rover rover;
+
+  @Override
+  protected void buildToy(ToyConfiguration configuration) throws Exception {
+    assertLengthValid(plateau_point.value(), 2);
+    plateau = new Plateau(
+        Integer.parseInt(plateau_point.value()[0]),
+        Integer.parseInt(plateau_point.value()[1])
+    );
+    assertLengthValid(start_point.value(), 2);
+    Location location = new Location(
+        Integer.parseInt(start_point.value()[0]),
+        Integer.parseInt(start_point.value()[1])
+    );
+    rover = new Rover(location, (Direction)direction.value());
+  }
+
+  @Override protected int haveFun() throws Exception {
+    for (String command : commands.value()) {
+      System.out.println("Start from " + rover);
+      rover.move(plateau, command.toCharArray());
+      System.out.println("End at " + rover);
+    }
+    return RETURN_CODE.SUCCESS.code();
+  }
+
+  @Override protected void destroyToy() throws Exception {
+  }
 
   static class Plateau {
 
@@ -95,17 +144,6 @@ public class MarsRover {
                      return E;
     }
 
-    static Direction parseDirection(String dir) {
-      String ud = dir.toUpperCase();
-      switch (ud) {
-        case "E": return E;
-        case "S": return S;
-        case "W": return W;
-        case "N": return N;
-        default: throw new IllegalArgumentException();
-      }
-    }
-
     @Override public String toString() {
       return "{" + name() + '}';
     }
@@ -146,60 +184,9 @@ public class MarsRover {
 
   }
 
-  private Map<Rover, String> inputs = new HashMap<>();
-  private Plateau plateau;
-
-  public void init(String[] args) {
-    String[] plateauPoint = args[0].split(" ");
-    assertValid(plateauPoint, 2);
-    plateau = new Plateau(
-        Integer.parseInt(plateauPoint[0]),
-        Integer.parseInt(plateauPoint[1])
-    );
-
-    for (int i = 1; i < args.length; i += 2) {
-      String[] rover = args[i].split(" ");
-      assertValid(rover, 3);
-      inputs.put(
-          new Rover(
-              new Location(
-                  Integer.parseInt(rover[0]),
-                  Integer.parseInt(rover[1])
-              ),
-              Direction.parseDirection(rover[2])
-          ),
-          args[i + 1]);
-    }
-  }
-
-  public void start() {
-    for (Map.Entry<Rover, String> entry : inputs.entrySet()) {
-      Rover rover      = entry.getKey();
-      String movements = entry.getValue();
-      System.out.println(rover);
-      rover.move(plateau, movements.toCharArray());
-      System.out.println(rover);
-      System.out.println();
-    }
-  }
-
-  private void assertValid(String[] res, int expected) {
+  private void assertLengthValid(String[] res, int expected) {
     if (res.length != expected) {
       throw new IllegalArgumentException();
-    }
-  }
-
-  public static void main(String[] args) {
-    args = new String[] {
-        "5 5",
-        "1 2 N", "LMLMLMLMM", "3 3 E", "MMRMMRMRRM", "0 0 S", "MMMLLLMMMMMMMM",
-        "2 3 N", "LLLL", "3 2 S", "RRRR"
-    };
-
-    if (args.length > 1 && args.length % 2 == 1) {
-      MarsRover rover = new MarsRover();
-      rover.init(args);
-      rover.start();
     }
   }
 

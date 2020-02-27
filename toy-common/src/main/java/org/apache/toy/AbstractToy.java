@@ -27,7 +27,7 @@ import java.util.List;
  * An abstract toy.
  * @param <T> configuration type, based on what kind of toy
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractToy<T> implements Toy {
 
   private final List<Parameter> parameters = new ArrayList<>();
@@ -45,7 +45,9 @@ public abstract class AbstractToy<T> implements Toy {
 
   @Override
   public final int play(String dir_of_conf_file) throws Exception {
-    return play(dir_of_conf_file, parameters);
+    ToyConfiguration toy_conf = ToyConfiguration.create(dir_of_conf_file);
+    preCheck(toy_conf, parameters);
+    return play(toy_conf);
   }
 
   /**
@@ -57,10 +59,25 @@ public abstract class AbstractToy<T> implements Toy {
   /**
    * This method is used for checking parameters needed for playing toy. Toy should throw IllegalArgumentException
    * if any required parameter is not set.
-   * @param configuration configuration file for reading parameter
+   * @param configuration toy configuration
    * @param requisites requisites to be checked
    */
-  protected abstract void preCheck(T configuration, List<Parameter> requisites);
+  protected final void preCheck(ToyConfiguration configuration, List<Parameter> requisites) {
+    for (Parameter p : requisites) {
+      if (!configuration.containsKey(p.key())) {
+        if (p.required()) {
+          howToPlay(System.out);
+          throw new IllegalArgumentException(p.key() + " is not set");
+        }
+        continue;
+      }
+           if (p.type().equals(String.class))   p.checkAndSet(configuration.get(p.key()));
+      else if (p.type().equals(String[].class)) p.checkAndSet(configuration.getStrings(p.key(), ","));
+      else if (p.type().isEnum())               p.checkAndSet(configuration.getEnum(p.key(), (Enum)p.value()));
+      else if (p.type().equals(Integer.class))  p.checkAndSet(configuration.getInt(p.key()));
+      else if (p.type().equals(Boolean.class))  p.checkAndSet(configuration.getBoolean(p.key(), (Boolean)p.value()));
+    }
+  }
 
   /**
    * Build up toys.
@@ -72,10 +89,9 @@ public abstract class AbstractToy<T> implements Toy {
   /**
    * This method is used for playing toy.
    * Feel free to throw any exception, try not to deal within method body in order to make your toy light.
-   * @param dir_of_conf_file directory of configuration
-   * @param requisites parameters
+   * @param toy_conf configuration of toy
    */
-  protected abstract int play(String dir_of_conf_file, List<Parameter> requisites) throws Exception;
+  protected abstract int play(ToyConfiguration toy_conf) throws Exception;
 
   /**
    * Actual toy playing.

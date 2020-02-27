@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-package org.apache.toy;
+package org.apache.toy.common;
 
-import org.apache.hadoop.conf.Configuration;
+public final class EnumParameter {
 
-/**
- * HBase toy's base implementation. HBase configuration is inititlized in this class.
- */
-public abstract class AbstractHBaseToy extends AbstractToy<Configuration> {
+  /**
+   * A builder for creating enum parameter.
+   * @param key key name for this parameter
+   * @param value default value
+   * @return a enum parameter builder
+   */
+  public static EnumBuilder newBuilder(String key, Enum value, Class<?> type) {
+    return new EnumBuilder(key, value, type);
+  }
 
-  @Override
-  protected final int play(ToyConfiguration toy_conf) throws Exception {
-    Configuration hbase_conf = ConfigurationFactory.createHBaseConfiguration(toy_conf);
-    buildToy(hbase_conf);
-    try {
-      return haveFun();
-    } finally {
-      destroyToy();
+  private EnumParameter() {}
+
+  public static class EnumBuilder extends AbstractTypeBuilder<Enum> {
+
+    private EnumBuilder(String key, Enum value, Class<?> type) {
+      builder.setKey(key).setType(type).setDefaultValue(value);
     }
+
   }
 
 }

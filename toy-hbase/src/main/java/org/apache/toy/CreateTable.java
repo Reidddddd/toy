@@ -29,7 +29,12 @@ import org.apache.hadoop.hbase.io.compress.Compression;
 import org.apache.hadoop.hbase.io.encoding.DataBlockEncoding;
 import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.toy.common.BoolParameter;
+import org.apache.toy.common.EnumParameter;
+import org.apache.toy.common.IntParameter;
 import org.apache.toy.common.Parameter;
+import org.apache.toy.common.StringArrayParameter;
+import org.apache.toy.common.StringParameter;
 
 import java.util.List;
 
@@ -40,91 +45,42 @@ import java.util.List;
 public class CreateTable extends AbstractHBaseToy {
 
   private final Parameter<String> table_name =
-      Parameter.<String>newBuilder()
-               .setKey("create_table_name").setRequired(true)
-               .setType(String.class).setDescription("table name")
-               .opt();
+      StringParameter.newBuilder("ct.table_name").setRequired().setDescription("table name").opt();
   private final Parameter<String[]> families =
-      Parameter.<String[]>newBuilder()
-               .setKey("families_name").setRequired(true)
-               .setType(String[].class).setDescription("A family or families delimited by ','")
-               .opt();
+      StringArrayParameter.newBuilder("ct.families_name").setRequired().setDescription("A family or families delimited by ','")
+                          .addConstraint(v -> v.length >= 1).opt();
   private final Parameter<Enum> split_algorithm =
-      Parameter.<Enum>newBuilder()
-               .setKey("split_algorithm").setDefaultValue(ALGORITHM.NONE)
-               .setType(ALGORITHM.class).setDescription("Split algorithm, so far suport HEX and NUM")
-               .opt();
+      EnumParameter.newBuilder("ct.split_algorithm", ALGORITHM.NONE, ALGORITHM.class)
+                   .setDescription("split algorithm, so far suport HEX and NUM").opt();
   private final Parameter<Integer> hex_split_regions =
-      Parameter.<Integer>newBuilder()
-               .setKey("hex_split_regions").setType(Integer.class)
-               .setDescription("Number of regions expecting when using hex split algorithm, upper bound is 256")
-               .addConstraint(v -> v > 1)
-               .addConstraint(v -> v <= 256)
-               .addConstraint(v -> 256 % v == 0)
-               .opt();
+      IntParameter.newBuilder("ct.hex_split_regions").setDescription("Number of regions expecting when using hex split algorithm, upper bound is 256")
+                  .addConstraint(v -> v > 1).addConstraint(v -> v <= 256).addConstraint(v -> 256 % v == 0).opt();
   private final Parameter<Integer> dec_split_regions =
-      Parameter.<Integer>newBuilder()
-               .setKey("dec_split_regions").setType(Integer.class)
-               .addConstraint(v -> v > 1)
-               .addConstraint(v -> v <= 1000)
-               .addConstraint(v -> 1000 % v == 0)
-               .setDescription("Number of regions expecting when using number split algorithm, upper bound is 1000")
-               .opt();
+      IntParameter.newBuilder("ct.dec_split_regions").setDescription("Number of regions expecting when using number split algorithm, upper bound is 1000")
+                  .addConstraint(v -> v > 1).addConstraint(v -> v <= 1000).addConstraint(v -> 1000 % v == 0).opt();
   private final Parameter<String> table_owners =
-      Parameter.<String>newBuilder()
-               .setKey("table_owners").setType(String.class)
-               .setRequired(true).setDescription("Whom the table is under in charge by, delimited by ','")
-               .opt();
+      StringParameter.newBuilder("ct.table_owners").setRequired().setDescription("Whom the table is under in charge by, delimited by ','").opt();
   // Column family parameters
   private final Parameter<Enum> compression =
-      Parameter.<Enum>newBuilder()
-               .setKey("compression").setType(Compression.Algorithm.class)
-               .setDescription("Compression algorithm will be used in flush and compactions")
-               .setDefaultValue(Compression.Algorithm.NONE)
-               .opt();
+      EnumParameter.newBuilder("ct.compression", Compression.Algorithm.NONE, Compression.Algorithm.class)
+                   .setDescription("Compression algorithm will be used in flush and compactions").opt();
   private final Parameter<Boolean> cache_data_on_write =
-      Parameter.<Boolean>newBuilder()
-               .setKey("cache_data_on_write").setType(Boolean.class)
-               .setDescription("Cache data even when write, it is useful if your access pattern is read recently.")
-               .setDefaultValue(Boolean.FALSE)
-               .opt();
-  private final Parameter<Boolean> cache_data_in_l1 =
-      Parameter.<Boolean>newBuilder()
-               .setKey("cache_data_in_L1").setType(Boolean.class)
-               .setDescription("L1 is the fastest cache, but with the smallest size")
-               .setDefaultValue(Boolean.FALSE)
-               .opt();
+      BoolParameter.newBuilder("ct.cache_data_on_write", false).setDescription("Cache data even when write, it is useful if your access pattern is read recently").opt();
+  private final Parameter<Boolean> cache_data_in_L1 =
+      BoolParameter.newBuilder("ct.cache_data_in_L1", false).setDescription("L1 is the fastest cache, but with the smallest size").opt();
   private final Parameter<Integer> time_to_live =
-      Parameter.<Integer>newBuilder()
-               .setKey("time_to_live").setType(Integer.class)
-               .setDescription("Time to live for cells under a specific family")
-               .addConstraint(v -> v > 0)
-               .setDefaultValue(HConstants.FOREVER)
-               .opt();
+      IntParameter.newBuilder("ct.time_to_live").setDefaultValue(HConstants.FOREVER).setDescription("Time to live for cells under a specific family")
+                  .addConstraint(v -> v > 0).opt();
   private final Parameter<Enum> bloom_type =
-      Parameter.<Enum>newBuilder()
-               .setKey("bloom_filter_type").setType(BloomType.class)
-               .setDescription("Bloom filter is useful for row get or column get. set it ROW or ROWCOL")
-               .setDefaultValue(BloomType.NONE)
-               .opt();
+      EnumParameter.newBuilder("ct.bloom_filter_type", BloomType.NONE, BloomType.class)
+                   .setDescription("Bloom filter is useful for row get or column get. set it ROW or ROWCOL").opt();
   private final Parameter<Integer> max_versions =
-      Parameter.<Integer>newBuilder()
-               .setKey("versions").setType(Integer.class)
-               .setDescription("Min versions of a cell, 1 by default.")
-               .setDefaultValue(1)
-               .opt();
+      IntParameter.newBuilder("ct.versions").setDefaultValue(1).setDescription("Min versions of a cell, 1 by default").opt();
   private final Parameter<Enum> data_block_encoding =
-      Parameter.<Enum>newBuilder()
-               .setKey("data_block_encoding").setType(DataBlockEncoding.class)
-               .setDescription("Encoding method for data block. Supporting type: PREFIX, DIFF, FAST_DIFF, ROW_INDEX_V1")
-               .setDefaultValue(DataBlockEncoding.NONE)
-               .opt();
+      EnumParameter.newBuilder("ct.data_block_encoding", DataBlockEncoding.NONE, DataBlockEncoding.class)
+                   .setDescription("Encoding method for data block. Supporting type: PREFIX, DIFF, FAST_DIFF, ROW_INDEX_V1").opt();
   private final Parameter<Boolean> in_memory =
-      Parameter.<Boolean>newBuilder()
-               .setKey("in_memory").setType(Boolean.class)
-               .setDescription("data cached in memory region of block cache.")
-               .setDefaultValue(Boolean.FALSE)
-               .opt();
+      BoolParameter.newBuilder("ct.in_memory", false).setDescription("data cached in memory region of block cache").opt();
 
   private TableName table;
   private Connection connection;
@@ -141,7 +97,7 @@ public class CreateTable extends AbstractHBaseToy {
     requisites.add(table_owners);
     requisites.add(compression);
     requisites.add(cache_data_on_write);
-    requisites.add(cache_data_in_l1);
+    requisites.add(cache_data_in_L1);
     requisites.add(time_to_live);
     requisites.add(bloom_type);
     requisites.add(max_versions);
@@ -180,14 +136,14 @@ public class CreateTable extends AbstractHBaseToy {
   private HColumnDescriptor buildFamilyDescriptor(String family) {
     HColumnDescriptor descriptor = new HColumnDescriptor(family);
     descriptor.setBlocksize(1048576); // 1MB
-    if (!compression.unset())         descriptor.setCompressionType((Compression.Algorithm)compression.value());
-    if (!cache_data_on_write.unset()) descriptor.setCacheDataOnWrite(true);
-    if (!cache_data_in_l1.unset())    descriptor.setCacheDataInL1(true);
+    if (!compression.empty())         descriptor.setCompressionType((Compression.Algorithm)compression.value());
+    if (!cache_data_on_write.empty()) descriptor.setCacheDataOnWrite(true);
+    if (!cache_data_in_L1.empty())    descriptor.setCacheDataInL1(true);
     if (!time_to_live.empty())        descriptor.setTimeToLive(time_to_live.value());
-    if (!bloom_type.unset())          descriptor.setBloomFilterType((BloomType)bloom_type.value());
+    if (!bloom_type.empty())          descriptor.setBloomFilterType((BloomType)bloom_type.value());
     if (!max_versions.empty())        descriptor.setMaxVersions(max_versions.value());
-    if (!data_block_encoding.unset()) descriptor.setDataBlockEncoding((DataBlockEncoding)data_block_encoding.value());
-    if (!in_memory.unset())           descriptor.setInMemory(true);
+    if (!data_block_encoding.empty()) descriptor.setDataBlockEncoding((DataBlockEncoding)data_block_encoding.value());
+    if (!in_memory.empty())           descriptor.setInMemory(true);
     return descriptor;
   }
 

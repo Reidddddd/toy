@@ -16,20 +16,18 @@
 
 package org.apache.toy.common;
 
-import org.apache.toy.annotation.Nullable;
+import org.apache.toy.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * A class defines parameter. Use {@link Builder} to create a Parameter.
  * A parameter is composed of a key, a description, and a flag indicating if it is a must, and value of type.
+ * In addition, user can add some constraints on parameter.
  * @param <T>
  */
 public final class Parameter<T> {
-
-  public static final Number UNSET = -99;
 
   private String key;
   private T value;
@@ -99,34 +97,31 @@ public final class Parameter<T> {
   }
 
   /**
-   * @return true is value is empty or unset from client, false otherwise
+   * @return true if it is null.
    */
   public boolean empty() {
     return value == null;
   }
 
   /**
-   * Check value and set if value is not null.
-   * @param value a nullable value
+   * Check value and set if value is neither null nor default value.
+   * @param value a non-null value
    */
-  public void checkAndSet(@Nullable T value) {
-    Optional<T> v = Optional.ofNullable(value);
-    if (v.isPresent()) {
-      for (ConstraintFunction<T> constraint : constraints) {
-        if (!constraint.satisfy(value)) {
-          throw new IllegalArgumentException(key + "'s value " +  value + " doesn't satisfy one of the parameter constrains.");
-        }
-      }
-      setValue(value);
-    }
-  }
+  public void checkAndSet(T value) {
+         if (type().equals(String.class) && value.equals(Constants.UNSET_STRING))     return;
+    else if (type().equals(String[].class) && value == Constants.UNSET_STRINGS)       return;
+    else if (type().equals(Integer.class) && (Integer) value == Constants.UNSET_INT)  return;
+    else if (type().equals(Long.class) && (Long)value == Constants.UNSET_LONG)        return;
+    else if (type().equals(Float.class) && (Float)value == Constants.UNSET_FLOAT)     return;
+    else if (type().equals(Double.class) && (Double)value == Constants.UNSET_DOUBLE)  return;
+    // Ingore enum type and boolean type
 
-  /**
-   * Check if value is the same as default value
-   * @return true if it is a default value, false otherwise
-   */
-  public boolean unset() {
-    return value.equals(default_value);
+    for (ConstraintFunction<T> constraint : constraints) {
+      if (!constraint.satisfy(value)) {
+        throw new IllegalArgumentException(key + "'s value " +  value + " doesn't satisfy one of the parameter constrains.");
+      }
+    }
+    setValue(value);
   }
 
   /**

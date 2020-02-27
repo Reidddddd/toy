@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package org.apache.toy;
+package org.apache.toy.common;
 
-import org.apache.hadoop.conf.Configuration;
+public final class StringArrayParameter {
 
-/**
- * HBase toy's base implementation. HBase configuration is inititlized in this class.
- */
-public abstract class AbstractHBaseToy extends AbstractToy<Configuration> {
+  /**
+   * A builder for creating string parameter.
+   * @param key key name for this parameter
+   * @return a string parameter builder
+   */
+  public static StringArrayBuilder newBuilder(String key) {
+    return new StringArrayBuilder(key);
+  }
 
-  @Override
-  protected final int play(ToyConfiguration toy_conf) throws Exception {
-    Configuration hbase_conf = ConfigurationFactory.createHBaseConfiguration(toy_conf);
-    buildToy(hbase_conf);
-    try {
-      return haveFun();
-    } finally {
-      destroyToy();
+  private StringArrayParameter() {}
+
+  public static class StringArrayBuilder extends AbstractTypeBuilderWithValue<String[]> {
+
+    private StringArrayBuilder(String key) {
+      builder.setKey(key).setType(String[].class);
     }
+
   }
 
 }

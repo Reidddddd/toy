@@ -24,6 +24,7 @@ import org.junit.Test;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Paths;
 
 public class TestToyConfiguration {
 
@@ -50,7 +51,7 @@ public class TestToyConfiguration {
     writer.write("h=SPECIFIC");           writer.newLine();
     writer.close();
 
-    toy_properties = new ToyConfiguration(toy_conf_file.toPath());
+    toy_properties = ToyConfiguration.create(Paths.get("").toString());
   }
 
   @AfterClass public static void teardown() {

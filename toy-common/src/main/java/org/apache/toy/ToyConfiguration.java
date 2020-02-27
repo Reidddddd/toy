@@ -21,14 +21,23 @@ import org.apache.toy.annotation.ThreadSafe;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
+/**
+ * Configurations for any Toys. Note that, instead of returnning null, it always return a non-null object.
+ * Please refer to {@link Constants} for default value for each type.
+ */
 @ThreadSafe
 public class ToyConfiguration {
 
   private final Properties properties = new Properties();
 
-  public ToyConfiguration(Path toy_property_file) throws IOException {
+  public static ToyConfiguration create(String dir_of_property_file) throws IOException {
+    return new ToyConfiguration(Paths.get(dir_of_property_file, "toy.properties"));
+  }
+
+  private ToyConfiguration(Path toy_property_file) throws IOException {
     properties.load(new FileReader(toy_property_file.toFile()));
   }
 
@@ -73,6 +82,10 @@ public class ToyConfiguration {
   public <T extends Enum<T>> T getEnum(String key, T def_value) {
     String enum_value = get(key);
     return enum_value.isEmpty() ? def_value : Enum.valueOf(def_value.getDeclaringClass(), enum_value);
+  }
+
+  public Properties getProperties() {
+    return properties;
   }
 
 }

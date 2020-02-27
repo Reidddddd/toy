@@ -16,6 +16,7 @@
 
 package org.apache.toy;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class TestToyParameters {
@@ -43,6 +44,11 @@ public class TestToyParameters {
   @Test(expected = ArrayIndexOutOfBoundsException.class)
   public void testIncompleteConfDirArgument() {
     ToyParameters.parse(new String[] { "--conf_dir" });
+  }
+
+  @Test public void testHelp() {
+    ToyParameters para = ToyParameters.parse(new String[] { "--help" });
+    Assert.assertTrue(para.needHelp());
   }
 
 }
