@@ -47,8 +47,12 @@ public class TestToyParameters {
   }
 
   @Test public void testHelp() {
-    ToyParameters para = ToyParameters.parse(new String[] { "--help" });
+    ToyParameters para = ToyParameters.parse(new String[] { "--help", "--toy", "WhateverToy" });
     Assert.assertTrue(para.needHelp());
+  }
+
+  @Test public void testNormal() {
+    ToyParameters.parse(new String[] { "--conf_dir", ".", "--toy", "WhateverToy" });
   }
 
 }

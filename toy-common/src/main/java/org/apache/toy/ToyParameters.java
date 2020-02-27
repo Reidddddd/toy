@@ -30,7 +30,7 @@ public final class ToyParameters {
   private static final Parameter<String> help =
       StringParameter.newBuilder("--help").setDescription("help message of toy").opt();
   private static final Parameter<String> toy =
-      StringParameter.newBuilder("--toy").setDescription("toy to be run").opt();
+      StringParameter.newBuilder("--toy").setDescription("toy to be run").setRequired().opt();
   private static final Parameter<String> conf =
       StringParameter.newBuilder("--conf_dir").setDescription("directory of configuration").opt();
 
@@ -80,9 +80,10 @@ public final class ToyParameters {
 
     String toy_name = Constants.UNSET_STRING;
     String conf_dir = Constants.UNSET_STRING;
+    boolean need_help = false;
     String[] args = optional_args.get();
     for (int i = 0; i < args.length; i++) {
-      if (args[i].equals(help.key())) return new ToyParameters();
+      if (args[i].equals(help.key())) need_help = true;
 
       if (args[i].equals(toy.key())) {
         if (++i == args.length) throw new ArrayIndexOutOfBoundsException("Value for " + toy.key() + " is not set.");
@@ -93,11 +94,15 @@ public final class ToyParameters {
       }
     }
 
-    if (toy_name.equals(Constants.UNSET_STRING) || conf_dir.equals(Constants.UNSET_STRING)) {
+    if (toy_name.equals(Constants.UNSET_STRING)) {
       HelpPrinter.printUsage(System.out, ToyParameters.class, parameters);
-      throw new IllegalArgumentException(toy.key() + " or " + conf.key() + " is not set");
+      throw new IllegalArgumentException("Toy isn't specified");
     }
-    return new ToyParameters(toy_name, conf_dir);
+    if (!need_help && conf_dir.equals(Constants.UNSET_STRING)) {
+      HelpPrinter.printUsage(System.out, ToyParameters.class, parameters);
+      throw new IllegalArgumentException("Either " + help.key() + " or " + conf.key() + " should be set");
+    }
+    return new ToyParameters(need_help, toy_name, conf_dir);
   }
 
 }

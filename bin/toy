@@ -76,7 +76,7 @@ echo "Execution classpath: $execute_jar"
 
 if [[ $help == "true" ]]
 then
-  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --help
+  $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --toy org.apache.toy.$toy_name --help
 else
   $java_cmd -cp $execute_jar org.apache.toy.ToyPlayer --toy org.apache.toy.$toy_name --conf_dir $conf_dir
 fi
