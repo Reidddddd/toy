@@ -51,7 +51,7 @@ public class CreateTable extends AbstractHBaseToy {
                           .addConstraint(v -> v.length >= 1).opt();
   private final Parameter<Enum> split_algorithm =
       EnumParameter.newBuilder("ct.split_algorithm", ALGORITHM.NONE, ALGORITHM.class)
-                   .setDescription("split algorithm, so far suport HEX and NUM").opt();
+                   .setRequired().setDescription("split algorithm, so far suport HEX and NUM").opt();
   private final Parameter<Integer> hex_split_regions =
       IntParameter.newBuilder("ct.hex_split_regions").setDescription("Number of regions expecting when using hex split algorithm, upper bound is 256")
                   .addConstraint(v -> v > 1).addConstraint(v -> v <= 256).addConstraint(v -> 256 % v == 0).opt();
@@ -61,6 +61,7 @@ public class CreateTable extends AbstractHBaseToy {
   private final Parameter<String> table_owners =
       StringParameter.newBuilder("ct.table_owners").setRequired().setDescription("Whom the table is under in charge by, delimited by ','").opt();
   // Column family parameters
+  // Following are optionals
   private final Parameter<Enum> compression =
       EnumParameter.newBuilder("ct.compression", Compression.Algorithm.NONE, Compression.Algorithm.class)
                    .setDescription("Compression algorithm will be used in flush and compactions").opt();
@@ -95,14 +96,6 @@ public class CreateTable extends AbstractHBaseToy {
     requisites.add(hex_split_regions);
     requisites.add(dec_split_regions);
     requisites.add(table_owners);
-    requisites.add(compression);
-    requisites.add(cache_data_on_write);
-    requisites.add(cache_data_in_L1);
-    requisites.add(time_to_live);
-    requisites.add(bloom_type);
-    requisites.add(max_versions);
-    requisites.add(data_block_encoding);
-    requisites.add(in_memory);
   }
 
   @Override
@@ -121,7 +114,7 @@ public class CreateTable extends AbstractHBaseToy {
 
     HTableDescriptor descriptor = buildTableDescriptor();
     for (String f : families.value()) {
-      descriptor.addFamily(buildFamilyDescriptor(f));
+      descriptor.addFamily(buildFamilyDescriptor(f, connection.getConfiguration()));
     }
     admin.createTable(descriptor, split.getSplitsKeys());
     return RETURN_CODE.SUCCESS.code();
@@ -133,18 +126,33 @@ public class CreateTable extends AbstractHBaseToy {
     return descriptor;
   }
 
-  private HColumnDescriptor buildFamilyDescriptor(String family) {
-    HColumnDescriptor descriptor = new HColumnDescriptor(family);
-    descriptor.setBlocksize(1048576); // 1MB
-    if (!compression.empty())         descriptor.setCompressionType((Compression.Algorithm)compression.value());
-    if (!cache_data_on_write.empty()) descriptor.setCacheDataOnWrite(true);
-    if (!cache_data_in_L1.empty())    descriptor.setCacheDataInL1(true);
-    if (!time_to_live.empty())        descriptor.setTimeToLive(time_to_live.value());
-    if (!bloom_type.empty())          descriptor.setBloomFilterType((BloomType)bloom_type.value());
-    if (!max_versions.empty())        descriptor.setMaxVersions(max_versions.value());
-    if (!data_block_encoding.empty()) descriptor.setDataBlockEncoding((DataBlockEncoding)data_block_encoding.value());
-    if (!in_memory.empty())           descriptor.setInMemory(true);
+  private HColumnDescriptor buildFamilyDescriptor(String family, Configuration conf) {
+    extractFamilyConf(family, conf);
+
+    HColumnDescriptor
+        descriptor = new HColumnDescriptor(family);
+        descriptor.setBlocksize(1048576); // 1 MB
+        descriptor.setCompressionType((Compression.Algorithm)compression.value());
+        descriptor.setCacheDataOnWrite(cache_data_on_write.value());
+        descriptor.setCacheDataInL1(cache_data_in_L1.value());
+        descriptor.setTimeToLive(time_to_live.value());
+        descriptor.setBloomFilterType((BloomType)bloom_type.value());
+        descriptor.setMaxVersions(max_versions.value());
+        descriptor.setDataBlockEncoding((DataBlockEncoding)data_block_encoding.value());
+        descriptor.setInMemory(in_memory.value());
     return descriptor;
+  }
+
+  private void extractFamilyConf(String f, Configuration conf) {
+      String suffix = "." + f;
+            compression.setValue(conf.getEnum(compression.key() + suffix, compression.value()));
+    cache_data_on_write.setValue(conf.getBoolean(cache_data_on_write.key() + suffix, cache_data_on_write.value()));
+       cache_data_in_L1.setValue(conf.getBoolean(cache_data_in_L1.key() + suffix, cache_data_in_L1.value()));
+           time_to_live.setValue(conf.getInt(time_to_live.key() + suffix, time_to_live.value()));
+             bloom_type.setValue(conf.getEnum(bloom_type.key() + suffix, bloom_type.value()));
+           max_versions.setValue(conf.getInt(max_versions.key() + suffix, max_versions.value()));
+    data_block_encoding.setValue(conf.getEnum(data_block_encoding.key() + suffix, data_block_encoding.value()));
+              in_memory.setValue(conf.getBoolean(in_memory.key() + suffix, in_memory.value()));
   }
 
   private SplitAlgorithm buildSplitAlgorithm(Enum raw_algorithm) {
