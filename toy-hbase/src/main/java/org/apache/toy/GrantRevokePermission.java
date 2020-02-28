@@ -18,8 +18,6 @@ package org.apache.toy;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.security.access.AccessControlClient;
 import org.apache.hadoop.hbase.security.access.Permission;
 import org.apache.toy.common.EnumParameter;
@@ -65,7 +63,6 @@ public class GrantRevokePermission extends AbstractHBaseToy {
           Permission.Action.EXEC,
           Permission.Action.CREATE
       };
-  private Connection connection;
   private SCOPE p_scope;
 
   @Override
@@ -80,7 +77,6 @@ public class GrantRevokePermission extends AbstractHBaseToy {
 
   @Override
   protected void buildToy(Configuration configuration) throws Exception {
-          connection = ConnectionFactory.createConnection(configuration);
           p_scope    = (SCOPE)scope.value();
     int valid_length = user_name.value().length;
     switch (p_scope) {
@@ -111,7 +107,6 @@ public class GrantRevokePermission extends AbstractHBaseToy {
   @Override
   protected int haveFun() throws Exception {
     if (!AccessControlClient.isAccessControllerRunning(connection)) return RETURN_CODE.FAILURE.code();
-
 
     switch (p_scope) {
       case GLOBAL:
@@ -184,11 +179,6 @@ public class GrantRevokePermission extends AbstractHBaseToy {
       case  V: AccessControlClient.revoke(connection, table, user_name, null, null, def_actions); break;
       default:                                                                                                   break;
     }
-  }
-
-  @Override
-  protected void destroyToy() throws Exception {
-    connection.close();
   }
 
 }

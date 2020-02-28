@@ -84,7 +84,6 @@ public class CreateTable extends AbstractHBaseToy {
       BoolParameter.newBuilder("ct.in_memory", false).setDescription("data cached in memory region of block cache").opt();
 
   private TableName table;
-  private Connection connection;
   private Admin admin;
   private SplitAlgorithm split;
 
@@ -101,7 +100,6 @@ public class CreateTable extends AbstractHBaseToy {
   @Override
   protected void buildToy(Configuration configuration) throws Exception {
     table = TableName.valueOf(table_name.value());
-    connection = ConnectionFactory.createConnection(configuration);
     admin = connection.getAdmin();
     split = buildSplitAlgorithm(split_algorithm.value());
   }
@@ -171,7 +169,7 @@ public class CreateTable extends AbstractHBaseToy {
   @Override
   protected void destroyToy() throws Exception {
     admin.close();
-    connection.close();
+    super.destroyToy();
   }
 
   private interface SplitAlgorithm {

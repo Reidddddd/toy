@@ -44,16 +44,14 @@
                 </executions>
             </plugin>
         </plugins>
-
     </build>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
-            <version>1.4.9</version>
+            <version>1.4.12</version>
         </dependency>
-
         <dependency>
             <groupId>org.rc</groupId>
             <artifactId>toy-common</artifactId>
