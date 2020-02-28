@@ -74,6 +74,14 @@ public final class Parameter<T> {
   }
 
   /**
+   * Get default value of parameter.
+   * @return default value
+   */
+  public T defvalue() {
+    return default_value;
+  }
+
+  /**
    * Get type of value.
    * @return value's class
    */

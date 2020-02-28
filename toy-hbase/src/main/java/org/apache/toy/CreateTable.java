@@ -145,14 +145,14 @@ public class CreateTable extends AbstractHBaseToy {
 
   private void extractFamilyConf(String f, Configuration conf) {
       String suffix = "." + f;
-            compression.setValue(conf.getEnum(compression.key() + suffix, compression.value()));
-    cache_data_on_write.setValue(conf.getBoolean(cache_data_on_write.key() + suffix, cache_data_on_write.value()));
-       cache_data_in_L1.setValue(conf.getBoolean(cache_data_in_L1.key() + suffix, cache_data_in_L1.value()));
-           time_to_live.setValue(conf.getInt(time_to_live.key() + suffix, time_to_live.value()));
-             bloom_type.setValue(conf.getEnum(bloom_type.key() + suffix, bloom_type.value()));
-           max_versions.setValue(conf.getInt(max_versions.key() + suffix, max_versions.value()));
-    data_block_encoding.setValue(conf.getEnum(data_block_encoding.key() + suffix, data_block_encoding.value()));
-              in_memory.setValue(conf.getBoolean(in_memory.key() + suffix, in_memory.value()));
+            compression.setValue(conf.getEnum(compression.key() + suffix, compression.defvalue()));
+    cache_data_on_write.setValue(conf.getBoolean(cache_data_on_write.key() + suffix, cache_data_on_write.defvalue()));
+       cache_data_in_L1.setValue(conf.getBoolean(cache_data_in_L1.key() + suffix, cache_data_in_L1.defvalue()));
+           time_to_live.setValue(conf.getInt(time_to_live.key() + suffix, time_to_live.defvalue()));
+             bloom_type.setValue(conf.getEnum(bloom_type.key() + suffix, bloom_type.defvalue()));
+           max_versions.setValue(conf.getInt(max_versions.key() + suffix, max_versions.defvalue()));
+    data_block_encoding.setValue(conf.getEnum(data_block_encoding.key() + suffix, data_block_encoding.defvalue()));
+              in_memory.setValue(conf.getBoolean(in_memory.key() + suffix, in_memory.defvalue()));
   }
 
   private SplitAlgorithm buildSplitAlgorithm(Enum raw_algorithm) {
