@@ -19,6 +19,7 @@ package org.apache.toy;
 import org.apache.toy.common.EnumParameter;
 import org.apache.toy.common.Parameter;
 import org.apache.toy.common.StringArrayParameter;
+import org.apache.toy.common.ToyUtils;
 
 import java.util.List;
 
@@ -45,12 +46,12 @@ public class MarsRover extends AbstractJavaToy {
 
   @Override
   protected void buildToy(ToyConfiguration configuration) throws Exception {
-    assertLengthValid(plateau_point.value(), 2);
+    ToyUtils.assertLengthValid(plateau_point.value(), 2);
     plateau = new Plateau(
         Integer.parseInt(plateau_point.value()[0]),
         Integer.parseInt(plateau_point.value()[1])
     );
-    assertLengthValid(start_point.value(), 2);
+    ToyUtils.assertLengthValid(start_point.value(), 2);
     Location location = new Location(
         Integer.parseInt(start_point.value()[0]),
         Integer.parseInt(start_point.value()[1])
@@ -182,12 +183,6 @@ public class MarsRover extends AbstractJavaToy {
       return "Rover{" + "location=" + location + ", direction=" + direction + '}';
     }
 
-  }
-
-  private void assertLengthValid(String[] res, int expected) {
-    if (res.length != expected) {
-      throw new IllegalArgumentException();
-    }
   }
 
 }
