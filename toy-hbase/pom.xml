@@ -51,7 +51,7 @@
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
             <version>1.4.12</version>
-        </dependency>
+        </dependency>g
         <dependency>
             <groupId>org.rc</groupId>
             <artifactId>toy-common</artifactId>
