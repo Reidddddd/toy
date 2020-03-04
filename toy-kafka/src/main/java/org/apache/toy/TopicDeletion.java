@@ -58,22 +58,27 @@ public class TopicDeletion extends AbstractKafkaToy {
 
   @Override
   protected int haveFun() throws Exception {
+    List<String> on_list = Arrays.asList(topics.value());
     List<String> to_be_deleted = new ArrayList<>();
     int upper_limit = partitions_upper.value();
 
-    DescribeTopicsResult describe_result = ac.describeTopics(Arrays.asList(topics.value()));
-    for (Map.Entry<String, KafkaFuture<TopicDescription>> entry : describe_result.values().entrySet()) {
-      String topic_name = entry.getKey();
-      TopicDescription topic_description = entry.getValue().get();
+    DescribeTopicsResult describe_result = ac.describeTopics(on_list);
+    Map<String, KafkaFuture<TopicDescription>> results = describe_result.values();
+    for (String topic : on_list) {
+      if (!results.containsKey(topic)) {
+        System.out.println(topic + " doesn't exist");
+        continue;
+      }
+      TopicDescription topic_description = results.get(topic).get();
       if (topic_description.isInternal()) {
-        System.out.println("Skipping internal topic " + topic_name);
+        System.out.println("Skipping internal topic " + topic);
         continue;
       }
       if (upper_limit > 0) {
         int num_partitions = topic_description.partitions().size();
-        System.out.println("Topic " + topic_name + " has " + num_partitions + " partitions");
-        System.out.println("Deleting topic " + topic_name);
-        to_be_deleted.add(topic_name);
+        System.out.println("Topic " + topic + " has " + num_partitions + " partitions");
+        System.out.println("Deleting topic " + topic);
+        to_be_deleted.add(topic);
         upper_limit -= num_partitions;
       }
       if (upper_limit <= 0) break;
