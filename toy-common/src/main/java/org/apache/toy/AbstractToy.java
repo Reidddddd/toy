@@ -117,7 +117,7 @@ public abstract class AbstractToy<T> implements Toy {
       this.return_code = return_code;
     }
 
-    public int code() {
+    protected int code() {
       return return_code;
     }
   }

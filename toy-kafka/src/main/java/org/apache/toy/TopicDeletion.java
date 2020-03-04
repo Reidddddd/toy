@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+package org.apache.toy;
+
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.toy.AbstractKafkaToy;
-import org.apache.toy.ToyConfiguration;
 import org.apache.toy.common.Parameter;
 import org.apache.toy.common.StringArrayParameter;
 
