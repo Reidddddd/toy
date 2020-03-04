@@ -65,11 +65,13 @@ public class TopicDeletion extends AbstractKafkaToy {
     DescribeTopicsResult describe_result = ac.describeTopics(on_list);
     Map<String, KafkaFuture<TopicDescription>> results = describe_result.values();
     for (String topic : on_list) {
-      if (!results.containsKey(topic)) {
+      TopicDescription topic_description = null;
+      try {
+        topic_description = results.get(topic).get();
+      } catch (Exception utope) {
         System.out.println(topic + " doesn't exist");
         continue;
       }
-      TopicDescription topic_description = results.get(topic).get();
       if (topic_description.isInternal()) {
         System.out.println("Skipping internal topic " + topic);
         continue;
