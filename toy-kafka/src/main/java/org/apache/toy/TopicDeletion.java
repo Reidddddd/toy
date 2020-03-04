@@ -17,11 +17,18 @@
 package org.apache.toy;
 
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.DeleteTopicsResult;
+import org.apache.kafka.clients.admin.DescribeTopicsResult;
+import org.apache.kafka.clients.admin.TopicDescription;
+import org.apache.kafka.common.KafkaFuture;
+import org.apache.toy.common.IntParameter;
 import org.apache.toy.common.Parameter;
 import org.apache.toy.common.StringArrayParameter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TopicDeletion extends AbstractKafkaToy {
@@ -31,12 +38,17 @@ public class TopicDeletion extends AbstractKafkaToy {
                           .setRequired().setDescription("Topics to be deleted.")
                           .addConstraint(v -> v.length >= 1)
                           .opt();
+  private final Parameter<Integer> partitions_upper =
+      IntParameter.newBuilder("td.partitions_upper_limit").setRequired()
+                  .setDescription("each deletions will not delete more than this number of partitions")
+                  .opt();
 
   private AdminClient ac;
 
   @Override
   protected void requisite(List<Parameter> requisites) {
     requisites.add(topics);
+    requisites.add(partitions_upper);
   }
 
   @Override
@@ -46,7 +58,29 @@ public class TopicDeletion extends AbstractKafkaToy {
 
   @Override
   protected int haveFun() throws Exception {
-    ac.deleteTopics(Arrays.asList(topics.value()));
+    List<String> to_be_deleted = new ArrayList<>();
+    int upper_limit = partitions_upper.value();
+
+    DescribeTopicsResult describe_result = ac.describeTopics(Arrays.asList(topics.value()));
+    for (Map.Entry<String, KafkaFuture<TopicDescription>> entry : describe_result.values().entrySet()) {
+      String topic_name = entry.getKey();
+      TopicDescription topic_description = entry.getValue().get();
+      if (topic_description.isInternal()) {
+        System.out.println("Skipping internal topic " + topic_name);
+        continue;
+      }
+      if (upper_limit > 0) {
+        int num_partitions = topic_description.partitions().size();
+        System.out.println("Topic " + topic_name + " has " + num_partitions + " partitions");
+        System.out.println("Deleting topic " + topic_name);
+        to_be_deleted.add(topic_name);
+        upper_limit -= num_partitions;
+      }
+      if (upper_limit <= 0) break;
+    }
+
+    DeleteTopicsResult delete_result = ac.deleteTopics(to_be_deleted);
+    delete_result.all().get();
     return RETURN_CODE.SUCCESS.code();
   }
 
