@@ -85,11 +85,12 @@ then
 elif [[ $kind == "hdfs" ]]
 then
   execute_jar=$execute_jar:`$hdfs_home/bin/hdfs classpath`
-elfi [[ $kind == "kafka"]]
+elif [[ $kind == "kafka" ]]
 then
   for file in $kafka_home/libs/*
   do
-    if should_include_file $file; then
+    if should_include_file $file
+    then
       execute_jar=$execute_jar:$file
     fi
   done
