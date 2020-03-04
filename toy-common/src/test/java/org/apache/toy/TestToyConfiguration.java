@@ -16,6 +16,7 @@
 
 package org.apache.toy;
 
+import org.apache.toy.common.Constants;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

@@ -16,8 +16,6 @@
 
 package org.apache.toy.common;
 
-import org.apache.toy.Constants;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,12 +114,12 @@ public final class Parameter<T> {
    * @param value a non-null value
    */
   public void checkAndSet(T value) {
-         if (type().equals(String.class) && value.equals(Constants.UNSET_STRING))     return;
+         if (type().equals(String.class)   && value.equals(Constants.UNSET_STRING))     return;
     else if (type().equals(String[].class) && value == Constants.UNSET_STRINGS)       return;
-    else if (type().equals(Integer.class) && (Integer) value == Constants.UNSET_INT)  return;
-    else if (type().equals(Long.class) && (Long)value == Constants.UNSET_LONG)        return;
-    else if (type().equals(Float.class) && (Float)value == Constants.UNSET_FLOAT)     return;
-    else if (type().equals(Double.class) && (Double)value == Constants.UNSET_DOUBLE)  return;
+    else if (type().equals(Integer.class)  && (Integer) value == Constants.UNSET_INT)  return;
+    else if (type().equals(Long.class)     && (Long)value == Constants.UNSET_LONG)        return;
+    else if (type().equals(Float.class)    && (Float)value == Constants.UNSET_FLOAT)     return;
+    else if (type().equals(Double.class)   && (Double)value == Constants.UNSET_DOUBLE)  return;
     // Ingore enum type and boolean type
 
     for (ConstraintFunction<T> constraint : constraints) {

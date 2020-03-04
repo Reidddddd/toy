@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.toy;
+package org.apache.toy.common;
 
 public final class Constants {
 
@@ -33,5 +33,7 @@ public final class Constants {
   public static final boolean UNSET_TRUE = true;
 
   public static final boolean UNSET_FALSE = false;
+
+  public static final long ONE_MB = 1048576;
 
 }
