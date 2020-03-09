@@ -42,6 +42,7 @@ java_cmd=$JAVA_HOME/bin/java
 hbase_home=$HBASE_HOME
 hdfs_home=$HDFS_HOME
 kafka_home=$KAFKA_HOME
+phoenix_home=$PHOENIX_HOME
 
 grep_thin_jar() {
   for jar in $1
@@ -77,11 +78,18 @@ execute_jar=$execute_jar:$exe_jar
 # toy-kafka jar
 grep_thin_jar "$bin/../toy-kafka/target/toy-kafka-[0-9]*.[0-9]*.jar"
 execute_jar=$execute_jar:$exe_jar
+# toy-phoenix jar
+grep_thin_jar "$bin/../toy-phoenix/target/toy-phoenix-[0-9]*.[0-9]*.jar"
+execute_jar=$execute_jar:$exe_jar
 
 # Extract external dependency
-if [[ $kind == "hbase" ]]
+if [[ $kind == "hbase" || $kind == "phoenix" ]]
 then
   execute_jar=$execute_jar:`$hbase_home/bin/hbase classpath`
+  if [[ $kind == "phoenix" ]]
+  then
+    execute_jar=$execute_jar:$phoenix_home/phoenix-client-*.jar
+  fi
 elif [[ $kind == "hdfs" ]]
 then
   execute_jar=$execute_jar:`$hdfs_home/bin/hdfs classpath`

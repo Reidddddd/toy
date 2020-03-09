@@ -16,5 +16,24 @@
 
 package org.apache.toy;
 
-public abstract class AbstractPhoenixToy extends AbstractHBaseToy {
+import org.apache.phoenix.jdbc.PhoenixConnection;
+import org.apache.phoenix.jdbc.PhoenixDriver;
+
+
+public abstract class AbstractPhoenixToy extends AbstractToy {
+
+  private static final String PHOENIX_URL = "phoenix.connection.url";
+
+  protected PhoenixDriver driver = new PhoenixDriver();
+  protected PhoenixConnection connection;
+
+  @Override protected void buildToy(ToyConfiguration configuration) throws Exception {
+    connection = (PhoenixConnection) driver.connect(configuration.get(PHOENIX_URL), configuration.getProperties());
+  }
+
+  @Override protected void destroyToy() throws Exception {
+    connection.close();
+    driver.close();
+  }
+
 }
