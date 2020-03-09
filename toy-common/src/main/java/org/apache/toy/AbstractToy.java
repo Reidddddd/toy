@@ -25,11 +25,10 @@ import java.util.List;
 
 /**
  * An abstract toy.
- * @param <T> configuration type, based on what kind of toy
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class AbstractToy<T> implements Toy {
+public abstract class AbstractToy implements Toy {
 
+  @SuppressWarnings("rawtypes")
   private final List<Parameter> parameters = new ArrayList<>();
 
   @Override
@@ -47,14 +46,19 @@ public abstract class AbstractToy<T> implements Toy {
   public final int play(String dir_of_conf_file) throws Exception {
     ToyConfiguration toy_conf = ToyConfiguration.create(dir_of_conf_file);
     preCheck(toy_conf, parameters);
-    return play(toy_conf);
+    buildToy(toy_conf);
+    try {
+      return haveFun();
+    } finally {
+      destroyToy();
+    }
   }
 
   /**
    * Please add all user-defined parameters in this method.
    * @param requisites parameters to be added to
    */
-  protected abstract void requisite(List<Parameter> requisites);
+  protected abstract void requisite(@SuppressWarnings("rawtypes") List<Parameter> requisites);
 
   /**
    * This method is used for checking parameters needed for playing toy. Toy should throw IllegalArgumentException
@@ -62,6 +66,7 @@ public abstract class AbstractToy<T> implements Toy {
    * @param configuration toy configuration
    * @param requisites requisites to be checked
    */
+  @SuppressWarnings({"rawtypes", "unchecked"})
   protected final void preCheck(ToyConfiguration configuration, List<Parameter> requisites) {
     for (Parameter p : requisites) {
       if (!configuration.containsKey(p.key())) {
@@ -81,17 +86,10 @@ public abstract class AbstractToy<T> implements Toy {
 
   /**
    * Build up toys.
-   * @param configuration configurations
+   * @param configuration toy configuration
    * @throws Exception exception if any
    */
-  protected abstract void buildToy(T configuration) throws Exception;
-
-  /**
-   * This method is used for playing toy.
-   * Feel free to throw any exception, try not to deal within method body in order to make your toy light.
-   * @param toy_conf configuration of toy
-   */
-  protected abstract int play(ToyConfiguration toy_conf) throws Exception;
+  protected abstract void buildToy(ToyConfiguration configuration) throws Exception;
 
   /**
    * Actual toy playing.

@@ -16,7 +16,6 @@
 
 package org.apache.toy;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.security.access.AccessControlClient;
 import org.apache.hadoop.hbase.security.access.Permission;
@@ -76,7 +75,8 @@ public class GrantRevokePermission extends AbstractHBaseToy {
   }
 
   @Override
-  protected void buildToy(Configuration configuration) throws Exception {
+  protected void buildToy(ToyConfiguration configuration) throws Exception {
+    super.buildToy(configuration);
           p_scope    = (SCOPE)scope.value();
     int valid_length = user_name.value().length;
     switch (p_scope) {

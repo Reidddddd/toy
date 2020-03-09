@@ -96,7 +96,8 @@ public class CreateTable extends AbstractHBaseToy {
   }
 
   @Override
-  protected void buildToy(Configuration configuration) throws Exception {
+  protected void buildToy(ToyConfiguration configuration) throws Exception {
+    super.buildToy(configuration);
     table = TableName.valueOf(table_name.value());
     admin = connection.getAdmin();
     split = buildSplitAlgorithm(split_algorithm.value());

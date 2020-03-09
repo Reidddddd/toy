@@ -19,16 +19,5 @@ package org.apache.toy;
 /**
  * Java toy's base implementation. Java configuration is inititlized in this class.
  */
-public abstract class AbstractJavaToy extends AbstractToy<ToyConfiguration> {
-
-  @Override
-  protected final int play(ToyConfiguration toy_conf) throws Exception {
-    buildToy(toy_conf);
-    try {
-      return haveFun();
-    } finally {
-      destroyToy();
-    }
-  }
-
+public abstract class AbstractJavaToy extends AbstractToy {
 }

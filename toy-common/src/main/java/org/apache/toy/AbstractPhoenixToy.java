@@ -17,5 +17,4 @@
 package org.apache.toy;
 
 public abstract class AbstractPhoenixToy extends AbstractHBaseToy {
-
 }

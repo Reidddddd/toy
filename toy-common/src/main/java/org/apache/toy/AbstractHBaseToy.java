@@ -23,20 +23,14 @@ import org.apache.hadoop.hbase.client.ConnectionFactory;
 /**
  * HBase toy's base implementation. HBase configuration is inititlized in this class.
  */
-public abstract class AbstractHBaseToy extends AbstractToy<Configuration> {
+public abstract class AbstractHBaseToy extends AbstractToy {
 
   protected Connection connection;
 
   @Override
-  protected final int play(ToyConfiguration toy_conf) throws Exception {
-    Configuration hbase_conf = ConfigurationFactory.createHBaseConfiguration(toy_conf);
+  protected void buildToy(ToyConfiguration configuration) throws Exception {
+    Configuration hbase_conf = ConfigurationFactory.createHBaseConfiguration(configuration);
     connection = ConnectionFactory.createConnection(hbase_conf);
-    buildToy(hbase_conf);
-    try {
-      return haveFun();
-    } finally {
-      destroyToy();
-    }
   }
 
   @Override

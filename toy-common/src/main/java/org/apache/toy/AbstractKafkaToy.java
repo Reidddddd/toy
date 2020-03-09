@@ -16,16 +16,5 @@
 
 package org.apache.toy;
 
-public abstract class AbstractKafkaToy extends AbstractToy<ToyConfiguration> {
-
-  @Override
-  protected final int play(ToyConfiguration toy_conf) throws Exception {
-    buildToy(toy_conf);
-    try {
-      return haveFun();
-    } finally {
-      destroyToy();
-    }
-  }
-
+public abstract class AbstractKafkaToy extends AbstractToy {
 }
