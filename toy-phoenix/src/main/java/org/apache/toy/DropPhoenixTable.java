@@ -39,6 +39,7 @@ public class DropPhoenixTable extends AbstractPhoenixToy {
     for (String table : tables.value()) {
       ps = connection.prepareStatement(String.format("drop table if exists %s", table));
       ps.execute();
+      System.out.println("Table " + table + " is dropped");
     }
     return RETURN_CODE.SUCCESS.code();
   }

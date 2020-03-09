@@ -93,14 +93,9 @@ grep_thin_jar "$bin/../toy-phoenix/target/toy-phoenix-[0-9]*.[0-9]*.jar"
 execute_jar=$execute_jar:$exe_jar
 
 # Extract external dependency
-if [[ $kind == "hbase" || $kind == "phoenix" ]]
+if [[ $kind == "hbase" ]]
 then
   execute_jar=$execute_jar:`$hbase_home/bin/hbase classpath`
-  if [[ $kind == "phoenix" ]]
-  then
-    grep_phoenix_jar "$phoenix_home/*"
-    execute_jar=$execute_jar:$exe_jar
-  fi
 elif [[ $kind == "hdfs" ]]
 then
   execute_jar=$execute_jar:`$hdfs_home/bin/hdfs classpath`
@@ -113,6 +108,10 @@ then
       execute_jar=$execute_jar:$file
     fi
   done
+elif [[ $kind == "phoenix" ]]
+then
+  grep_phoenix_jar "$phoenix_home/*"
+  execute_jar=$execute_jar:$exe_jar
 fi
 echo "Execution classpath: $execute_jar"
 
