@@ -63,6 +63,7 @@ public class GrantRevokePermission extends AbstractHBaseToy {
           Permission.Action.CREATE
       };
   private SCOPE p_scope;
+  protected boolean skipCheck = false;
 
   @Override
   protected void requisite(@SuppressWarnings("rawtypes") List<Parameter> requisites) {
@@ -74,9 +75,13 @@ public class GrantRevokePermission extends AbstractHBaseToy {
     requisites.add(table_name);
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
-  protected void buildToy(ToyConfiguration configuration) throws Exception {
-    super.buildToy(configuration);
+  protected void preCheck(ToyConfiguration configuration, List<Parameter> requisites) {
+    super.preCheck(configuration, requisites);
+
+    if (skipCheck) return;
+
           p_scope    = (SCOPE)scope.value();
     int valid_length = user_name.value().length;
     switch (p_scope) {
@@ -89,7 +94,7 @@ public class GrantRevokePermission extends AbstractHBaseToy {
             ToyUtils.assertLengthValid(grant_revoke.value(), valid_length);
   }
 
-  private Permission.Action[] extractPermissionActions(String permission_actions) {
+  protected Permission.Action[] extractPermissionActions(String permission_actions) {
     Set<Permission.Action> actions = new HashSet<>();
     for (char c : permission_actions.toCharArray()) {
       switch (c) {
@@ -173,7 +178,7 @@ public class GrantRevokePermission extends AbstractHBaseToy {
     }
   }
 
-  private void performTablePermission(G_V act, TableName table, String user_name, Permission.Action[] actions) throws Throwable {
+  protected void performTablePermission(G_V act, TableName table, String user_name, Permission.Action[] actions) throws Throwable {
     switch (act) {
       case  G: AccessControlClient.grant(connection, table, user_name, null, null, actions);         break;
       case  V: AccessControlClient.revoke(connection, table, user_name, null, null, def_actions); break;

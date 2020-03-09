@@ -127,16 +127,16 @@ public class CreateTable extends AbstractHBaseToy {
     extractFamilyConf(family, conf);
 
     HColumnDescriptor
-        descriptor = new HColumnDescriptor(family);
-        descriptor.setBlocksize(1048576); // 1 MB
-        descriptor.setCompressionType((Compression.Algorithm)compression.value());
-        descriptor.setCacheDataOnWrite(cache_data_on_write.value());
-        descriptor.setCacheDataInL1(cache_data_in_L1.value());
-        descriptor.setTimeToLive(time_to_live.value());
-        descriptor.setBloomFilterType((BloomType)bloom_type.value());
-        descriptor.setMaxVersions(max_versions.value());
-        descriptor.setDataBlockEncoding((DataBlockEncoding)data_block_encoding.value());
-        descriptor.setInMemory(in_memory.value());
+           descriptor = new HColumnDescriptor(family);
+           descriptor.setBlocksize(1048576); // 1 MB
+           descriptor.setCompressionType((Compression.Algorithm)compression.value());
+           descriptor.setCacheDataOnWrite(cache_data_on_write.value());
+           descriptor.setCacheDataInL1(cache_data_in_L1.value());
+           descriptor.setTimeToLive(time_to_live.value());
+           descriptor.setBloomFilterType((BloomType)bloom_type.value());
+           descriptor.setMaxVersions(max_versions.value());
+           descriptor.setDataBlockEncoding((DataBlockEncoding)data_block_encoding.value());
+           descriptor.setInMemory(in_memory.value());
     return descriptor;
   }
 
