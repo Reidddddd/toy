@@ -16,10 +16,12 @@
 
 # java home
 # export JAVA_HOME=
-
 # hbase home
 # export HBASE_HOME=
-
 # hdfs home
 # export HDFS_HOME=
+# kafka home
+# export KAFKA_HOME=
+# phoenix home
+# export PHOENIX_HOME=
 

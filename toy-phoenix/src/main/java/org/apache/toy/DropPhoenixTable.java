@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import org.apache.toy.AbstractPhoenixToy;
+package org.apache.toy;
 import org.apache.toy.common.Parameter;
 import org.apache.toy.common.StringArrayParameter;
 
@@ -40,7 +40,7 @@ public class DropPhoenixTable extends AbstractPhoenixToy {
       ps.setString(1, table);
       ps.execute();
     }
-    return 0;
+    return RETURN_CODE.SUCCESS.code();
   }
 
 }
