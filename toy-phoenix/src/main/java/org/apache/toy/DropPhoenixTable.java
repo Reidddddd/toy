@@ -35,9 +35,9 @@ public class DropPhoenixTable extends AbstractPhoenixToy {
 
   @Override
   protected int haveFun() throws Exception {
-    PreparedStatement ps = connection.prepareStatement("drop table if exists ?");
+    PreparedStatement ps;
     for (String table : tables.value()) {
-      ps.setString(1, table);
+      ps = connection.prepareStatement(String.format("drop table if exists %s", table));
       ps.execute();
     }
     return RETURN_CODE.SUCCESS.code();
