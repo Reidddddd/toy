@@ -43,6 +43,7 @@ public class DeleteTable extends AbstractHBaseToy {
     for (String table : tables.value()) {
       TableName name = TableName.valueOf(table);
       if (admin.tableExists(name)) {
+        admin.disableTable(name);
         admin.deleteTable(name);
       }
     }
