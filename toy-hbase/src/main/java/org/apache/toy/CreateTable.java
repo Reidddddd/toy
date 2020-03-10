@@ -28,6 +28,7 @@ import org.apache.hadoop.hbase.io.encoding.DataBlockEncoding;
 import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.toy.common.BoolParameter;
+import org.apache.toy.common.Constants;
 import org.apache.toy.common.EnumParameter;
 import org.apache.toy.common.IntParameter;
 import org.apache.toy.common.Parameter;
@@ -128,7 +129,7 @@ public class CreateTable extends AbstractHBaseToy {
 
     HColumnDescriptor
            descriptor = new HColumnDescriptor(family);
-           descriptor.setBlocksize(1048576); // 1 MB
+           descriptor.setBlocksize((int)Constants.ONE_MB); // 1 MB
            descriptor.setCompressionType((Compression.Algorithm)compression.value());
            descriptor.setCacheDataOnWrite(cache_data_on_write.value());
            descriptor.setCacheDataInL1(cache_data_in_L1.value());

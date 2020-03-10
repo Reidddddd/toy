@@ -16,22 +16,51 @@
 
 package org.apache.toy;
 
+import org.apache.toy.common.IntParameter;
 import org.apache.toy.common.Parameter;
 import org.apache.toy.common.StringParameter;
 
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CreatePhoenixTable extends AbstractPhoenixToy {
+
+  private final Set<String> compression_set = new HashSet<>(Arrays.asList("LZO", "GZ", "NONE", "SNAPPY", "LZ4", "BZIP2"));
+  private final Set<String> bloom_set = new HashSet<>(Arrays.asList("NONE", "ROW", "ROWCOL"));
+  private final String TABLE_OWNERS = "TABLE_OWNERS";
+  private final String BLOOMFILTER = "BLOOMFILTER";
+  private final String BLOCKSIZE = "BLOCKSIZE";
+  private final String COMPRESSION = "COMPRESSION";
+  private final String TTL = "TTL";
+  private final String SALT_BUCKETS = "SALT_BUCKETS";
+  private final String UPDATE_CACHE_FREQUENCY = "UPDATE_CACHE_FREQUENCY";
+
   private final Parameter<String> sql =
       StringParameter.newBuilder("cpt.create_table_sql").setRequired().setDescription("create table sql").opt();
+  private final Parameter<String> owners =
+      StringParameter.newBuilder("cpt.table_owners").setRequired().setDescription("owners of table").opt();
+  private final Parameter<Integer> bucket_size =
+      IntParameter.newBuilder("cpt.salt_buckets").setDescription("salted size for table").opt();
+  private final Parameter<String> compression =
+      StringParameter.newBuilder("cpt.compression").setDescription("compression used in table")
+                     .addConstraint(compression_set::contains).opt();
+  private final Parameter<String> bloomfilter =
+      StringParameter.newBuilder("cpt.bloom_filter").setDescription("bloom filter used in table")
+                     .addConstraint(bloom_set::contains).opt();
+  private final Parameter<Integer> time_to_live =
+      IntParameter.newBuilder("cpt.time_to_live").setDescription("time to live for value")
+                  .addConstraint(v -> v > 0).opt();
 
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(sql);
   }
 
   @Override protected int haveFun() throws Exception {
-    System.out.println("What the sql looks like: " + sql.value());
+    System.out.println("Executing sql: ");
+    System.out.println(sql.value());
     Statement statement = connection.createStatement();
     statement.execute(sql.value());
     return RETURN_CODE.SUCCESS.code();
