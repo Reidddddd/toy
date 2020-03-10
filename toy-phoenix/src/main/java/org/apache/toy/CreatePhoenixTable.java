@@ -31,6 +31,7 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
   }
 
   @Override protected int haveFun() throws Exception {
+    System.out.println("What the sql looks like: " + sql.value());
     Statement statement = connection.createStatement();
     statement.execute(sql.value());
     return RETURN_CODE.SUCCESS.code();
