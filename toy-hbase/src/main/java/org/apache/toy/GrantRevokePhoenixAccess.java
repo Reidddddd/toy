@@ -18,22 +18,28 @@ package org.apache.toy;
 
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.security.access.AccessControlClient;
+import org.apache.toy.common.EnumParameter;
 import org.apache.toy.common.Parameter;
 import org.apache.toy.common.StringArrayParameter;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class GrantPhoenixAccess extends GrantRevokePermission {
+public class GrantRevokePhoenixAccess extends GrantRevokePermission {
 
   private final TableName CATALOG = TableName.valueOf("SYSTEM:CATALOG");
   private final TableName   STATS = TableName.valueOf("SYSTEM:STATS");
 
+  private final Parameter<Enum> gv =
+      EnumParameter.newBuilder("gpa.grant_revoke", G_V.G, G_V.class).setDescription("grant or revoke permission").setRequired().opt();
   private final Parameter<String[]> users =
       StringArrayParameter.newBuilder("gpa.users").setDescription("users who want to access phoenix").setRequired().opt();
 
+  private G_V action;
+
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(users);
+    requisites.add(gv);
   }
 
   @Override protected void preCheck(ToyConfiguration configuration, List<Parameter> requisites) {
@@ -44,11 +50,19 @@ public class GrantPhoenixAccess extends GrantRevokePermission {
   @Override protected int haveFun() throws Exception {
     if (!AccessControlClient.isAccessControllerRunning(connection)) return RETURN_CODE.FAILURE.code();
 
+    action = (G_V) gv.value();
     IntStream.range(0, users.value().length)
              .forEach(i -> {
                try {
-                 performTablePermission(G_V.G, CATALOG, users.value()[i], extractPermissionActions("RX"));
-                 performTablePermission(G_V.G,   STATS, users.value()[i], extractPermissionActions("R"));
+                 performTablePermission(
+                     action,
+                     CATALOG,
+                     users.value()[i],
+                     extractPermissionActions(action == G_V.G ? "RX" : "RWXCA"));
+                 performTablePermission(
+                     action,STATS,
+                     users.value()[i],
+                     extractPermissionActions(action == G_V.G ? "R"  : "RWXCA"));
                } catch (Throwable throwable) {
                  throw new RuntimeException(throwable);
                }
