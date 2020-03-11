@@ -56,7 +56,8 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
       IntParameter.newBuilder("cpt.time_to_live").setDescription("time to live for value")
                   .addConstraint(v -> v > 0).opt();
   private final Parameter<String[]> others =
-      StringArrayParameter.newBuilder("cpt.attributes").setDescription("other attributes: k1=v1,k2=v2,...").opt();
+      StringArrayParameter.newBuilder("cpt.attributes")
+                          .setDescription("other attributes: k1=v1,k2=v2,..., please '' for string attributes").opt();
 
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(sql);
@@ -80,19 +81,19 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
   private String decorateSQL(String sql) {
     StringBuilder
            builder = new StringBuilder(sql);
-           builder.append(" ").append(TABLE_OWNERS).append("=").append(owners.value());
+           builder.append(" ").append(TABLE_OWNERS).append("='").append(owners.value()).append("'");
     if (!bucket_size.empty())
-           builder.append(" ").append(SALT_BUCKETS).append("=").append(bucket_size.value());
+           builder.append(", ").append(SALT_BUCKETS).append("=").append(bucket_size.value());
     if (!compression.empty())
-           builder.append(" ").append(COMPRESSION).append("=").append(compression.value());
+           builder.append(", ").append(COMPRESSION).append("='").append(compression.value()).append("'");
     if (!bloomfilter.empty())
-           builder.append(" ").append(BLOOMFILTER).append("=").append(bloomfilter.value());
+           builder.append(", ").append(BLOOMFILTER).append("='").append(bloomfilter.value()).append("'");
     if (!time_to_live.empty())
-           builder.append(" ").append(TTL).append("=").append(time_to_live.value());
+           builder.append(", ").append(TTL).append("=").append(time_to_live.value());
     if (!others.empty())
       for (String attribute : others.value()) {
         if (attribute.split("=").length != 2) continue;
-           builder.append(" ").append(attribute);
+           builder.append(", ").append(attribute);
       }
     return builder.toString();
   }
