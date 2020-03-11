@@ -89,10 +89,11 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
            builder.append(" ").append(BLOOMFILTER).append("=").append(bloomfilter.value());
     if (!time_to_live.empty())
            builder.append(" ").append(TTL).append("=").append(time_to_live.value());
-    for (String attribute : others.value()) {
-      if (attribute.split("=").length != 2) continue;
+    if (!others.empty())
+      for (String attribute : others.value()) {
+        if (attribute.split("=").length != 2) continue;
            builder.append(" ").append(attribute);
-    }
+      }
     return builder.toString();
   }
 
