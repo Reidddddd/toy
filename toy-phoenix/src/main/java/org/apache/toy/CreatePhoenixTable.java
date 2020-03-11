@@ -18,7 +18,9 @@ package org.apache.toy;
 
 import org.apache.toy.common.IntParameter;
 import org.apache.toy.common.Parameter;
+import org.apache.toy.common.StringArrayParameter;
 import org.apache.toy.common.StringParameter;
+import org.apache.toy.common.ToyUtils;
 
 import java.sql.Statement;
 import java.util.Arrays;
@@ -53,9 +55,17 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
   private final Parameter<Integer> time_to_live =
       IntParameter.newBuilder("cpt.time_to_live").setDescription("time to live for value")
                   .addConstraint(v -> v > 0).opt();
+  private final Parameter<String[]> others =
+      StringArrayParameter.newBuilder("cpt.attributes").setDescription("other attributes: k1=v1,k2=v2,...").opt();
 
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(sql);
+    requisites.add(owners);
+    requisites.add(bucket_size);
+    requisites.add(compression);
+    requisites.add(bloomfilter);
+    requisites.add(time_to_live);
+    requisites.add(others);
   }
 
   @Override protected int haveFun() throws Exception {
@@ -79,6 +89,10 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
            builder.append(" ").append(BLOOMFILTER).append("=").append(bloomfilter.value());
     if (!time_to_live.empty())
            builder.append(" ").append(TTL).append("=").append(time_to_live.value());
+    for (String attribute : others.value()) {
+      if (attribute.split("=").length != 2) continue;
+           builder.append(" ").append(attribute);
+    }
     return builder.toString();
   }
 
