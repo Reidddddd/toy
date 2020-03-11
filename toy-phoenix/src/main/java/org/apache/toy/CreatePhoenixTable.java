@@ -59,11 +59,27 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
   }
 
   @Override protected int haveFun() throws Exception {
-    System.out.println("Executing sql: ");
-    System.out.println(sql.value());
+    System.out.println("Executing sql:");
+    String create_statement = decorateSQL(sql.value());
+    System.out.println(create_statement);
     Statement statement = connection.createStatement();
-    statement.execute(sql.value());
+    statement.execute(create_statement);
     return RETURN_CODE.SUCCESS.code();
+  }
+
+  private String decorateSQL(String sql) {
+    StringBuilder
+           builder = new StringBuilder(sql);
+           builder.append(" ").append(TABLE_OWNERS).append("=").append(owners.value());
+    if (!bucket_size.empty())
+           builder.append(" ").append(SALT_BUCKETS).append("=").append(bucket_size.value());
+    if (!compression.empty())
+           builder.append(" ").append(COMPRESSION).append("=").append(compression.value());
+    if (!bloomfilter.empty())
+           builder.append(" ").append(BLOOMFILTER).append("=").append(bloomfilter.value());
+    if (!time_to_live.empty())
+           builder.append(" ").append(TTL).append("=").append(time_to_live.value());
+    return builder.toString();
   }
 
 }
