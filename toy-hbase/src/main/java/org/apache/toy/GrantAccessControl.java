@@ -109,18 +109,13 @@ public class GrantAccessControl extends AbstractHBaseToy {
   @Override protected int haveFun() throws Exception {
     if (!AccessControlClient.isAccessControllerRunning(connection)) return RETURN_CODE.FAILURE.code();
 
-    switch (gv_scope) {
-      case     TABLE: {
-      }
-      case NAMESPACE:
-    }
-
     switch (map_relation) {
       case ONE2MULTI: {
         String user = users.value()[0];
         switch (gv_scope) {
           case TABLE: {
             List<TableName> targetTables = grepTables();
+            System.out.println("Target tables are " +  targetTables.toString());
             IntStream.range(0, targetTables.size())
                      .forEach(i -> performTablePermission(action, targetTables.get(i), user, extractPermissionActions(action == G_V.G ? permissions.value()[i] : "RWXCA")));
           } break;
