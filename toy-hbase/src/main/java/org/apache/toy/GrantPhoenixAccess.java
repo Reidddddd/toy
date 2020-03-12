@@ -31,7 +31,7 @@ public class GrantPhoenixAccess extends GrantAccessControl {
       StringArrayParameter.newBuilder("gpa.users").setDescription("users who want to access phoenix").setRequired().opt();
 
   @Override protected void requisite(List<Parameter> requisites) {
-    requisites.add(users);
+    requisites.add(p_users);
     requisites.add(gv);
   }
 
