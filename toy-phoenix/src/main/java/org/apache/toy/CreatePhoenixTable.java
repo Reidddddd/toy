@@ -16,11 +16,7 @@
 
 package org.apache.toy;
 
-import org.apache.toy.common.IntParameter;
-import org.apache.toy.common.Parameter;
-import org.apache.toy.common.StringArrayParameter;
-import org.apache.toy.common.StringParameter;
-import org.apache.toy.common.ToyUtils;
+import org.apache.toy.common.*;
 
 import java.sql.Statement;
 import java.util.Arrays;
@@ -82,6 +78,8 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
     StringBuilder
            builder = new StringBuilder(sql);
            builder.append(" ").append(TABLE_OWNERS).append("='").append(owners.value()).append("'");
+           builder.append(" ").append(UPDATE_CACHE_FREQUENCY).append("='").append("NEVER").append(",");
+           builder.append(" ").append(BLOCKSIZE).append("='").append(Constants.ONE_MB).append(",");
     if (!bucket_size.empty())
            builder.append(", ").append(SALT_BUCKETS).append("=").append(bucket_size.value());
     if (!compression.empty())
