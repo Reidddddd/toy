@@ -194,7 +194,6 @@ public class GrantAccessControl extends AbstractHBaseToy {
   private List<TableName> grepTables() throws IOException  {
     List<TableName> tablenames = new ArrayList<>();
     for (String table_or_pattern : tables.value()) {
-      System.out.println(table_or_pattern);
       if (table_or_pattern.startsWith("#")) {
         tablenames.addAll(Arrays.asList(admin.listTableNames(Pattern.compile(table_or_pattern.substring(1)))));
       } else {
