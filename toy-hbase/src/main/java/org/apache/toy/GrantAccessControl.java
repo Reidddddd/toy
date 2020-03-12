@@ -37,19 +37,19 @@ import java.util.stream.IntStream;
 @SuppressWarnings("rawtypes")
 public class GrantAccessControl extends AbstractHBaseToy {
 
-  private final Parameter<Enum> g_v =
+  protected final Parameter<Enum> g_v =
       EnumParameter.newBuilder("gac.grant_revoke", G_V.G, G_V.class).setDescription("grant_or_revoke").setRequired().opt();
   private final Parameter<Enum> scope =
       EnumParameter.newBuilder("gac.scope", SCOPE.TABLE, SCOPE.class).setDescription("permissions scope").setRequired().opt();
-  private final Parameter<Enum> relation =
+  protected final Parameter<Enum> relation =
       EnumParameter.newBuilder("gac.relation", RELATION.MULTI2ONE, SCOPE.class).setDescription("pending").setRequired().opt();
-  private final Parameter<String[]> tables =
+  protected final Parameter<String[]> tables =
       StringArrayParameter.newBuilder("gac.target_tables").setDescription("tables or pattern which should be started with #").opt();
-  private final Parameter<String[]> namespaces =
+  protected final Parameter<String[]> namespaces =
       StringArrayParameter.newBuilder("gac.target_namespaces").setDescription("namespaces to be granted").opt();
-  private final Parameter<String[]> users =
+  protected final Parameter<String[]> users =
       StringArrayParameter.newBuilder("gac.users").setDescription("users to be granted acl").setRequired().opt();
-  private final Parameter<String[]> permissions =
+  protected final Parameter<String[]> permissions =
       StringArrayParameter.newBuilder("gac.permissions").setDescription("acl permissions").opt();
 
   enum G_V {
@@ -61,7 +61,7 @@ public class GrantAccessControl extends AbstractHBaseToy {
   }
 
   enum RELATION {
-    ONE2MULTI, MULTI2ONE
+    ONE2MULTI, MULTI2ONE, MULTI2MULTI
   }
 
   private G_V action;
@@ -79,22 +79,21 @@ public class GrantAccessControl extends AbstractHBaseToy {
     requisites.add(permissions);
   }
 
-  @Override protected void preCheck(ToyConfiguration configuration, List<Parameter> requisites) {
-    super.preCheck(configuration, requisites);
-
-    map_relation = (RELATION) relation.value();
-    action       = (G_V) g_v.value();
-    gv_scope     = (SCOPE) scope.value();
+  @Override protected void inCheck() {
+    map_relation    = (RELATION) relation.value();
+    action          = (G_V) g_v.value();
+    gv_scope        = (SCOPE) scope.value();
     switch (map_relation) {
-      case ONE2MULTI: {
+      case ONE2MULTI:
             ToyUtils.assertLengthValid(users.value(), 1);
+      case MULTI2MULTI: {
         if (action == G_V.G && gv_scope == SCOPE.TABLE)
             ToyUtils.assertLengthValid(tables.value(), permissions.value().length);
         if (action == G_V.G && gv_scope == SCOPE.NAMESPACE)
             ToyUtils.assertLengthValid(namespaces.value(), permissions.value().length);
       }        break;
       case MULTI2ONE: {
-            ToyUtils.assertLengthValid(permissions.value(), 1);
+        ToyUtils.assertLengthValid(permissions.value(), 1);
       }        break;
              default:
                break;
@@ -110,6 +109,28 @@ public class GrantAccessControl extends AbstractHBaseToy {
     if (!AccessControlClient.isAccessControllerRunning(connection)) return RETURN_CODE.FAILURE.code();
 
     switch (map_relation) {
+      case MULTI2MULTI: {
+        switch (gv_scope) {
+          case TABLE: {
+            List<TableName> targetTables = grepTables();
+            System.out.println("Target tables are " +  targetTables.toString());
+            IntStream.range(0, users.value().length).forEach(i ->
+                IntStream.range(0, targetTables.size()).forEach(j ->
+                    performTablePermission(action, targetTables.get(j), users.value()[i], extractPermissionActions(action == G_V.G ? permissions.value()[j] : "RWXCA"))
+                )
+            );
+          } break;
+          case NAMESPACE: {
+            IntStream.range(0, users.value().length).forEach(i ->
+                IntStream.range(0, namespaces.value().length).forEach(j ->
+                    performNamespacePermissions(action, namespaces.value()[j], users.value()[i], extractPermissionActions(action == G_V.G ? permissions.value()[j] : "RWXCA"))
+                )
+            );
+          } break;
+          default:
+            break;
+        }
+      } break;
       case ONE2MULTI: {
         String user = users.value()[0];
         switch (gv_scope) {
@@ -130,14 +151,19 @@ public class GrantAccessControl extends AbstractHBaseToy {
         switch (gv_scope) {
           case TABLE: {
             List<TableName> targetTables = grepTables();
+            System.out.println("Target tables are " +  targetTables.toString());
             IntStream.range(0, users_name.length).forEach(i ->
                 IntStream.range(0, targetTables.size()).forEach(j ->
-                    performTablePermission(action, targetTables.get(j), users_name[i], extractPermissionActions(action == G_V.G ? permissions.value()[0] : "RWXCA"))));
+                    performTablePermission(action, targetTables.get(j), users_name[i], extractPermissionActions(action == G_V.G ? permissions.value()[0] : "RWXCA"))
+                )
+            );
           } break;
           case NAMESPACE: {
             IntStream.range(0, users_name.length).forEach(i ->
                 IntStream.range(0, namespaces.value().length).forEach(j ->
-                    performNamespacePermissions(action, namespaces.value()[j], users_name[i], extractPermissionActions(action == G_V.G ? permissions.value()[0] : "RWXCA"))));
+                    performNamespacePermissions(action, namespaces.value()[j], users_name[i], extractPermissionActions(action == G_V.G ? permissions.value()[0] : "RWXCA"))
+                )
+            );
           } break;
           default:
             break;
@@ -170,9 +196,7 @@ public class GrantAccessControl extends AbstractHBaseToy {
     for (String table_or_pattern : tables.value()) {
       System.out.println(table_or_pattern);
       if (table_or_pattern.startsWith("#")) {
-        String sb = table_or_pattern.substring(1);
-        Pattern p = Pattern.compile(sb);
-        tablenames.addAll(Arrays.asList(admin.listTableNames(p)));
+        tablenames.addAll(Arrays.asList(admin.listTableNames(Pattern.compile(table_or_pattern.substring(1)))));
       } else {
         tablenames.add(TableName.valueOf(table_or_pattern));
       }

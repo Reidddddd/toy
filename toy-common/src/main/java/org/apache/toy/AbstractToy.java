@@ -46,6 +46,7 @@ public abstract class AbstractToy implements Toy {
   public final int play(String dir_of_conf_file) throws Exception {
     ToyConfiguration toy_conf = ToyConfiguration.create(dir_of_conf_file);
     preCheck(toy_conf, parameters);
+    inCheck();
     buildToy(toy_conf);
     try {
       return haveFun();
@@ -67,7 +68,7 @@ public abstract class AbstractToy implements Toy {
    * @param requisites requisites to be checked
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
-  protected void preCheck(ToyConfiguration configuration, List<Parameter> requisites) {
+  private void preCheck(ToyConfiguration configuration, List<Parameter> requisites) {
     for (Parameter p : requisites) {
       if (!configuration.containsKey(p.key())) {
         if (p.required()) {
@@ -82,6 +83,13 @@ public abstract class AbstractToy implements Toy {
       else if (p.type().equals(Integer.class))  p.checkAndSet(configuration.getInt(p.key()));
       else if (p.type().equals(Boolean.class))  p.checkAndSet(configuration.getBoolean(p.key(), (Boolean)p.value()));
     }
+  }
+
+  /**
+   * This method is called after preCheck, it may be used in specific toy to do self parameter check.
+   * Every parameter should have valid value.
+   */
+  protected void inCheck() {
   }
 
   /**

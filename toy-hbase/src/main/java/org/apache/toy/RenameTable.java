@@ -45,9 +45,7 @@ public class RenameTable extends AbstractHBaseToy {
     requisites.add(skip_flush);
   }
 
-  @Override protected void preCheck(ToyConfiguration configuration, List<Parameter> requisites) {
-    super.preCheck(configuration, requisites);
-
+  @Override protected void inCheck() {
     if (old_table_names.value().length != new_table_names.value().length) {
       throw new RuntimeException("table mapping is not one to one");
     }
