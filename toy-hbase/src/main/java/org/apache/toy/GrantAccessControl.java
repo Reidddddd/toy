@@ -50,7 +50,7 @@ public class GrantAccessControl extends AbstractHBaseToy {
   private final Parameter<String[]> users =
       StringArrayParameter.newBuilder("gac.users").setDescription("users to be granted acl").setRequired().opt();
   private final Parameter<String[]> permissions =
-      StringArrayParameter.newBuilder("gac.permissions").setDescription("acl permissions").setRequired().opt();
+      StringArrayParameter.newBuilder("gac.permissions").setDescription("acl permissions").opt();
 
   enum G_V {
     G, V
@@ -67,6 +67,7 @@ public class GrantAccessControl extends AbstractHBaseToy {
   private G_V action;
   private RELATION map_relation;
   private Admin admin;
+  private SCOPE gv_scope;
 
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(g_v);
@@ -82,12 +83,15 @@ public class GrantAccessControl extends AbstractHBaseToy {
     super.preCheck(configuration, requisites);
 
     map_relation = (RELATION) relation.value();
-    action = (G_V) g_v.value();
+    action       = (G_V) g_v.value();
+    gv_scope     = (SCOPE) scope.value();
     switch (map_relation) {
       case ONE2MULTI: {
             ToyUtils.assertLengthValid(users.value(), 1);
-        if (action == G_V.G)
+        if (action == G_V.G && gv_scope == SCOPE.TABLE)
             ToyUtils.assertLengthValid(tables.value(), permissions.value().length);
+        if (action == G_V.G && gv_scope == SCOPE.NAMESPACE)
+            ToyUtils.assertLengthValid(namespaces.value(), permissions.value().length);
       }        break;
       case MULTI2ONE: {
             ToyUtils.assertLengthValid(permissions.value(), 1);
@@ -105,7 +109,6 @@ public class GrantAccessControl extends AbstractHBaseToy {
   @Override protected int haveFun() throws Exception {
     if (!AccessControlClient.isAccessControllerRunning(connection)) return RETURN_CODE.FAILURE.code();
 
-    SCOPE gv_scope = (SCOPE)scope.value();
     switch (gv_scope) {
       case     TABLE: {
       }
@@ -118,11 +121,11 @@ public class GrantAccessControl extends AbstractHBaseToy {
         switch (gv_scope) {
           case TABLE: {
             List<TableName> targetTables = grepTables();
-            IntStream.range(0, permissions.value().length)
+            IntStream.range(0, targetTables.size())
                      .forEach(i -> performTablePermission(action, targetTables.get(i), user, extractPermissionActions(action == G_V.G ? permissions.value()[i] : "RWXCA")));
           } break;
           case NAMESPACE: {
-            IntStream.range(0, permissions.value().length)
+            IntStream.range(0, namespaces.value().length)
                      .forEach(i -> performNamespacePermissions(action, namespaces.value()[i], user, extractPermissionActions(action == G_V.G ? permissions.value()[i] : "RWXCA")));
           } break;
         }
