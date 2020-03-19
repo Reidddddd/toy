@@ -16,6 +16,7 @@
 
 package org.apache.toy;
 
+import org.apache.toy.common.BoolParameter;
 import org.apache.toy.common.EnumParameter;
 import org.apache.toy.common.Parameter;
 import org.apache.toy.common.StringArrayParameter;
@@ -29,16 +30,18 @@ public class GrantPhoenixAccess extends GrantAccessControl {
       EnumParameter.newBuilder("gpa.grant_revoke", G_V.G, G_V.class).setDescription("grant or revoke permission").setRequired().opt();
   private final Parameter<String[]> p_users =
       StringArrayParameter.newBuilder("gpa.users").setDescription("users who want to access phoenix").setRequired().opt();
+  private final Parameter<Boolean> test_db = BoolParameter.newBuilder("gpa.acquire_test", false).setDescription("if grant permission for creating tables").opt();
 
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(p_users);
     requisites.add(gv);
+    requisites.add(test_db);
   }
 
   @Override protected void inCheck() {
     relation.setValue(RELATION.MULTI2MULTI);
     tables.setValue(new String[] { "SYSTEM:CATALOG", "SYSTEM:STATS" });
-    permissions.setValue(new String[] { "RX", "R" });
+    permissions.setValue(test_db.value() ? new String[] { "RXW", "R" } : new String[] { "RX", "R" });
     users.setValue(p_users.value());
     g_v.setValue(gv.value());
 

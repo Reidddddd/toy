@@ -185,7 +185,7 @@ public class GrantAccessControl extends AbstractHBaseToy {
         case 'C': actions.add(Permission.Action.CREATE); break;
         case 'X': actions.add(Permission.Action.EXEC);   break;
         case 'A': actions.add(Permission.Action.ADMIN);  break;
-        default:                                         break;
+         default:                                        break;
       }
     }
     return actions.toArray(new Permission.Action[0]);
