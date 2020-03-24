@@ -82,6 +82,7 @@ public abstract class AbstractToy implements Toy {
       else if (p.type().isEnum())               p.checkAndSet(configuration.getEnum(p.key(), (Enum)p.value()));
       else if (p.type().equals(Integer.class))  p.checkAndSet(configuration.getInt(p.key()));
       else if (p.type().equals(Boolean.class))  p.checkAndSet(configuration.getBoolean(p.key(), (Boolean)p.value()));
+      else if (p.type().equals(Short.class))    p.checkAndSet(configuration.getShort(p.key()));
     }
   }
 
