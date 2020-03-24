@@ -16,10 +16,10 @@
 package org.apache.toy;
 
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
 import org.apache.toy.common.IntParameter;
-import org.apache.toy.common.LongParameter;
 import org.apache.toy.common.Parameter;
 import org.apache.toy.common.ShortParameter;
 import org.apache.toy.common.StringArrayParameter;
@@ -62,19 +62,17 @@ public class TopicCreation extends AbstractKafkaToy {
   @Override
   protected void buildToy(ToyConfiguration configuration) throws Exception {
     if (retention_ms.empty() || retention_bytes.empty()) {
-      throw new IllegalArgumentException(retention_ms.key() + " " + retention_bytes +
+      throw new IllegalArgumentException(retention_ms.key() + " or " + retention_bytes.key() +
           " at least one of these two must be configed.");
+    }
+    configs.put(TopicConfig.RETENTION_MS_CONFIG, retention_ms.value());
+    if (!retention_bytes.empty()) {
+      configs.put(TopicConfig.RETENTION_BYTES_CONFIG, retention_bytes.value());
     }
 
     ac = AdminClient.create(configuration.getProperties());
     topic_partitions = partitions.value();
     partition_replications = replications.value();
-    if (!retention_ms.empty()) {
-      configs.put(TopicConfig.RETENTION_MS_CONFIG, retention_ms.value());
-    }
-    if (!retention_bytes.empty()) {
-      configs.put(TopicConfig.RETENTION_BYTES_CONFIG, retention_bytes.value());
-    }
   }
 
   @Override
@@ -84,7 +82,8 @@ public class TopicCreation extends AbstractKafkaToy {
     for (String topic : topics.value()) {
       new_topics.add(new NewTopic(topic, topic_partitions, partition_replications).configs(configs));
     }
-    ac.createTopics(new_topics);
+    CreateTopicsResult ctr = ac.createTopics(new_topics);
+    ctr.all().get();
     return RETURN_CODE.SUCCESS.code();
   }
 
