@@ -83,6 +83,9 @@ public abstract class AbstractToy implements Toy {
       else if (p.type().equals(Integer.class))  p.checkAndSet(configuration.getInt(p.key()));
       else if (p.type().equals(Boolean.class))  p.checkAndSet(configuration.getBoolean(p.key(), (Boolean)p.value()));
       else if (p.type().equals(Short.class))    p.checkAndSet(configuration.getShort(p.key()));
+      else if (p.type().equals(Long.class))     p.checkAndSet(configuration.getLong(p.key()));
+      else if (p.type().equals(Double.class))   p.checkAndSet(configuration.getDouble(p.key()));
+      else if (p.type().equals(Float.class))    p.checkAndSet(configuration.getFloat(p.key()));
     }
   }
 

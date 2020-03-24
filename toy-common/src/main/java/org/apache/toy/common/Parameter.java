@@ -120,6 +120,7 @@ public final class Parameter<T> {
     else if (type().equals(Long.class)     && (Long)value == Constants.UNSET_LONG)     return;
     else if (type().equals(Float.class)    && (Float)value == Constants.UNSET_FLOAT)   return;
     else if (type().equals(Double.class)   && (Double)value == Constants.UNSET_DOUBLE) return;
+    else if (type().equals(Short.class)    && (Short)value == Constants.UNSET_SHORT)   return;
     // Ingore enum type and boolean type
 
     for (ConstraintFunction<T> constraint : constraints) {
