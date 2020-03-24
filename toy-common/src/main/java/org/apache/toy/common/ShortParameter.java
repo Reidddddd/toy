@@ -16,26 +16,25 @@
 
 package org.apache.toy.common;
 
-public final class Constants {
+public final class ShortParameter {
 
-  public static final String UNSET_STRING = "";
+  /**
+   * A builder for creating int parameter.
+   * @param key key name for this parameter
+   * @return a int parameter builder
+   */
+  public static ShortBuilder newBuilder(String key) {
+    return new ShortBuilder(key);
+  }
 
-  public static final String[] UNSET_STRINGS = new String[0];
+  private ShortParameter() {}
 
-  public static final int UNSET_INT = -99;
+  public static class ShortBuilder extends AbstractTypeBuilderWithValue<Short> {
 
-  public static final long UNSET_LONG = -999L;
+    private ShortBuilder(String key) {
+      builder.setKey(key).setType(Short.class);
+    }
 
-  public static final short UNSET_SHORT = -9;
-
-  public static final double UNSET_DOUBLE = -9.9D;
-
-  public static final float UNSET_FLOAT = -9.9F;
-
-  public static final boolean UNSET_TRUE = true;
-
-  public static final boolean UNSET_FALSE = false;
-
-  public static final long ONE_MB = 1048576;
+  }
 
 }

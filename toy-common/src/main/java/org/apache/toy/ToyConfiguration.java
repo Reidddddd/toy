@@ -65,6 +65,11 @@ public class ToyConfiguration {
     return long_value.isEmpty() ? Constants.UNSET_LONG: Long.parseLong(long_value);
   }
 
+  public long getShort(String key) {
+    String short_value = get(key);
+    return short_value.isEmpty() ? Constants.UNSET_SHORT: Short.parseShort(short_value);
+  }
+
   public double getDouble(String key) {
     String double_value = get(key);
     return double_value.isEmpty() ? Constants.UNSET_DOUBLE : Double.parseDouble(double_value);
