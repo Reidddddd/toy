@@ -42,15 +42,27 @@ public class JanusgraphSplit extends AbstractHBaseToy {
     regions.sort((o1, o2) -> Bytes.compareTo(o1.getRegionInfo().getStartKey(), o2.getRegionInfo().getStartKey()));
     int i = 0;
     for (HRegionLocation region : regions) {
+      if (!verifyKeyRange(region.getRegionInfo().getStartKey(), region.getRegionInfo().getEndKey(), split_keys[i])) {
+        i++;
+        continue;
+      }
       System.out.println(
           Bytes.toHex(region.getRegionInfo().getStartKey()) + "|" + Bytes.toHex(region.getRegionInfo().getEndKey()) + "|"
-              + Bytes.toHex(split_keys[i]) + "|"
-              + Bytes.compareTo(region.getRegionInfo().getStartKey(), split_keys[i]) + "|"
-              + Bytes.compareTo(split_keys[i], region.getRegionInfo().getEndKey())
+              + Bytes.toHex(split_keys[i])
       );
       i++;
     }
     return 0;
+  }
+
+  private boolean verifyKeyRange(byte[] start_key, byte[] end_key, byte[] split_key) {
+    if (start_key.length == 0) {
+      return Bytes.compareTo(split_key, end_key) < 0;
+    }
+    if (end_key.length == 0) {
+      return Bytes.compareTo(start_key, split_key) < 0;
+    }
+    return Bytes.compareTo(start_key, split_key) < 0 && Bytes.compareTo(split_key, end_key) < 0;
   }
 
   private byte[][] getSplitKeys(int region_count) {
