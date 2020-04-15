@@ -54,6 +54,9 @@ public class JanusgraphSplit extends AbstractHBaseToy {
     for (int i = 0; i < regions.size(); i++) {
       HRegionLocation region = regions.get(i);
       if (!verifyKeyRange(region.getRegionInfo().getStartKey(), region.getRegionInfo().getEndKey(), split_keys[i])) {
+        System.out.println(Bytes.toHex(split_keys[i]) + " is not in range [" +
+            Bytes.toHex(region.getRegionInfo().getStartKey()) + ", " +
+            Bytes.toHex(region.getRegionInfo().getEndKey()));
         continue;
       }
       admin.splitRegion(region.getRegionInfo().getRegionName(), split_keys[i]);
