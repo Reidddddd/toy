@@ -59,7 +59,9 @@ public class JanusgraphSplit extends AbstractHBaseToy {
             Bytes.toHex(region.getRegionInfo().getEndKey()));
         continue;
       }
-      admin.splitRegion(region.getRegionInfo().getRegionName(), split_keys[i]);
+      System.out.println("Splitting region " + region.getRegionInfo().getRegionNameAsString());
+      System.out.println("Splitting region " + Bytes.toStringBinary(region.getRegionInfo().getRegionName()));
+      admin.splitRegion(Bytes.toBytes(region.getRegionInfo().getRegionId()), split_keys[i]);
     }
     return 0;
   }
