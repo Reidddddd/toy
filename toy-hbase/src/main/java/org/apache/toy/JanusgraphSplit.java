@@ -1,6 +1,8 @@
 package org.apache.toy;
 
+import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HRegionLocation;
+import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.RegionLocator;
@@ -19,7 +21,6 @@ public class JanusgraphSplit extends AbstractHBaseToy {
   private final Parameter<String> table_name =
       StringParameter.newBuilder("js.table_name").setRequired().setDescription("table to be splited").opt();
 
-
   private Admin admin;
 
   @Override
@@ -36,23 +37,28 @@ public class JanusgraphSplit extends AbstractHBaseToy {
 
   @Override
   protected int haveFun() throws Exception {
+    TableName test = TableName.valueOf("TEST:test_janusgraph");
+    admin.createTable(
+        new HTableDescriptor(test).addFamily(new HColumnDescriptor("f")),
+        getStartKey(split_num.value()),
+        getEndKey(split_num.value()),
+        split_num.value()
+    );
+    return 0;
+    /*
     byte[][] split_keys = getSplitKeys(split_num.value());
     RegionLocator region_locator = connection.getRegionLocator(TableName.valueOf(table_name.value()));
     List<HRegionLocation> regions = region_locator.getAllRegionLocations();
     regions.sort((o1, o2) -> Bytes.compareTo(o1.getRegionInfo().getStartKey(), o2.getRegionInfo().getStartKey()));
-    int i = 0;
-    for (HRegionLocation region : regions) {
+    for (int i = 0; i < regions.size(); i++) {
+      HRegionLocation region = regions.get(i);
       if (!verifyKeyRange(region.getRegionInfo().getStartKey(), region.getRegionInfo().getEndKey(), split_keys[i])) {
-        i++;
         continue;
       }
-      System.out.println(
-          Bytes.toHex(region.getRegionInfo().getStartKey()) + "|" + Bytes.toHex(region.getRegionInfo().getEndKey()) + "|"
-              + Bytes.toHex(split_keys[i])
-      );
-      i++;
+      admin.splitRegion(region.getRegionInfo().getRegionName(), split_keys[i]);
     }
     return 0;
+     */
   }
 
   private boolean verifyKeyRange(byte[] start_key, byte[] end_key, byte[] split_key) {
@@ -90,25 +96,5 @@ public class JanusgraphSplit extends AbstractHBaseToy {
   protected void destroyToy() throws Exception {
     super.destroyToy();
   }
-
-  public static void main(String[] args) {
-    int regionCount = 32;
-    ByteBuffer startKey = ByteBuffer.allocate(4);
-    ByteBuffer endKey = ByteBuffer.allocate(4);
-
-    startKey.putInt((int)(((1L << 32) - 1L) / regionCount)).flip();
-    endKey.putInt((int)(((1L << 32) - 1L) / regionCount * (regionCount - 1))).flip();
-    byte[] start = startKey.array();
-    byte[] end= endKey.array();
-    System.out.println(start.length);
-    System.out.println(end.length);
-    byte[][] splits = Bytes.split(start, end, regionCount - 3);
-    System.out.println(splits.length);
-    for (int i = 0; i < splits.length; i++) {
-      System.out.println(Bytes.toHex(splits[i]));
-      i++;
-    }
-  }
-
 
 }
