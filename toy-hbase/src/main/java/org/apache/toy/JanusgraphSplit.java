@@ -37,16 +37,20 @@ public class JanusgraphSplit extends AbstractHBaseToy {
 
   @Override
   protected int haveFun() throws Exception {
-     /*
+
     TableName test = TableName.valueOf("TEST:test_janusgraph");
-    admin.createTable(
-        new HTableDescriptor(test).addFamily(new HColumnDescriptor("f")),
-        getStartKey(split_num.value()),
-        getEndKey(split_num.value()),
-        split_num.value()
-    );
-    return 0;
-    */
+    if (admin.tableExists(test)) {
+      admin.disableTable(test);
+      admin.deleteTable(test);
+    }
+    if (!admin.tableExists(test)) {
+      admin.createTable(
+          new HTableDescriptor(test).addFamily(new HColumnDescriptor("f")),
+          getStartKey(16),
+          getEndKey(16),
+          16
+      );
+    }
     byte[][] split_keys = getSplitKeys(split_num.value());
     RegionLocator region_locator = connection.getRegionLocator(TableName.valueOf(table_name.value()));
     List<HRegionLocation> regions = region_locator.getAllRegionLocations();
