@@ -1,8 +1,22 @@
+/*
+ * Copyright (c) 2019 R.C
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.toy;
 
-import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HRegionLocation;
-import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.RegionLocator;
@@ -14,10 +28,12 @@ import org.apache.toy.common.StringParameter;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class JanusgraphSplit extends AbstractHBaseToy {
+public class JanusgraphTableExpansion extends AbstractHBaseToy {
 
-  private final Parameter<Integer> split_num =
-      IntParameter.newBuilder("js.split_num").setRequired().setDescription("expect split numbers").opt();
+  private final Parameter<Integer> old_split_num =
+      IntParameter.newBuilder("js.old_split_num").setRequired().setDescription("old split numbers").opt();
+  private final Parameter<Integer> new_split_num =
+      IntParameter.newBuilder("js.new_split_num").setRequired().setDescription("new split numbers").opt();
   private final Parameter<String> table_name =
       StringParameter.newBuilder("js.table_name").setRequired().setDescription("table to be splited").opt();
 
@@ -25,33 +41,23 @@ public class JanusgraphSplit extends AbstractHBaseToy {
 
   @Override
   protected void requisite(List<Parameter> requisites) {
-    requisites.add(split_num);
+    requisites.add(old_split_num);
+    requisites.add(new_split_num);
     requisites.add(table_name);
   }
 
   @Override
   protected void buildToy(ToyConfiguration configuration) throws Exception {
     super.buildToy(configuration);
-    admin = connection.getAdmin();
+
+    if (new_split_num.value() / old_split_num.value() != 2) {
+      throw new IllegalArgumentException(new_split_num.key() + " should be twice of " + old_split_num.key());
+    }
   }
 
   @Override
   protected int haveFun() throws Exception {
-
-    TableName test = TableName.valueOf("TEST:test_janusgraph");
-    if (admin.tableExists(test)) {
-      admin.disableTable(test);
-      admin.deleteTable(test);
-    }
-    if (!admin.tableExists(test)) {
-      admin.createTable(
-          new HTableDescriptor(test).addFamily(new HColumnDescriptor("f")),
-          getStartKey(16),
-          getEndKey(16),
-          16
-      );
-    }
-    byte[][] split_keys = getSplitKeys(split_num.value());
+    byte[][] split_keys = getSplitKeys(new_split_num.value());
     RegionLocator region_locator = connection.getRegionLocator(TableName.valueOf(table_name.value()));
     List<HRegionLocation> regions = region_locator.getAllRegionLocations();
     regions.sort((o1, o2) -> Bytes.compareTo(o1.getRegionInfo().getStartKey(), o2.getRegionInfo().getStartKey()));
@@ -103,6 +109,7 @@ public class JanusgraphSplit extends AbstractHBaseToy {
   @Override
   protected void destroyToy() throws Exception {
     super.destroyToy();
+    admin.close();;
   }
 
 }
