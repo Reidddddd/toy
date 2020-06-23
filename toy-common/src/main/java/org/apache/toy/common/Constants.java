@@ -36,6 +36,8 @@ public final class Constants {
 
   public static final boolean UNSET_FALSE = false;
 
-  public static final long ONE_MB = 1048576;
+  public static final long ONE_MB = ONE_KB * 1024;
+
+  public static final int ONE_KB = 1024;
 
 }

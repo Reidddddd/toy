@@ -129,7 +129,7 @@ public class CreateTable extends AbstractHBaseToy {
 
     HColumnDescriptor
            descriptor = new HColumnDescriptor(family);
-           descriptor.setBlocksize((int)Constants.ONE_MB); // 1 MB
+           descriptor.setBlocksize(Constants.ONE_KB * 32); // 32KB
            descriptor.setCompressionType((Compression.Algorithm)compression.value());
            descriptor.setCacheDataOnWrite(cache_data_on_write.value());
            descriptor.setCacheDataInL1(cache_data_in_L1.value());
