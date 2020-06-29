@@ -77,7 +77,7 @@ public class PutWorker extends AbstractHBaseToy {
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       synchronized (mutex) {
-        notify();
+        mutex.notify();
       }
     }));
   }
@@ -85,7 +85,7 @@ public class PutWorker extends AbstractHBaseToy {
   @Override
   protected int haveFun() throws Exception {
     synchronized (mutex) {
-      wait();
+      mutex.wait();
     }
     return 0;
   }
