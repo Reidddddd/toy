@@ -37,14 +37,14 @@ import java.util.concurrent.Executors;
 public class PutWorker extends AbstractHBaseToy {
 
   private final Parameter<Integer> num_connections =
-      IntParameter.newBuilder("num_connections").setRequired()
+      IntParameter.newBuilder("pw.num_connections").setRequired()
                   .setDescription("number of connections used for put")
                   .addConstraint(v -> v > 0).opt();
   private final Parameter<String> table_name =
-      StringParameter.newBuilder("target_table").setRequired()
+      StringParameter.newBuilder("pw.target_table").setRequired()
                      .setDescription("table that data will be put in").opt();
   private final Parameter<String> family =
-      StringParameter.newBuilder("target_family")
+      StringParameter.newBuilder("pw.target_family")
                      .setDescription("a family that belongs to the target_table, and wanted to be put in data")
                      .setRequired().opt();
 
