@@ -79,7 +79,7 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
            builder = new StringBuilder(sql);
            builder.append(" ").append(TABLE_OWNERS).append("='").append(owners.value()).append("'");
            builder.append(", ").append(UPDATE_CACHE_FREQUENCY).append("='").append("NEVER").append("'");
-           builder.append(", ").append(BLOCKSIZE).append("='").append(Constants.ONE_MB).append("'");
+           builder.append(", ").append(BLOCKSIZE).append("='").append(Constants.ONE_KB * 32).append("'");
     if (!bucket_size.empty())
            builder.append(", ").append(SALT_BUCKETS).append("=").append(bucket_size.value());
     if (!compression.empty())

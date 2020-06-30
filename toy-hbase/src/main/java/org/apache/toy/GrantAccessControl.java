@@ -61,7 +61,9 @@ public class GrantAccessControl extends AbstractHBaseToy {
   }
 
   enum RELATION {
-    ONE2MULTI, MULTI2ONE, MULTI2MULTI
+    ONE2MULTI,  /** one user, multi permissions to multi tables **/
+    MULTI2ONE,  /** multi users to multi tables, with the same permission **/
+    MULTI2MULTI /** multi users to multi tables, with multi persmissions, but permission is bound to table **/
   }
 
   private G_V action;
