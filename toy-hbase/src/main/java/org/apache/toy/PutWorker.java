@@ -21,11 +21,14 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.BufferedMutator;
+import org.apache.hadoop.hbase.client.BufferedMutatorParams;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.toy.common.Constants;
 import org.apache.toy.common.IntParameter;
+import org.apache.toy.common.LongParameter;
 import org.apache.toy.common.Parameter;
 import org.apache.toy.common.StringParameter;
 
@@ -47,6 +50,9 @@ public class PutWorker extends AbstractHBaseToy {
       StringParameter.newBuilder("pw.target_family")
                      .setDescription("a family that belongs to the target_table, and wanted to be put in data")
                      .setRequired().opt();
+  private final Parameter<Long> buffer_size =
+      LongParameter.newBuilder("pw.buffer_size").setDefaultValue(Constants.ONE_MB)
+                   .setDescription("buffer size for batch put").opt();
 
   private Admin admin;
   private ExecutorService service;
@@ -59,6 +65,7 @@ public class PutWorker extends AbstractHBaseToy {
     requisites.add(num_connections);
     requisites.add(table_name);
     requisites.add(family);
+    requisites.add(buffer_size);
   }
 
   @Override
@@ -86,6 +93,7 @@ public class PutWorker extends AbstractHBaseToy {
   protected int haveFun() throws Exception {
     synchronized (mutex) {
       mutex.wait();
+      running = false;
     }
     return 0;
   }
@@ -112,6 +120,7 @@ public class PutWorker extends AbstractHBaseToy {
 
     Worker(ToyConfiguration conf) throws IOException {
       connection = createConnection(conf);
+      System.out.println("Connection created " + connection);
     }
 
     Connection createConnection(ToyConfiguration conf) throws IOException {
@@ -122,9 +131,11 @@ public class PutWorker extends AbstractHBaseToy {
     @Override
     public void run() {
       BufferedMutator mutator = null;
+      BufferedMutatorParams param = new BufferedMutatorParams(table);
+      param.writeBufferSize(buffer_size.value());
       try {
-        mutator = connection.getBufferedMutator(table);
-        while (true) {
+        mutator = connection.getBufferedMutator(param);
+        while (running) {
           Put put = new Put(Bytes.toBytes(generateRandomString(10)));
           put.addColumn(
               Bytes.toBytes(family.value()),
