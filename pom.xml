@@ -5,16 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.rc</groupId>
-    <artifactId>toy</artifactId>
+    <artifactId>aries</artifactId>
     <packaging>pom</packaging>
     <version>0.1</version>
     <modules>
-        <module>toy-hbase</module>
-        <module>toy-common</module>
-        <module>toy-java</module>
-        <module>toy-hdfs</module>
-        <module>toy-phoenix</module>
-        <module>toy-kafka</module>
+        <module>aries-hbase</module>
+        <module>aries-common</module>
+        <module>aries-java</module>
+        <module>aries-hdfs</module>
+        <module>aries-phoenix</module>
+        <module>aries-kafka</module>
     </modules>
 
 
