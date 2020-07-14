@@ -37,7 +37,7 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
   private final String UPDATE_CACHE_FREQUENCY = "UPDATE_CACHE_FREQUENCY";
 
   private final Parameter<String> sql =
-      StringParameter.newBuilder("cpt.create_table_sql").setRequired().setDescription("create table sql").opt();
+      StringParameter.newBuilder("cpt.create_table_sql").setRequired().setDescription("create table sql, it can be patterned with %s").opt();
   private final Parameter<String> owners =
       StringParameter.newBuilder("cpt.table_owners").setRequired().setDescription("owners of table").opt();
   private final Parameter<Integer> bucket_size =
@@ -54,6 +54,9 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
   private final Parameter<String[]> others =
       StringArrayParameter.newBuilder("cpt.attributes")
                           .setDescription("other attributes: k1=v1,k2=v2,..., please '' for string attributes").opt();
+  private final Parameter<String[]> options =
+      StringArrayParameter.newBuilder("cpt.pattern.values")
+                          .setDescription("if cpt.create_table_sql uses pattern, then list the optional values here").opt();
 
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(sql);
@@ -63,6 +66,7 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
     requisites.add(bloomfilter);
     requisites.add(time_to_live);
     requisites.add(others);
+    requisites.add(options);
   }
 
   @Override protected int haveFun() throws Exception {
@@ -70,7 +74,14 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
     String create_statement = decorateSQL(sql.value());
     System.out.println(create_statement);
     Statement statement = connection.createStatement();
-    statement.execute(create_statement);
+    if (options.empty()) {
+      statement.execute(create_statement);
+    } else {
+      for (String option : options.value()) {
+        statement.execute(create_statement.replace("%s", option));
+      }
+    }
+
     return RETURN_CODE.SUCCESS.code();
   }
 
