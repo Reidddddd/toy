@@ -34,10 +34,9 @@ import org.apache.aries.common.IntParameter;
 import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringArrayParameter;
 import org.apache.aries.common.StringParameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A class for creating table.
@@ -45,7 +44,7 @@ import java.util.List;
 @SuppressWarnings("rawtypes")
 public class CreateTable extends AbstractHBaseToy {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CreateTable.class);
+  private static final Logger LOG = Logger.getLogger(CreateTable.class.getName());
 
   private final Parameter<String> table_name =
       StringParameter.newBuilder("ct.table_name").setRequired().setDescription("table name").opt();
@@ -111,7 +110,7 @@ public class CreateTable extends AbstractHBaseToy {
   @Override
   public int haveFun() throws Exception {
     if (admin.tableExists(table)) {
-      LOG.error("Table {} exists, quitting.", table);
+      LOG.info("Table " + table + " exists, quitting.");
       throw new TableExistsException(table);
     }
 
@@ -124,7 +123,7 @@ public class CreateTable extends AbstractHBaseToy {
     try {
       return RETURN_CODE.SUCCESS.code();
     } finally {
-      LOG.info("Table {} is created.", table);
+      LOG.info("Table " + table + " is created.");
     }
   }
 
