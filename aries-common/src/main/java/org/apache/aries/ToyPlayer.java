@@ -16,6 +16,13 @@
 
 package org.apache.aries;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
 /**
  * Usage of this class:
  * java -cp jarA:jarB --toy|-t full.class.name --conf_dir|-cd conf_dir --help|-h
@@ -23,11 +30,22 @@ package org.apache.aries;
  */
 public final class ToyPlayer {
 
+  private static Logger LOG = Logger.getLogger(ToyPlayer.class.getName());
+
   public static void main(String[] args) throws Exception {
     ToyParameters tp = ToyParameters.parse(args);
+    buildLog(tp.getConfDirectory());
+    LOG.info("Building Toy: " + tp.getToyName());
     Toy toy = (Toy) Class.forName(tp.getToyName()).newInstance();
+    LOG.info("Initializing Toy: " + tp.getToyName());
     toy.init();
+    LOG.info("Start to play Toy: " + tp.getToyName());
     System.exit(tp.needHelp() ? toy.howToPlay(System.out) : toy.play(tp.getConfDirectory()));
+  }
+
+  private static void buildLog(String directory) throws IOException {
+    Path log_properties = Paths.get(directory, "logging.properties");
+    LogManager.getLogManager().readConfiguration(new FileInputStream(log_properties.toFile()));
   }
 
 }
