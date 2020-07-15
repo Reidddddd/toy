@@ -117,8 +117,8 @@ echo "Execution classpath: $execute_jar"
 
 if [[ $help == "true" ]]
 then
-  $java_cmd -cp $execute_jar org.apache.aries.ToyPlayer --aries org.apache.aries.$toy_name --help
+  $java_cmd -cp $execute_jar org.apache.aries.ToyPlayer --toy org.apache.aries.$toy_name --help
 else
-  $java_cmd -cp $execute_jar org.apache.aries.ToyPlayer --aries org.apache.aries.$toy_name --conf_dir $conf_dir
+  $java_cmd -cp $execute_jar org.apache.aries.ToyPlayer --toy org.apache.aries.$toy_name --conf_dir $conf_dir
 fi
 
