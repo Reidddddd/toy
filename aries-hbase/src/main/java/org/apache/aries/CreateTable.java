@@ -34,6 +34,8 @@ import org.apache.aries.common.IntParameter;
 import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringArrayParameter;
 import org.apache.aries.common.StringParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -42,6 +44,8 @@ import java.util.List;
  */
 @SuppressWarnings("rawtypes")
 public class CreateTable extends AbstractHBaseToy {
+
+  private static final Logger LOG = LoggerFactory.getLogger(CreateTable.class);
 
   private final Parameter<String> table_name =
       StringParameter.newBuilder("ct.table_name").setRequired().setDescription("table name").opt();
@@ -107,15 +111,21 @@ public class CreateTable extends AbstractHBaseToy {
   @Override
   public int haveFun() throws Exception {
     if (admin.tableExists(table)) {
+      LOG.error("Table {} exists, quitting.", table);
       throw new TableExistsException(table);
     }
 
+    printParameters();
     HTableDescriptor descriptor = buildTableDescriptor();
     for (String f : families.value()) {
       descriptor.addFamily(buildFamilyDescriptor(f, connection.getConfiguration()));
     }
     admin.createTable(descriptor, split.getSplitsKeys());
-    return RETURN_CODE.SUCCESS.code();
+    try {
+      return RETURN_CODE.SUCCESS.code();
+    } finally {
+      LOG.info("Table {} is created.", table);
+    }
   }
 
   private HTableDescriptor buildTableDescriptor() {

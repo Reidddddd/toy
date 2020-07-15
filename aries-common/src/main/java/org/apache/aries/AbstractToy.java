@@ -18,6 +18,8 @@ package org.apache.aries;
 
 import org.apache.aries.common.HelpPrinter;
 import org.apache.aries.common.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ import java.util.List;
  * An abstract toy.
  */
 public abstract class AbstractToy implements Toy {
+
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractToy.class);
 
   @SuppressWarnings("rawtypes")
   private final List<Parameter> parameters = new ArrayList<>();
@@ -52,6 +56,13 @@ public abstract class AbstractToy implements Toy {
       return haveFun();
     } finally {
       destroyToy();
+    }
+  }
+
+  protected final void printParameters() {
+    LOG.info("Parameters for {} are:", this.getClass().getName());
+    for (Parameter parameter : parameters) {
+      LOG.info("{}={}", parameter.key(), parameter.empty() ? parameter.defvalue() : parameter.value());
     }
   }
 
