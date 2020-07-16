@@ -18,42 +18,14 @@ package org.apache.aries;
 
 import org.apache.aries.annotation.Nullable;
 import org.apache.aries.common.Constants;
-import org.apache.aries.common.HelpPrinter;
-import org.apache.aries.common.Parameter;
-import org.apache.aries.common.StringParameter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public final class ToyParameters {
 
-  private static final Parameter<String> help =
-      StringParameter.newBuilder("--help").setDescription("help message of toy").opt();
-  private static final Parameter<String> toy =
-      StringParameter.newBuilder("--toy").setDescription("toy to be run").setRequired().opt();
-  private static final Parameter<String> conf =
-      StringParameter.newBuilder("--conf_dir").setDescription("directory of configuration").opt();
-
-  private static final List<Parameter> parameters = new ArrayList<>();
-
-  static {
-    parameters.add(help);
-    parameters.add(toy);
-    parameters.add(conf);
-  }
-
   private boolean need_help;
   private String toy_name;
   private String conf_dir;
-
-  private ToyParameters(String toy_name, String conf_dir) {
-    this(Constants.UNSET_FALSE, toy_name, conf_dir);
-  }
-
-  private ToyParameters() {
-    this(true, Constants.UNSET_STRING, Constants.UNSET_STRING);
-  }
 
   private ToyParameters(boolean need_help, String toy_name, String conf_dir) {
     this.need_help = need_help;
@@ -73,6 +45,12 @@ public final class ToyParameters {
     return conf_dir;
   }
 
+  private static final String USAGE =
+      "Usage: aries --kind [java|hbase|hdfs|kafka|phoenix]\n" +
+      "             --toy  [name of toy]\n" +
+      "             --conf_dir [configuration's directory]\n" +
+      "             --help (this will print help message of the toy)";
+
   public static ToyParameters parse(@Nullable String[] main_args) {
     Optional<String[]> optional_args = Optional.ofNullable(main_args);
     if (!optional_args.isPresent()) {
@@ -84,24 +62,26 @@ public final class ToyParameters {
     boolean need_help = false;
     String[] args = optional_args.get();
     for (int i = 0; i < args.length; i++) {
-      if (args[i].equals(help.key())) need_help = true;
-
-      if (args[i].equals(toy.key())) {
-        if (++i == args.length) throw new ArrayIndexOutOfBoundsException("Value for " + toy.key() + " is not set.");
-       toy_name = args[i];
-      } else if (args[i].equals(conf.key())) {
-        if (++i == args.length) throw new ArrayIndexOutOfBoundsException("Value for " + conf.key() + " is not set.");
-        conf_dir = args[i];
+           if (args[i].equals("--help")) need_help = true;
+      else if (args[i].equals("--toy")) {
+           if (++i == args.length) {
+             System.out.println(USAGE);
+             System.exit(1);
+           }
+           toy_name = "org.apache.aries." + args[i];
+      }
+      else if (args[i].equals("--conf_dir")) {
+           if (++i == args.length) {
+             System.out.println(USAGE);
+             System.exit(1);
+           }
+           conf_dir = args[i];
       }
     }
 
-    if (toy_name.equals(Constants.UNSET_STRING)) {
-      HelpPrinter.printUsage(System.out, ToyParameters.class, parameters);
-      throw new IllegalArgumentException("Toy isn't specified");
-    }
-    if (!need_help && conf_dir.equals(Constants.UNSET_STRING)) {
-      HelpPrinter.printUsage(System.out, ToyParameters.class, parameters);
-      throw new IllegalArgumentException("Either " + help.key() + " or " + conf.key() + " should be set");
+    if (toy_name.equals(Constants.UNSET_STRING) || conf_dir.equals(Constants.UNSET_STRING)) {
+      System.out.println(USAGE);
+      System.exit(1);
     }
     return new ToyParameters(need_help, toy_name, conf_dir);
   }

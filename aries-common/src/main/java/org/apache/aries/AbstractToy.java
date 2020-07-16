@@ -19,7 +19,6 @@ package org.apache.aries;
 import org.apache.aries.common.HelpPrinter;
 import org.apache.aries.common.Parameter;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -40,8 +39,8 @@ public abstract class AbstractToy implements Toy {
   }
 
   @Override
-  public final int howToPlay(PrintStream out) {
-    HelpPrinter.printUsage(out, this.getClass(), parameters);
+  public final int howToPlay() {
+    HelpPrinter.printUsage(this.getClass(), parameters);
     return RETURN_CODE.HELP.code();
   }
 
@@ -51,6 +50,7 @@ public abstract class AbstractToy implements Toy {
     preCheck(toy_conf, parameters);
     inCheck();
     buildToy(toy_conf);
+    printParameters();
     try {
       return haveFun();
     } finally {
@@ -61,7 +61,7 @@ public abstract class AbstractToy implements Toy {
   protected final void printParameters() {
     LOG.info("Parameters for " +  this.getClass().getName() + " are:");
     for (Parameter parameter : parameters) {
-      LOG.info(parameter.key() + "=" + (parameter.empty() ? parameter.defvalue() : parameter.value()));
+      LOG.info(parameter.key() + "=" + parameter.valueInString());
     }
   }
 
@@ -82,7 +82,7 @@ public abstract class AbstractToy implements Toy {
     for (Parameter p : requisites) {
       if (!configuration.containsKey(p.key())) {
         if (p.required()) {
-          howToPlay(System.out);
+          howToPlay();
           throw new IllegalArgumentException(p.key() + " is not set");
         }
         continue;

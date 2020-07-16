@@ -132,6 +132,26 @@ public final class Parameter<T> {
   }
 
   /**
+   * @return value in string
+   */
+  public String valueInString() {
+    return empty() ? "NULL" : decorateString();
+  }
+
+  private String decorateString() {
+    if (!type().equals(String[].class)) {
+      return String.valueOf(value());
+    }
+    String[] vs = (String[]) value;
+    StringBuilder builder = new StringBuilder();
+    for (String v : vs) {
+      builder.append(v).append(",");
+    }
+    String s = builder.toString();
+    return s.substring(0, s.lastIndexOf(","));
+  }
+
+  /**
    * A builder for creating parameter.
    * @param <T> type
    * @return a builder

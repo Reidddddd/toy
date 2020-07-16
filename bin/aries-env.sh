@@ -15,7 +15,7 @@
 #
 
 # java home
-# export JAVA_HOME=
+export JAVA_HOME=/usr
 # hbase home
 # export HBASE_HOME=
 # hdfs home

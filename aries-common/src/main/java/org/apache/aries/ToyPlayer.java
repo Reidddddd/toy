@@ -40,7 +40,7 @@ public final class ToyPlayer {
     LOG.info("Initializing Toy: " + tp.getToyName());
     toy.init();
     LOG.info("Start to play Toy: " + tp.getToyName());
-    System.exit(tp.needHelp() ? toy.howToPlay(System.out) : toy.play(tp.getConfDirectory()));
+    System.exit(tp.needHelp() ? toy.howToPlay() : toy.play(tp.getConfDirectory()));
   }
 
   private static void buildLog(String directory) throws IOException {

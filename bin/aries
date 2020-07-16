@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # Deal with parameters
-if [ "$#" -lt 6 ]
-then
-  echo ""
-  echo "Usage: aries --kind [java|hbase|hdfs|kafka|phoenix] --toy [name of toy] --conf_dir [configuration's directory] --help"
-  echo ""
-  exit 1
-fi
+
+#if [ "$#" -lt 6 ]
+#then
+#  echo "Usage: aries --kind [java|hbase|hdfs|kafka|phoenix]"
+#  echo "             --toy [name of toy]"
+#  echo "             --conf_dir [configuration's directory]"
+#  echo "             --help (this will print help message of the toy)"
+#  exit 1
+#fi
 
 get_value() {
   k=$1
@@ -15,22 +17,22 @@ get_value() {
   if [[ $k == "--kind" ]]
   then
     kind=$v
-  elif [[ $k == "--toy" ]]
-  then
-    toy_name=$v
-  elif [[ $k == "--conf_dir" ]]
-  then
-    conf_dir=$v
-  elif [[ $k == "--help" ]]
-  then
-    help="true"
+  else
+    echo "Usage: aries --kind [java|hbase|hdfs|kafka|phoenix]"
+    echo "             --toy [name of toy]"
+    echo "             --conf_dir [configuration's directory]"
+    echo "             --help (this will print help message of the toy)"
+    exit 1
   fi
 }
 
+
 get_value "$1" "$2"
-get_value "$3" "$4"
-get_value "$5" "$6"
-get_value "$7"
+shift
+shift
+#get_value "$3" "$4"
+#get_value "$5" "$6"
+#get_value "$7"
 
 # Get script directory
 bin=`dirname $0`
@@ -115,10 +117,11 @@ then
 fi
 echo "Execution classpath: $execute_jar"
 
-if [[ $help == "true" ]]
-then
-  $java_cmd -cp $execute_jar org.apache.aries.ToyPlayer --toy org.apache.aries.$toy_name --help
-else
-  $java_cmd -cp $execute_jar org.apache.aries.ToyPlayer --toy org.apache.aries.$toy_name --conf_dir $conf_dir
-fi
+$java_cmd -cp $execute_jar org.apache.aries.ToyPlayer $@
+#if [[ $help == "true" ]]
+#then
+#  $java_cmd -cp $execute_jar org.apache.aries.ToyPlayer --toy org.apache.aries.$toy_name --conf_dir $conf_dir --help
+#else
+#  $java_cmd -cp $execute_jar org.apache.aries.ToyPlayer --toy org.apache.aries.$toy_name --conf_dir $conf_dir
+#fi
 

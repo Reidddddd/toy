@@ -114,7 +114,6 @@ public class CreateTable extends AbstractHBaseToy {
       throw new TableExistsException(table);
     }
 
-    printParameters();
     HTableDescriptor descriptor = buildTableDescriptor();
     for (String f : families.value()) {
       descriptor.addFamily(buildFamilyDescriptor(f, connection.getConfiguration()));

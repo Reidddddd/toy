@@ -16,50 +16,50 @@
 
 package org.apache.aries.common;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Tool class for print help message.
  */
 public final class HelpPrinter {
 
+  private static final Logger LOG = Logger.getLogger(HelpPrinter.class.getName());
+
   private HelpPrinter() {}
 
-  private static void printIndents(PrintStream out) {
-    // 6 spaces
-    out.print("      ");
+  private static void printParameters(@SuppressWarnings("rawtypes") List<Parameter> parameters, int indent) {
+    parameters.forEach(p -> printParameter(p, indent));
   }
 
-  private static void printParameters(PrintStream out,
-                                      @SuppressWarnings("rawtypes") List<Parameter> parameters, boolean required) {
-    printIndents(out);
-    out.println(required ? "Required:" : "Optional:");
-    parameters.forEach(p -> {
-      printIndents(out);
-      printIndents(out);
-      printParameter(out, p);
-    });
+  private static String indent(int x) {
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < x; i++) builder.append(" ");
+    return builder.toString();
   }
-
-  private static void printParameter(PrintStream out, Parameter<?> parameter) {
-    out.println("Parameter key: " + parameter.key() + ", description: " + parameter.description() + ", required: " + parameter.required());
+  private static void printParameter(Parameter<?> parameter, int indent) {
+    LOG.info("| " + parameter.required() +
+                  " | " + parameter.key() + indent(indent - parameter.key().length()) +
+                  " | " + parameter.description() + " |");
   }
 
   @SuppressWarnings("rawtypes")
-  public static void printUsage(PrintStream out, Class<?> clazz, List<Parameter> args) {
+  public static void printUsage(Class<?> clazz, List<Parameter> args) {
     List<Parameter> required = new ArrayList<>();
     List<Parameter> optional = new ArrayList<>();
     args.forEach(arg -> {
       if (arg.required()) required.add(arg);
       else optional.add(arg);
     });
+    required.sort((o1, o2) -> o2.key().length() - o1.key().length());
+    optional.sort((o1, o2) -> o2.key().length() - o1.key().length());
 
     String clazz_name = clazz.getCanonicalName();
-    out.println("Toy: " + clazz_name + " has following parameters.");
-    printParameters(out, required, true);
-    printParameters(out, optional, false);
+    LOG.info("Toy: " + clazz_name + " has following parameters:");
+    LOG.info("|------ Required ------|------ Key -------|------ Description ------|");
+    if (!required.isEmpty()) printParameters(required, required.get(0).key().length());
+    if (!optional.isEmpty()) printParameters(optional, optional.get(0).key().length());
   }
 
 }
