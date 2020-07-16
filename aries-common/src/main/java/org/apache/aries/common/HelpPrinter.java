@@ -56,7 +56,7 @@ public final class HelpPrinter {
     required.sort((o1, o2) -> o2.key().length() - o1.key().length());
     optional.sort((o1, o2) -> o2.key().length() - o1.key().length());
 
-    String clazz_name = clazz.getCanonicalName();
+    String clazz_name = clazz.getSimpleName();
     LOG.info("Toy: " + clazz_name + " has following parameters:");
     LOG.info("|------ Required ------|------ Key -------|------ Default ------|------ Description ------|");
     if (!required.isEmpty()) printParameters(required, required.get(0).key().length());

@@ -50,4 +50,10 @@ public class GrantPhoenixAccess extends GrantAccessControl {
     super.midCheck();
   }
 
+  @Override
+  protected void exampleConfiguration() {
+    example(gv.key(), "G");
+    example(p_users.key(), "whoever");
+    example(test_db.key(), "false");
+  }
 }

@@ -41,18 +41,18 @@ public class PutWorker extends AbstractHBaseToy {
 
   private final Parameter<Integer> num_connections =
       IntParameter.newBuilder("pw.num_connections").setRequired()
-                  .setDescription("number of connections used for put")
+                  .setDescription("Number of connections used for put")
                   .addConstraint(v -> v > 0).opt();
   private final Parameter<String> table_name =
       StringParameter.newBuilder("pw.target_table").setRequired()
-                     .setDescription("table that data will be put in").opt();
+                     .setDescription("A table that data will be put in").opt();
   private final Parameter<String> family =
       StringParameter.newBuilder("pw.target_family")
-                     .setDescription("a family that belongs to the target_table, and wanted to be put in data")
+                     .setDescription("A family that belongs to the target_table, and wanted to be put in data")
                      .setRequired().opt();
   private final Parameter<Long> buffer_size =
       LongParameter.newBuilder("pw.buffer_size").setDefaultValue(Constants.ONE_MB)
-                   .setDescription("buffer size for batch put").opt();
+                   .setDescription("Buffer size in bytes for batch put").opt();
 
   private Admin admin;
   private ExecutorService service;
@@ -66,6 +66,14 @@ public class PutWorker extends AbstractHBaseToy {
     requisites.add(table_name);
     requisites.add(family);
     requisites.add(buffer_size);
+  }
+
+  @Override
+  protected void exampleConfiguration() {
+    example(num_connections.key(), "3");
+    example(table_name.key(), "table:for_put");
+    example(family.key(), "f");
+    example(buffer_size.key(), "1024");
   }
 
   @Override

@@ -34,15 +34,16 @@ import java.util.concurrent.TimeUnit;
 public class TopicCreation extends AbstractKafkaToy {
 
   private final Parameter<String[]> topics =
-      StringArrayParameter.newBuilder("tc.topics_creating").setRequired().setDescription("topics to be created").opt();
+      StringArrayParameter.newBuilder("tc.topics_creating").setRequired()
+                          .setDescription("Topics to be created. All configurations are shared among these topics").opt();
   private final Parameter<Integer> partitions =
-      IntParameter.newBuilder("tc.partitions").setRequired().setDescription("partitions for each topics").opt();
+      IntParameter.newBuilder("tc.partitions").setRequired().setDescription("Partitions for each topics").opt();
   private final Parameter<Short> replications =
-      ShortParameter.newBuilder("tc.replications").setRequired().setDescription("replications for each partitions").opt();
+      ShortParameter.newBuilder("tc.replications").setRequired().setDescription("Replications for each partitions").opt();
   private final Parameter<String> retention_ms =
-      StringParameter.newBuilder("tc.retention_ms").setDescription("retention time in ms for topics").opt();
+      StringParameter.newBuilder("tc.retention_ms").setDescription("Retention time in ms for topics").opt();
   private final Parameter<String> retention_bytes =
-      StringParameter.newBuilder("tc.retention_bytes").setDescription("retentions bytes for topics").opt();
+      StringParameter.newBuilder("tc.retention_bytes").setDescription("Retentions bytes for topics").opt();
 
   private final Map<String, String> configs = new HashMap<>();
 
@@ -57,6 +58,15 @@ public class TopicCreation extends AbstractKafkaToy {
     requisites.add(replications);
     requisites.add(retention_ms);
     requisites.add(retention_bytes);
+  }
+
+  @Override
+  protected void exampleConfiguration() {
+    example(topics.key(), "stream.topic,for.metrics");
+    example(partitions.key(), "3");
+    example(replications.key(), "2");
+    example(retention_ms.key(), "66666666");
+    example(retention_bytes.key(), "2000000");
   }
 
   @Override

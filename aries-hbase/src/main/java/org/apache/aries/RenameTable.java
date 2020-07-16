@@ -85,4 +85,10 @@ public class RenameTable extends AbstractHBaseToy {
     admin.close();
   }
 
+  @Override
+  protected void exampleConfiguration() {
+    example(old_table_names.key(), "a,alice:toy,bob:table");
+    example(new_table_names.key(), "b,bob:toy,bob:alice");
+  }
+
 }

@@ -73,4 +73,8 @@ public class DeleteTable extends AbstractHBaseToy {
     admin.close();
   }
 
+  @Override
+  protected void exampleConfiguration() {
+    example(tables.key(), "what:foo,hello:world,#test:.*");
+  }
 }

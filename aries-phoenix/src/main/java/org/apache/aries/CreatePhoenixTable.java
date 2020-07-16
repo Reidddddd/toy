@@ -108,4 +108,15 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
     return builder.toString();
   }
 
+  @Override
+  protected void exampleConfiguration() {
+    example(sql.key(), "CREATE TABLE user_%s (\"user_id\" BIGINT PRIMARY KEY );");
+    example(owners.key(), "bob,alice");
+    example(bucket_size.key(), "2");
+    example(compression.key(), "SNAPPY");
+    example(bloomfilter.key(), "ROW");
+    example(time_to_live.key(), "259200");
+    example(options.key(), "cn,us,sg,jp,uk");
+  }
+
 }

@@ -45,6 +45,14 @@ public class MarsRover extends AbstractJavaToy {
   private Rover rover;
 
   @Override
+  protected void exampleConfiguration() {
+    example(commands.key(), "RLLMMMR");
+    example(plateau_point.key(), "5,5");
+    example(start_point.key(), "0,0");
+    example(direction.key(), "E");
+  }
+
+  @Override
   protected void buildToy(ToyConfiguration configuration) throws Exception {
     ToyUtils.assertLengthValid(plateau_point.value(), 2);
     plateau = new Plateau(

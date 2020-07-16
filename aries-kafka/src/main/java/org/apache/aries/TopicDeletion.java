@@ -40,7 +40,7 @@ public class TopicDeletion extends AbstractKafkaToy {
                           .opt();
   private final Parameter<Integer> partitions_upper =
       IntParameter.newBuilder("td.partitions_upper_limit").setRequired()
-                  .setDescription("each deletions will not delete more than this number of partitions")
+                  .setDescription("Each deletions will not delete more than this number of partitions")
                   .opt();
 
   private AdminClient ac;
@@ -49,6 +49,12 @@ public class TopicDeletion extends AbstractKafkaToy {
   protected void requisite(List<Parameter> requisites) {
     requisites.add(topics);
     requisites.add(partitions_upper);
+  }
+
+  @Override
+  protected void exampleConfiguration() {
+    example(topics.key(), "a,b,c,d");
+    example(partitions_upper.key(), "200");
   }
 
   @Override
@@ -69,17 +75,17 @@ public class TopicDeletion extends AbstractKafkaToy {
       try {
         topic_description = results.get(topic).get();
       } catch (Exception utope) {
-        System.out.println(topic + " doesn't exist");
+        LOG.warning(topic + " doesn't exist");
         continue;
       }
       if (topic_description.isInternal()) {
-        System.out.println("Skipping internal topic " + topic);
+        LOG.warning("Skipping internal topic " + topic);
         continue;
       }
       if (upper_limit > 0) {
         int num_partitions = topic_description.partitions().size();
-        System.out.println("Topic " + topic + " has " + num_partitions + " partitions");
-        System.out.println("Deleting topic " + topic);
+        LOG.info("Topic " + topic + " has " + num_partitions + " partitions");
+        LOG.info("Deleting topic " + topic);
         to_be_deleted.add(topic);
         upper_limit -= num_partitions;
       }

@@ -41,6 +41,8 @@ public abstract class AbstractToy implements Toy {
   @Override
   public final int howToPlay() {
     HelpPrinter.printUsage(this.getClass(), parameters);
+    LOG.info("Example configurations for " + this.getClass().getSimpleName() + ":");
+    exampleConfiguration();
     return RETURN_CODE.HELP.code();
   }
 
@@ -70,6 +72,15 @@ public abstract class AbstractToy implements Toy {
    * @param requisites parameters to be added to
    */
   protected abstract void requisite(@SuppressWarnings("rawtypes") List<Parameter> requisites);
+
+  /**
+   * It prints out an example configuration for a toy.
+   */
+  protected abstract void exampleConfiguration();
+
+  protected void example(String key, String value) {
+    LOG.info(key + "=" + value);
+  }
 
   /**
    * This method is used for checking parameters needed for playing toy. Toy should throw IllegalArgumentException

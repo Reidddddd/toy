@@ -144,6 +144,23 @@ public class CreateTable extends AbstractHBaseToy {
     }
   }
 
+  @Override
+  protected void exampleConfiguration() {
+    example(table_name.key(), "namespace:table");
+    example(families.key(), "a");
+    example(split_algorithm.key(), "HEX");
+    example(hex_split_regions.key(), "4");
+    example(table_owners.key(), "foo");
+    example(compression.key() + ".a", "SNAPPY");
+    example(cache_data_on_write.key() + ".a", "true");
+    example(cache_data_in_L1.key() + ".a", "true");
+    example(time_to_live.key() + ".a", "259200");
+    example(bloom_type.key() + ".a", "ROW");
+    example(max_versions.key() + ".a", "1");
+    example(data_block_encoding.key() + ".a", "FASTDIFF");
+    example(in_memory.key() + ".a", "true");
+  }
+
   private HTableDescriptor buildTableDescriptor() {
     HTableDescriptor descriptor = new HTableDescriptor(table);
     descriptor.setValue(Bytes.toBytes("TABLE_OWNERS"), Bytes.toBytes(table_owners.value()));

@@ -91,6 +91,16 @@ public class GrantAccessControl extends AbstractHBaseToy {
     requisites.add(permissions);
   }
 
+  @Override
+  protected void exampleConfiguration() {
+    example(g_v.key(), "G");
+    example(scope.key(), "TABLE");
+    example(relation.key(), "MULTI2ONE");
+    example(tables.key(), "what:foo,hello:world,#test:.*");
+    example(users.key(), "alice,bob,foo");
+    example(permissions.key(), "RW");
+  }
+
   @Override protected void midCheck() {
     map_relation    = (RELATION) relation.value();
     action          = (G_V) g_v.value();

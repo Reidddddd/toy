@@ -45,4 +45,9 @@ public class DropPhoenixTable extends AbstractPhoenixToy {
     return RETURN_CODE.SUCCESS.code();
   }
 
+  @Override
+  protected void exampleConfiguration() {
+    example(tables.key(), "PHOENIX.TABLE1,PHOENIX.TABLE2,PHOENIX.TABLE3");
+  }
+
 }
