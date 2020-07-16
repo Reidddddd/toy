@@ -27,10 +27,12 @@ import java.util.List;
 public class GrantPhoenixAccess extends GrantAccessControl {
 
   private final Parameter<Enum> gv =
-      EnumParameter.newBuilder("gpa.grant_revoke", G_V.G, G_V.class).setDescription("grant or revoke permission").setRequired().opt();
+      EnumParameter.newBuilder("gpa.grant_revoke", G_V.G, G_V.class)
+                   .setDescription("Grant or revoke permission, set either G or V").setRequired().opt();
   private final Parameter<String[]> p_users =
-      StringArrayParameter.newBuilder("gpa.users").setDescription("users who want to access phoenix").setRequired().opt();
-  private final Parameter<Boolean> test_db = BoolParameter.newBuilder("gpa.acquire_test", false).setDescription("if grant permission for creating tables").opt();
+      StringArrayParameter.newBuilder("gpa.users").setDescription("Users who want to access phoenix, delimited by ','").setRequired().opt();
+  private final Parameter<Boolean> test_db =
+      BoolParameter.newBuilder("gpa.acquire_create_priviledge", false).setDescription("Whether to grant permission to the user for creating tables him/herself").opt();
 
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(p_users);

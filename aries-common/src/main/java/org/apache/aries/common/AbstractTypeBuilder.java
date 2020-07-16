@@ -26,7 +26,7 @@ public abstract class AbstractTypeBuilder<T> {
    * @return builder itself
    */
   public AbstractTypeBuilder<T> setDescription(String description) {
-    builder.setDescription(description.toLowerCase());
+    builder.setDescription(description);
     return this;
   }
 

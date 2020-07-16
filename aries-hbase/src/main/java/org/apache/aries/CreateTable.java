@@ -44,13 +44,13 @@ import java.util.List;
 public class CreateTable extends AbstractHBaseToy {
 
   private final Parameter<String> table_name =
-      StringParameter.newBuilder("ct.table_name").setRequired().setDescription("table name").opt();
+      StringParameter.newBuilder("ct.table_name").setRequired().setDescription("Table name").opt();
   private final Parameter<String[]> families =
       StringArrayParameter.newBuilder("ct.families_name").setRequired().setDescription("A family or families delimited by ','")
                           .addConstraint(v -> v.length >= 1).opt();
   private final Parameter<Enum> split_algorithm =
       EnumParameter.newBuilder("ct.split_algorithm", ALGORITHM.NONE, ALGORITHM.class)
-                   .setRequired().setDescription("split algorithm, so far suport HEX and NUM").opt();
+                   .setRequired().setDescription("Split algorithm, either HEX or DEC").opt();
   private final Parameter<Integer> hex_split_regions =
       IntParameter.newBuilder("ct.hex_split_regions").setDescription("Number of regions expecting when using hex split algorithm, upper bound is 256")
                   .addConstraint(v -> v > 1).addConstraint(v -> v <= 256).addConstraint(v -> 256 % v == 0).opt();
@@ -63,24 +63,36 @@ public class CreateTable extends AbstractHBaseToy {
   // Following are optionals
   private final Parameter<Enum> compression =
       EnumParameter.newBuilder("ct.compression", Compression.Algorithm.NONE, Compression.Algorithm.class)
-                   .setDescription("Compression algorithm will be used in flush and compactions").opt();
+                   .setDescription("Compression algorithm will be used in flush and compactions. This is a family level parameter, so use this ct.compression.$family as full key")
+                   .opt();
   private final Parameter<Boolean> cache_data_on_write =
-      BoolParameter.newBuilder("ct.cache_data_on_write", false).setDescription("Cache data even when write, it is useful if your access pattern is read recently").opt();
+      BoolParameter.newBuilder("ct.cache_data_on_write", false)
+                   .setDescription("Cache data even writing data, it is useful if your access pattern is reading recently. This is a family level parameter, so use this ct.cache_data_on_write.$family as full key")
+                   .opt();
   private final Parameter<Boolean> cache_data_in_L1 =
-      BoolParameter.newBuilder("ct.cache_data_in_L1", false).setDescription("L1 is the fastest cache, but with the smallest size").opt();
+      BoolParameter.newBuilder("ct.cache_data_in_L1", false)
+                   .setDescription("L1 is the fastest cache, but with the smallest size. This is a family level parameter, so use this ct.cache_data_in_L1.$family as full key")
+                   .opt();
   private final Parameter<Integer> time_to_live =
-      IntParameter.newBuilder("ct.time_to_live").setDefaultValue(HConstants.FOREVER).setDescription("Time to live for cells under a specific family")
+      IntParameter.newBuilder("ct.time_to_live").setDefaultValue(HConstants.FOREVER)
+                  .setDescription("Time to live for cells under a specific family. This is a family level parameter, so use this ct.time_to_live.$family as full key")
                   .addConstraint(v -> v > 0).opt();
   private final Parameter<Enum> bloom_type =
       EnumParameter.newBuilder("ct.bloom_filter_type", BloomType.NONE, BloomType.class)
-                   .setDescription("Bloom filter is useful for row get or column get. set it ROW or ROWCOL").opt();
+                   .setDescription("Bloom filter is useful for row get or column get, either set ROW or ROWCOL. This is a family level parameter, so use this ct.bloom_filter_type.$family as full key")
+                   .opt();
   private final Parameter<Integer> max_versions =
-      IntParameter.newBuilder("ct.versions").setDefaultValue(1).setDescription("Min versions of a cell, 1 by default").opt();
+      IntParameter.newBuilder("ct.versions").setDefaultValue(1)
+                  .setDescription("Min versions of a cell. This is a family level parameter, so use this ct.versions.$family as full key")
+                  .opt();
   private final Parameter<Enum> data_block_encoding =
       EnumParameter.newBuilder("ct.data_block_encoding", DataBlockEncoding.NONE, DataBlockEncoding.class)
-                   .setDescription("Encoding method for data block. Supporting type: PREFIX, DIFF, FAST_DIFF, ROW_INDEX_V1").opt();
+                   .setDescription("Encoding method for data block. Supporting type: PREFIX, DIFF, FAST_DIFF, ROW_INDEX_V1. This is a family level parameter, so use this ct.data_block_encoding.$family as full key")
+                   .opt();
   private final Parameter<Boolean> in_memory =
-      BoolParameter.newBuilder("ct.in_memory", false).setDescription("data cached in memory region of block cache").opt();
+      BoolParameter.newBuilder("ct.in_memory", false)
+                   .setDescription("data cached in memory region of block cache. This is a family level parameter, so use this ct.in_memory.$family as full key")
+                   .opt();
 
   private TableName table;
   private Admin admin;
@@ -94,6 +106,15 @@ public class CreateTable extends AbstractHBaseToy {
     requisites.add(hex_split_regions);
     requisites.add(dec_split_regions);
     requisites.add(table_owners);
+    // Family parameters
+    requisites.add(compression);
+    requisites.add(cache_data_on_write);
+    requisites.add(cache_data_in_L1);
+    requisites.add(time_to_live);
+    requisites.add(bloom_type);
+    requisites.add(max_versions);
+    requisites.add(data_block_encoding);
+    requisites.add(in_memory);
   }
 
   @Override

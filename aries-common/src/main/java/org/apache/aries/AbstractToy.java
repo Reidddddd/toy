@@ -59,7 +59,7 @@ public abstract class AbstractToy implements Toy {
   }
 
   protected final void printParameters() {
-    LOG.info("Parameters for " +  this.getClass().getName() + " are:");
+    LOG.info("Parameters for " +  this.getClass().getSimpleName() + " are:");
     for (Parameter parameter : parameters) {
       LOG.info(parameter.key() + "=" + parameter.valueInString());
     }

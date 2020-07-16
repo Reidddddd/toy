@@ -26,7 +26,7 @@ import java.util.List;
 public class DropPhoenixTable extends AbstractPhoenixToy {
   private final Parameter<String[]> tables =
       StringArrayParameter.newBuilder("dpt.tables").setRequired()
-                          .setDescription("phoenix tables to be dropped").addConstraint(v -> v.length > 0)
+                          .setDescription("Phoenix tables to be dropped").addConstraint(v -> v.length > 0)
                           .opt();
 
   @Override

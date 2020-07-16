@@ -39,19 +39,28 @@ import java.util.stream.IntStream;
 public class GrantAccessControl extends AbstractHBaseToy {
 
   protected final Parameter<Enum> g_v =
-      EnumParameter.newBuilder("gac.grant_revoke", G_V.G, G_V.class).setDescription("grant_or_revoke").setRequired().opt();
+      EnumParameter.newBuilder("gac.grant_revoke", G_V.G, G_V.class).setRequired()
+                   .setDescription("Grant or revoke permission, set either G or V")
+                   .opt();
   private final Parameter<Enum> scope =
-      EnumParameter.newBuilder("gac.scope", SCOPE.TABLE, SCOPE.class).setDescription("permissions scope").setRequired().opt();
+      EnumParameter.newBuilder("gac.scope", SCOPE.TABLE, SCOPE.class).setRequired()
+                   .setDescription("Permission scope, set either NAMESPACE or TABLE")
+                   .opt();
   protected final Parameter<Enum> relation =
       EnumParameter.newBuilder("gac.relation", RELATION.MULTI2ONE, SCOPE.class).setDescription("pending").setRequired().opt();
   protected final Parameter<String[]> tables =
-      StringArrayParameter.newBuilder("gac.target_tables").setDescription("tables or pattern which should be started with #").opt();
+      StringArrayParameter.newBuilder("gac.target_tables")
+                          .setDescription("Target tables or patterns which should be started with #, delimited by ','. It must be set when gac.scope is set TABLE")
+                          .opt();
   protected final Parameter<String[]> namespaces =
-      StringArrayParameter.newBuilder("gac.target_namespaces").setDescription("namespaces to be granted").opt();
+      StringArrayParameter.newBuilder("gac.target_namespaces")
+                          .setDescription("Namespaces to be granted. It must be set when gac.scope is set NAMESPACE")
+                          .opt();
   protected final Parameter<String[]> users =
-      StringArrayParameter.newBuilder("gac.users").setDescription("users to be granted acl").setRequired().opt();
+      StringArrayParameter.newBuilder("gac.users").setDescription("Users to be granted ACL").setRequired().opt();
   protected final Parameter<String[]> permissions =
-      StringArrayParameter.newBuilder("gac.permissions").setDescription("acl permissions").opt();
+      StringArrayParameter.newBuilder("gac.permissions")
+                          .setDescription("ACL permissions, options are R,W,X,C,A, respectively represents Read, Write, Execute, Admin, Create").opt();
 
   enum G_V {
     G, V

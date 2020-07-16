@@ -25,13 +25,13 @@ import java.util.List;
 
 public class MarsRover extends AbstractJavaToy {
   private final Parameter<String[]> commands =
-      StringArrayParameter.newBuilder("mr.commands").setDescription("movements for rover").setRequired().opt();
+      StringArrayParameter.newBuilder("mr.commands").setDescription("A series of movements for rover").setRequired().opt();
   private final Parameter<String[]> plateau_point =
-      StringArrayParameter.newBuilder("mr.plateau").setDescription("plateau").setRequired().setRequired().opt();
+      StringArrayParameter.newBuilder("mr.plateau").setDescription("The up right corner of a plateau").setRequired().setRequired().opt();
   private final Parameter<String[]> start_point =
-      StringArrayParameter.newBuilder("mr.start").setDescription("start point for rover").setRequired().opt();
+      StringArrayParameter.newBuilder("mr.start").setDescription("Point at the plateau where rover should start").setRequired().opt();
   private final Parameter<Enum> direction =
-      EnumParameter.newBuilder("mr.direction", Direction.N, Direction.class).setDescription("start direction").setRequired().opt();
+      EnumParameter.newBuilder("mr.direction", Direction.N, Direction.class).setDescription("Face direction at start point").setRequired().opt();
 
   @Override
   protected void requisite(List<Parameter> requisites) {

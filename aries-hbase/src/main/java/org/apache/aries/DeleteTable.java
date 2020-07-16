@@ -17,15 +17,21 @@
 package org.apache.aries;
 
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.TableNotEnabledException;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringArrayParameter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class DeleteTable extends AbstractHBaseToy {
+
   private final Parameter<String[]> tables =
-      StringArrayParameter.newBuilder("dt.table_name").setRequired().setDescription("tables's names to be dropped")
+      StringArrayParameter.newBuilder("dt.table_name").setRequired()
+                          .setDescription("Tables's names to be dropped, delimited by ','. Pattern is supported, by prefixing '#'")
                           .addConstraint(v -> v.length > 0).opt();
 
   @Override protected void requisite(List<Parameter> requisites) {
@@ -40,10 +46,22 @@ public class DeleteTable extends AbstractHBaseToy {
   private Admin admin;
 
   @Override protected int haveFun() throws Exception {
-    for (String table : tables.value()) {
-      TableName name = TableName.valueOf(table);
+    List<TableName> pending = new ArrayList<>();
+    for (String table_or_pattern : tables.value()) {
+      if (table_or_pattern.startsWith("#")) {
+        pending.addAll(Arrays.asList(admin.listTableNames(Pattern.compile(table_or_pattern.substring(1)))));
+      } else {
+        pending.add(TableName.valueOf(table_or_pattern));
+      }
+    }
+
+    for (TableName name : pending) {
       if (admin.tableExists(name)) {
-        admin.disableTable(name);
+        try {
+          admin.disableTable(name);
+        } catch (TableNotEnabledException tne) {
+          LOG.warning(name + " is disabled already");
+        }
         admin.deleteTable(name);
       }
     }

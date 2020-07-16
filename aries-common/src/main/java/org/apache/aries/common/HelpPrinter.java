@@ -41,6 +41,7 @@ public final class HelpPrinter {
   private static void printParameter(Parameter<?> parameter, int indent) {
     LOG.info("| " + parameter.required() +
                   " | " + parameter.key() + indent(indent - parameter.key().length()) +
+                  " | " + (parameter.defvalue() == null ? "NOT SET" : parameter.defvalue()) +
                   " | " + parameter.description() + " |");
   }
 
@@ -57,7 +58,7 @@ public final class HelpPrinter {
 
     String clazz_name = clazz.getCanonicalName();
     LOG.info("Toy: " + clazz_name + " has following parameters:");
-    LOG.info("|------ Required ------|------ Key -------|------ Description ------|");
+    LOG.info("|------ Required ------|------ Key -------|------ Default ------|------ Description ------|");
     if (!required.isEmpty()) printParameters(required, required.get(0).key().length());
     if (!optional.isEmpty()) printParameters(optional, optional.get(0).key().length());
   }

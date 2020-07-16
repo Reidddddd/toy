@@ -32,12 +32,13 @@ public class RenameTable extends AbstractHBaseToy {
 
   private Parameter<String[]> old_table_names =
       StringArrayParameter.newBuilder("rt.old_table_names").setRequired()
-                          .setDescription("old tables's names").opt();
+                          .setDescription("Old tables's names").opt();
   private Parameter<String[]> new_table_names =
       StringArrayParameter.newBuilder("rt.new_table_names").setRequired()
-                          .setDescription("new tables's names").opt();
+                          .setDescription("New tables's names").opt();
   private Parameter<Boolean> skip_flush =
-      BoolParameter.newBuilder("rt.snapshot_skip_flush", true).setDescription("whether skip flush when snapshot table").opt();
+      BoolParameter.newBuilder("rt.snapshot_skip_flush", false)
+                   .setDescription("Whether skip flush when snapshot table").opt();
 
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(old_table_names);
