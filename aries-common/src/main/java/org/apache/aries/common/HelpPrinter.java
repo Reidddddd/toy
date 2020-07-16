@@ -33,7 +33,7 @@ public final class HelpPrinter {
     parameters.forEach(p -> printParameter(p, indent));
   }
 
-  public static String indent(int x) {
+  private static String indent(int x) {
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < x; i++) builder.append(" ");
     return builder.toString();
