@@ -48,7 +48,7 @@ public abstract class AbstractToy implements Toy {
   public final int play(String dir_of_conf_file) throws Exception {
     ToyConfiguration toy_conf = ToyConfiguration.create(dir_of_conf_file);
     preCheck(toy_conf, parameters);
-    inCheck();
+    midCheck();
     buildToy(toy_conf);
     printParameters();
     try {
@@ -58,7 +58,7 @@ public abstract class AbstractToy implements Toy {
     }
   }
 
-  protected final void printParameters() {
+  private final void printParameters() {
     LOG.info("Parameters for " +  this.getClass().getSimpleName() + " are:");
     for (Parameter parameter : parameters) {
       LOG.info(parameter.key() + "=" + parameter.valueInString());
@@ -103,7 +103,7 @@ public abstract class AbstractToy implements Toy {
    * This method is called after preCheck, it may be used in specific toy to do self parameter check.
    * Every parameter should have valid value.
    */
-  protected void inCheck() {
+  protected void midCheck() {
   }
 
   /**

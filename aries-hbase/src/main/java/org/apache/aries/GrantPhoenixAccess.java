@@ -40,14 +40,14 @@ public class GrantPhoenixAccess extends GrantAccessControl {
     requisites.add(test_db);
   }
 
-  @Override protected void inCheck() {
+  @Override protected void midCheck() {
     relation.setValue(RELATION.MULTI2MULTI);
     tables.setValue(new String[] { "SYSTEM:CATALOG", "SYSTEM:STATS" });
     permissions.setValue(test_db.value() ? new String[] { "RXW", "R" } : new String[] { "RX", "R" });
     users.setValue(p_users.value());
     g_v.setValue(gv.value());
 
-    super.inCheck();
+    super.midCheck();
   }
 
 }

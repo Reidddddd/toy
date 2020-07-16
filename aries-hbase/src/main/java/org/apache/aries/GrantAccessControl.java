@@ -91,7 +91,7 @@ public class GrantAccessControl extends AbstractHBaseToy {
     requisites.add(permissions);
   }
 
-  @Override protected void inCheck() {
+  @Override protected void midCheck() {
     map_relation    = (RELATION) relation.value();
     action          = (G_V) g_v.value();
     gv_scope        = (SCOPE) scope.value();
