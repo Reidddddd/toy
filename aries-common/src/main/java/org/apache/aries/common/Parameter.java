@@ -184,7 +184,7 @@ public final class Parameter<T> {
      * @return builder itself
      */
     public Builder<T> setDescription(String description) {
-      this.description = description.toLowerCase();
+      this.description = description;
       return this;
     }
 
