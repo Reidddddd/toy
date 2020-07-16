@@ -79,7 +79,7 @@ public abstract class AbstractToy implements Toy {
   protected abstract void exampleConfiguration();
 
   protected void example(String key, String value) {
-    LOG.info(key + "=" + value);
+    LOG.info(HelpPrinter.indent(4) + key + "=" + value);
   }
 
   /**

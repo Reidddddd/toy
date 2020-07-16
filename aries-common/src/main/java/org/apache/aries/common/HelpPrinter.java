@@ -33,7 +33,7 @@ public final class HelpPrinter {
     parameters.forEach(p -> printParameter(p, indent));
   }
 
-  private static String indent(int x) {
+  public static String indent(int x) {
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < x; i++) builder.append(" ");
     return builder.toString();
@@ -57,7 +57,7 @@ public final class HelpPrinter {
     optional.sort((o1, o2) -> o2.key().length() - o1.key().length());
 
     String clazz_name = clazz.getSimpleName();
-    LOG.info("Toy: " + clazz_name + " has following parameters:");
+    LOG.info("Toy " + clazz_name + " has following parameters:");
     LOG.info("|------ Required ------|------ Key -------|------ Default ------|------ Description ------|");
     if (!required.isEmpty()) printParameters(required, required.get(0).key().length());
     if (!optional.isEmpty()) printParameters(optional, optional.get(0).key().length());
