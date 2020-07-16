@@ -26,6 +26,7 @@ public final class ToyParameters {
   private boolean need_help;
   private String toy_name;
   private String conf_dir;
+  private String package_name = "org.apache.aries.";
 
   private ToyParameters(boolean need_help, String toy_name, String conf_dir) {
     this.need_help = need_help;
@@ -38,6 +39,10 @@ public final class ToyParameters {
   }
 
   public String getToyName() {
+    return package_name + toy_name;
+  }
+
+  public String getSimpleToyName() {
     return toy_name;
   }
 
@@ -68,7 +73,7 @@ public final class ToyParameters {
              System.out.println(USAGE);
              System.exit(1);
            }
-           toy_name = "org.apache.aries." + args[i];
+           toy_name = args[i];
       }
       else if (args[i].equals("--conf_dir")) {
            if (++i == args.length) {

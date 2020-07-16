@@ -120,7 +120,7 @@ public class PutWorker extends AbstractHBaseToy {
 
     Worker(ToyConfiguration conf) throws IOException {
       connection = createConnection(conf);
-      System.out.println("Connection created " + connection);
+      LOG.info("Connection created " + connection);
     }
 
     Connection createConnection(ToyConfiguration conf) throws IOException {
@@ -145,7 +145,7 @@ public class PutWorker extends AbstractHBaseToy {
           mutator.mutate(put);
         }
       } catch (IOException e) {
-        System.err.println("Error occured " + e.getMessage());
+        LOG.warning("Error occured " + e.getMessage());
       }
     }
 

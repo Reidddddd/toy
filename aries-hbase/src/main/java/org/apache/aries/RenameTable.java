@@ -73,7 +73,7 @@ public class RenameTable extends AbstractHBaseToy {
             skip_flush.value() ? HBaseProtos.SnapshotDescription.Type.SKIPFLUSH : HBaseProtos.SnapshotDescription.Type.FLUSH);
         admin.cloneSnapshot(name.getQualifierAsString(), TableName.valueOf(n), true);
       } catch (IOException e) {
-        System.err.println("Failed to snapshot " + name);
+        LOG.warning("Failed to snapshot " + name);
       }
     });
     return 0;

@@ -35,11 +35,11 @@ public final class ToyPlayer {
   public static void main(String[] args) throws Exception {
     ToyParameters tp = ToyParameters.parse(args);
     buildLog(tp.getConfDirectory());
-    LOG.info("Building Toy: " + tp.getToyName());
+    LOG.info("Building toy: " + tp.getSimpleToyName());
     Toy toy = (Toy) Class.forName(tp.getToyName()).newInstance();
-    LOG.info("Initializing Toy: " + tp.getToyName());
+    LOG.info("Initializing toy: " + tp.getSimpleToyName());
     toy.init();
-    LOG.info("Start to play Toy: " + tp.getToyName());
+    LOG.info("Start to play toy: " + tp.getSimpleToyName());
     System.exit(tp.needHelp() ? toy.howToPlay() : toy.play(tp.getConfDirectory()));
   }
 

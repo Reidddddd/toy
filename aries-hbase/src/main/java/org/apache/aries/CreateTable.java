@@ -36,15 +36,12 @@ import org.apache.aries.common.StringArrayParameter;
 import org.apache.aries.common.StringParameter;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * A class for creating table.
  */
 @SuppressWarnings("rawtypes")
 public class CreateTable extends AbstractHBaseToy {
-
-  private static final Logger LOG = Logger.getLogger(CreateTable.class.getName());
 
   private final Parameter<String> table_name =
       StringParameter.newBuilder("ct.table_name").setRequired().setDescription("table name").opt();

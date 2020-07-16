@@ -139,16 +139,7 @@ public final class Parameter<T> {
   }
 
   private String decorateString() {
-    if (!type().equals(String[].class)) {
-      return String.valueOf(value());
-    }
-    String[] vs = (String[]) value;
-    StringBuilder builder = new StringBuilder();
-    for (String v : vs) {
-      builder.append(v).append(",");
-    }
-    String s = builder.toString();
-    return s.substring(0, s.lastIndexOf(","));
+    return !type().equals(String[].class) ? String.valueOf(value()) : ToyUtils.arrayToString((String[]) value);
   }
 
   /**

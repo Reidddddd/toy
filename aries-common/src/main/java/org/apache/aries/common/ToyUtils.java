@@ -24,5 +24,14 @@ public final class ToyUtils {
     }
   }
 
+  public static String arrayToString(Object[] arr) {
+    StringBuilder builder = new StringBuilder();
+    for (Object a : arr) {
+      builder.append(a.toString()).append(",");
+    }
+    String s = builder.toString();
+    return s.substring(0, s.lastIndexOf(","));
+  }
+
 }
 

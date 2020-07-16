@@ -61,9 +61,9 @@ public class MarsRover extends AbstractJavaToy {
 
   @Override protected int haveFun() throws Exception {
     for (String command : commands.value()) {
-      System.out.println("Start from " + rover);
+      LOG.info("Start from " + rover);
       rover.move(plateau, command.toCharArray());
-      System.out.println("End at " + rover);
+      LOG.info("End at " + rover);
     }
     return RETURN_CODE.SUCCESS.code();
   }

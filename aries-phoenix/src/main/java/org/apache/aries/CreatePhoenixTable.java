@@ -70,15 +70,16 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
   }
 
   @Override protected int haveFun() throws Exception {
-    System.out.println("Executing sql:");
     String create_statement = decorateSQL(sql.value());
-    System.out.println(create_statement);
     Statement statement = connection.createStatement();
     if (options.empty()) {
+      LOG.info("Executing SQL: " + create_statement);
       statement.execute(create_statement);
     } else {
       for (String option : options.value()) {
-        statement.execute(create_statement.replace("%s", option));
+        String sql = create_statement.replace("%s", option);
+        LOG.info("Executing SQL: " + sql);
+        statement.execute(sql);
       }
     }
 

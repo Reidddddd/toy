@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractToy implements Toy {
 
-  private static final Logger LOG = Logger.getLogger(AbstractToy.class.getName());
+  protected static final Logger LOG = Logger.getLogger(AbstractToy.class.getName());
 
   @SuppressWarnings("rawtypes")
   private final List<Parameter> parameters = new ArrayList<>();

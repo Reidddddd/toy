@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
@@ -108,14 +109,17 @@ public class GrantAccessControl extends AbstractHBaseToy {
   }
 
   @Override protected int haveFun() throws Exception {
-    if (!AccessControlClient.isAccessControllerRunning(connection)) return RETURN_CODE.FAILURE.code();
+    if (!AccessControlClient.isAccessControllerRunning(connection)) {
+      LOG.warning("ACL is disabled");
+      return RETURN_CODE.FAILURE.code();
+    }
 
     switch (map_relation) {
       case MULTI2MULTI: {
         switch (gv_scope) {
           case TABLE: {
             List<TableName> targetTables = grepTables();
-            System.out.println("Target tables are " +  targetTables.toString());
+            LOG.info("Target tables are " +  targetTables.toString());
             IntStream.range(0, users.value().length).forEach(i ->
                 IntStream.range(0, targetTables.size()).forEach(j ->
                     performTablePermission(action, targetTables.get(j), users.value()[i], extractPermissionActions(action == G_V.G ? permissions.value()[j] : "RWXCA"))
@@ -123,6 +127,7 @@ public class GrantAccessControl extends AbstractHBaseToy {
             );
           } break;
           case NAMESPACE: {
+            LOG.info("Target namespaces are " + namespaces.valueInString());
             IntStream.range(0, users.value().length).forEach(i ->
                 IntStream.range(0, namespaces.value().length).forEach(j ->
                     performNamespacePermissions(action, namespaces.value()[j], users.value()[i], extractPermissionActions(action == G_V.G ? permissions.value()[j] : "RWXCA"))
@@ -138,11 +143,12 @@ public class GrantAccessControl extends AbstractHBaseToy {
         switch (gv_scope) {
           case TABLE: {
             List<TableName> targetTables = grepTables();
-            System.out.println("Target tables are " +  targetTables.toString());
+            LOG.info("Target tables are " +  targetTables.toString());
             IntStream.range(0, targetTables.size())
                      .forEach(i -> performTablePermission(action, targetTables.get(i), user, extractPermissionActions(action == G_V.G ? permissions.value()[i] : "RWXCA")));
           } break;
           case NAMESPACE: {
+            LOG.info("Target namespaces are " + namespaces.valueInString());
             IntStream.range(0, namespaces.value().length)
                      .forEach(i -> performNamespacePermissions(action, namespaces.value()[i], user, extractPermissionActions(action == G_V.G ? permissions.value()[i] : "RWXCA")));
           } break;
@@ -153,7 +159,7 @@ public class GrantAccessControl extends AbstractHBaseToy {
         switch (gv_scope) {
           case TABLE: {
             List<TableName> targetTables = grepTables();
-            System.out.println("Target tables are " +  targetTables.toString());
+            LOG.info("Target tables are " +  targetTables.toString());
             IntStream.range(0, users_name.length).forEach(i ->
                 IntStream.range(0, targetTables.size()).forEach(j ->
                     performTablePermission(action, targetTables.get(j), users_name[i], extractPermissionActions(action == G_V.G ? permissions.value()[0] : "RWXCA"))
@@ -161,6 +167,7 @@ public class GrantAccessControl extends AbstractHBaseToy {
             );
           } break;
           case NAMESPACE: {
+            LOG.info("Target namespaces are " + namespaces.valueInString());
             IntStream.range(0, users_name.length).forEach(i ->
                 IntStream.range(0, namespaces.value().length).forEach(j ->
                     performNamespacePermissions(action, namespaces.value()[j], users_name[i], extractPermissionActions(action == G_V.G ? permissions.value()[0] : "RWXCA"))
@@ -208,30 +215,52 @@ public class GrantAccessControl extends AbstractHBaseToy {
   private void performNamespacePermissions(G_V act, String namespace, String user_name, Permission.Action[] actions) {
     try {
       switch (act) {
-        case G: AccessControlClient.grant(connection, namespace, user_name, actions);  break;
-        case V: AccessControlClient.revoke(connection, namespace, user_name, actions); break;
-       default:                                                                        break;
+        case G: {
+          logging("Granting", user_name, "namespace", namespace, actions);
+          AccessControlClient.grant(connection, namespace, user_name, actions);
+          break;
+        }
+        case V: {
+          logging("Revoking", user_name, "namespace", namespace, actions);
+          AccessControlClient.revoke(connection, namespace, user_name, actions);
+          break;
+        }
+       default:
+         break;
       }
     } catch (Throwable t) {
-      System.err.println("Can't " + act + " " + user_name + " permissions on " + namespace);
+      LOG.warning("Can't " + act + " " + user_name + " permissions on " + namespace);
     }
   }
 
   protected void performTablePermission(G_V act, TableName table, String user_name, Permission.Action[] actions) {
     try {
       switch (act) {
-        case G: AccessControlClient.grant(connection, table, user_name, null, null, actions);     break;
-        case V: AccessControlClient.revoke(connection, table, user_name, null, null, actions); break;
-       default:                                                                                               break;
+        case G: {
+          logging("Granting", user_name, "table", table.getNameAsString(), actions);
+          AccessControlClient.grant(connection, table, user_name, null, null, actions);
+          break;
+        }
+        case V: {
+          logging("Revoking", user_name, "table", table.getNameAsString(), actions);
+          AccessControlClient.revoke(connection, table, user_name, null, null, actions);
+          break;
+        }
+       default:
+         break;
       }
     } catch (Throwable t) {
-      System.err.println("Can't " + act + " " + user_name + " permissions on " + table);
+      LOG.warning("Can't " + act + " " + user_name + " permissions on " + table);
     }
   }
 
   @Override protected void destroyToy() throws Exception {
     super.destroyToy();
     admin.close();
+  }
+
+  private void logging(String g_v, String user, String scope, String scope_name, Permission.Action[] actions) {
+    LOG.info(g_v + " " + user + " permissions: " + ToyUtils.arrayToString(actions) + " on " + scope + ": " + scope_name );
   }
 
 }
