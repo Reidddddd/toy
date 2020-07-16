@@ -38,6 +38,7 @@ public final class HelpPrinter {
     for (int i = 0; i < x; i++) builder.append(" ");
     return builder.toString();
   }
+
   private static void printParameter(Parameter<?> parameter, int indent) {
     LOG.info("| " + parameter.required() +
                   " | " + parameter.key() + indent(indent - parameter.key().length()) +
