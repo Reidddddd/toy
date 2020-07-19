@@ -24,6 +24,7 @@ import org.apache.aries.common.ToyUtils;
 import java.util.List;
 
 public class MarsRover extends AbstractJavaToy {
+
   private final Parameter<String[]> commands =
       StringArrayParameter.newBuilder("mr.commands").setDescription("A series of movements for rover").setRequired().opt();
   private final Parameter<String[]> plateau_point =

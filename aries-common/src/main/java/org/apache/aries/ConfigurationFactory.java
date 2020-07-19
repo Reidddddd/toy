@@ -20,8 +20,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.aries.annotation.ThreadSafe;
 
-import java.io.FileNotFoundException;
-import java.nio.file.NotDirectoryException;
 import java.util.Map;
 
 /**
@@ -36,10 +34,8 @@ public final class ConfigurationFactory {
    * Create hbase configuration.
    * @param toy_conf toy configuration
    * @return wrapped hbase configuration
-   * @throws NotDirectoryException if passes in parameter is not a directory
-   * @throws FileNotFoundException if dir doesn't contain hbase-site.xml
    */
-  public static synchronized final Configuration createHBaseConfiguration(ToyConfiguration toy_conf) {
+  public static synchronized Configuration createHBaseConfiguration(ToyConfiguration toy_conf) {
     Configuration configuration = HBaseConfiguration.create();
     for (Map.Entry<Object, Object> e : toy_conf.getProperties().entrySet()) {
       configuration.set((String)e.getKey(), (String)e.getValue());
