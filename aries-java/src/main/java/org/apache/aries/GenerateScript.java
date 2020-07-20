@@ -137,7 +137,7 @@ public class GenerateScript extends AbstractJavaToy {
   private int generateScript(List<String> template_lines, Map<Integer, LinkedList<String>> p_sets, boolean repeat_line) throws IOException {
     String name = source_script.getName();
     File script = new File(script_dir, source_script.getName());
-    String header = name.endsWith("sql") ? "-- " : "# " + HEADER;
+    String header = (name.endsWith("sql") ? "-- " : "# ") + HEADER;
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(script))) {
       writer.write(header);
       writer.newLine();
@@ -161,6 +161,8 @@ public class GenerateScript extends AbstractJavaToy {
       }
       writer.newLine();
     }
+    script.setExecutable(true);
+    LOG.info("Generated script: " + script);
     return RETURN_CODE.SUCCESS.code();
   }
 
