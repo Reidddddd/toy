@@ -34,8 +34,11 @@ import org.apache.aries.common.StringParameter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class PutWorker extends AbstractHBaseToy {
 
@@ -53,6 +56,8 @@ public class PutWorker extends AbstractHBaseToy {
   private final Parameter<Long> buffer_size =
       LongParameter.newBuilder("pw.buffer_size").setDefaultValue(Constants.ONE_MB)
                    .setDescription("Buffer size in bytes for batch put").opt();
+  private final Parameter<Integer> running_time =
+      IntParameter.newBuilder("pw.running_time").setDescription("How long this application run (in seconds").opt();
 
   private Admin admin;
   private ExecutorService service;
@@ -66,6 +71,7 @@ public class PutWorker extends AbstractHBaseToy {
     requisites.add(table_name);
     requisites.add(family);
     requisites.add(buffer_size);
+    requisites.add(running_time);
   }
 
   @Override
@@ -74,6 +80,7 @@ public class PutWorker extends AbstractHBaseToy {
     example(table_name.key(), "table:for_put");
     example(family.key(), "f");
     example(buffer_size.key(), "1024");
+    example(running_time.key(), "300");
   }
 
   @Override
@@ -95,6 +102,21 @@ public class PutWorker extends AbstractHBaseToy {
         mutex.notify();
       }
     }));
+
+    if (!running_time.empty()) {
+      new Timer().schedule(new TimerTask() {
+        @Override
+        public void run() {
+          try {
+            TimeUnit.SECONDS.sleep(running_time.value());
+          } catch (InterruptedException e) {
+            // Ignore
+          } finally {
+            running = false;
+          }
+        }
+      }, 0);
+    }
   }
 
   @Override
