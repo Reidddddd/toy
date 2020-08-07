@@ -112,7 +112,9 @@ public class PutWorker extends AbstractHBaseToy {
           } catch (InterruptedException e) {
             // Ignore
           } finally {
-            running = false;
+            synchronized (mutex) {
+              mutex.notify();
+            }
           }
         }
       }, 0);
@@ -125,6 +127,7 @@ public class PutWorker extends AbstractHBaseToy {
       mutex.wait();
       running = false;
     }
+    LOG.info("Existing.");
     return 0;
   }
 
