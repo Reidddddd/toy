@@ -30,6 +30,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("rawtypes")
 public class MergeTable extends AbstractHBaseToy {
@@ -39,22 +40,27 @@ public class MergeTable extends AbstractHBaseToy {
   private final Parameter<Integer> merge_threshold =
       IntParameter.newBuilder("mt.merge_threshold_megabytes")
                   .setRequired().setDescription("Regions under this threshold will be merged, unit in MB").opt();
+  private final Parameter<Integer> runs_interval_sec =
+      IntParameter.newBuilder("mt.run_interval_sec").setDefaultValue(600).setDescription("Interval between merge run, in seconds").opt();
 
   @Override
   protected void requisite(List<Parameter> requisites) {
     requisites.add(merge_table_url);
     requisites.add(merge_threshold);
+    requisites.add(runs_interval_sec);
   }
 
   @Override
   protected void exampleConfiguration() {
     example(merge_table_url.key(), "http://host:port/table.jsp?name=namespace:table");
     example(merge_threshold.key(), "100");
+    example(runs_interval_sec.key(), "500");
   }
 
   Admin admin;
   TableName table;
   long threshold_bytes;
+  int round = Constants.UNSET_INT;
 
   @Override
   protected void buildToy(ToyConfiguration configuration) throws Exception {
@@ -67,30 +73,48 @@ public class MergeTable extends AbstractHBaseToy {
 
   @Override
   protected int haveFun() throws Exception {
-    List<HRegionInfo> regions = admin.getTableRegions(table);
-
-    Document doc = Jsoup.connect(merge_table_url.value()).get();
-    Element element = doc.getElementById("regionServerDetailsTable");
-    TableInfo table_info = new TableInfo(element);
-    for (int i = 0, index_a, index_b; i < table_info.regionNum();) {
-      index_a = i++;
-      index_b = i++;
-      if (index_b > table_info.regionNum()) {
-        break;
+    do {
+      List<HRegionInfo> regions = admin.getTableRegions(table);
+      Document doc = Jsoup.connect(merge_table_url.value()).get();
+      Element element = doc.getElementById("regionServerDetailsTable");
+      TableInfo table_info = new TableInfo(element);
+      if (round == Constants.UNSET_INT) {
+        // It is determined by first run.
+        round = calculateHowManyRuns(table_info);
       }
-      RegionInfo region_A = table_info.getRegionAtIndex(index_a);
-      RegionInfo region_B = table_info.getRegionAtIndex(index_b);
-      if (region_A.getSizeInBytes() < threshold_bytes || region_B.getSizeInBytes() < threshold_bytes) {
-        HRegionInfo A_region = regions.get(index_a);
-        HRegionInfo B_region = regions.get(index_b);
-        LOG.info("Merging region " + A_region.getRegionId() + " and " + B_region.getRegionId());
-        admin.mergeRegions(
-            A_region.getEncodedNameAsBytes(),
-            B_region.getEncodedNameAsBytes(),
-            false);
+      for (int i = 0, index_a, index_b; i < table_info.regionNum(); ) {
+        index_a = i++;
+        index_b = i++;
+        if (index_b > table_info.regionNum()) {
+          break;
+        }
+        RegionInfo region_A = table_info.getRegionAtIndex(index_a);
+        RegionInfo region_B = table_info.getRegionAtIndex(index_b);
+        if (region_A.getSizeInBytes() < threshold_bytes || region_B.getSizeInBytes() < threshold_bytes) {
+          HRegionInfo A_region = regions.get(index_a);
+          HRegionInfo B_region = regions.get(index_b);
+          LOG.info("Merging region " + A_region.getRegionId() + " and " + B_region.getRegionId());
+          admin.mergeRegions(
+              A_region.getEncodedNameAsBytes(),
+              B_region.getEncodedNameAsBytes(),
+              false);
+        }
       }
-    }
+      LOG.info("Sleeping for " + runs_interval_sec.value() + " seconds to wait for CatalogJanitor cleaning merged regions.");
+      TimeUnit.SECONDS.sleep(runs_interval_sec.value());
+    } while (--round != 0);
     return 0;
+  }
+
+  private int calculateHowManyRuns(TableInfo table) {
+    int result = 0;
+    int qualified_for_merge = 0;
+    for (RegionInfo region : table.getRegions()) {
+      qualified_for_merge += region.getSizeInBytes() < threshold_bytes ? 1 : 0;
+    }
+    result = (int) (Math.log(qualified_for_merge) / Math.log(2));
+    LOG.info("There will be " + result + " runs");
+    return result;
   }
 
   @Override
@@ -173,6 +197,10 @@ public class MergeTable extends AbstractHBaseToy {
       for (int i = 1; i < rows.size(); i++) {
         regions.add(new RegionInfo(rows.get(i)));
       }
+    }
+
+    public List<RegionInfo> getRegions() {
+      return regions;
     }
 
     public int regionNum() {
