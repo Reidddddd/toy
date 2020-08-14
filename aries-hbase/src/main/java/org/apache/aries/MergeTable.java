@@ -23,7 +23,6 @@ import org.apache.hadoop.hbase.client.Admin;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.util.List;
 
@@ -59,7 +58,7 @@ public class MergeTable extends AbstractHBaseToy {
   protected int haveFun() throws Exception {
     Document doc = Jsoup.connect(merge_table_url.value()).get();
     Element element = doc.selectFirst("tbody");
-    for (Elements ele : element.getAllElements()) {
+    for (Element ele : element.getAllElements()) {
       System.out.println(ele);
     }
     return 0;
