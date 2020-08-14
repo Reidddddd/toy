@@ -85,7 +85,7 @@ public class MergeTable extends AbstractHBaseToy {
       for (int i = 0, index_a, index_b; i < table_info.regionNum(); ) {
         index_a = i++;
         index_b = i++;
-        if (index_b > table_info.regionNum()) {
+        if (index_b >= table_info.regionNum()) {
           break;
         }
         RegionInfo region_A = table_info.getRegionAtIndex(index_a);
