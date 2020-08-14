@@ -71,18 +71,19 @@ public class MergeTable extends AbstractHBaseToy {
     Document doc = Jsoup.connect(merge_table_url.value()).get();
     Element element = doc.getElementById("regionServerDetailsTable");
     TableInfo table_info = new TableInfo(element);
-    for (int i = 0; i < table_info.regionNum(); i += 2) {
-      RegionInfo regionA = table_info.getRegionAtIndex(i);
-      RegionInfo regionB = table_info.getRegionAtIndex(i + 1);
-      if (regionA.getSizeInBytes() < threshold_bytes) {
-        System.out.println("RegionA:");
-        System.out.println(regionA);
-        System.out.println(regions.get(i));
-      }
-      if (regionB.getSizeInBytes() < threshold_bytes) {
-        System.out.println("RegionB:");
-        System.out.println(regionB);
-        System.out.println(regions.get(i + 1));
+    for (int i = 0, index_a, index_b; i < table_info.regionNum();) {
+      index_a = i++;
+      index_b = i++;
+      RegionInfo region_A = table_info.getRegionAtIndex(index_a);
+      RegionInfo region_B = table_info.getRegionAtIndex(index_b);
+      if (region_A.getSizeInBytes() < threshold_bytes || region_B.getSizeInBytes() < threshold_bytes) {
+        HRegionInfo A_region = regions.get(index_a);
+        HRegionInfo B_region = regions.get(index_b);
+        LOG.info("Merging region " + A_region.getRegionId() + " and " + B_region.getRegionId());
+        admin.mergeRegions(
+            A_region.getEncodedNameAsBytes(),
+            B_region.getEncodedNameAsBytes(),
+            false);
       }
     }
     return 0;
