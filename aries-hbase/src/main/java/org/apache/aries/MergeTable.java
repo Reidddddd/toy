@@ -31,6 +31,7 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 public class MergeTable extends AbstractHBaseToy {
 
   private final Parameter<String> merge_table_url =
@@ -74,6 +75,9 @@ public class MergeTable extends AbstractHBaseToy {
     for (int i = 0, index_a, index_b; i < table_info.regionNum();) {
       index_a = i++;
       index_b = i++;
+      if (index_b > table_info.regionNum()) {
+        break;
+      }
       RegionInfo region_A = table_info.getRegionAtIndex(index_a);
       RegionInfo region_B = table_info.getRegionAtIndex(index_b);
       if (region_A.getSizeInBytes() < threshold_bytes || region_B.getSizeInBytes() < threshold_bytes) {
@@ -169,10 +173,6 @@ public class MergeTable extends AbstractHBaseToy {
       for (int i = 1; i < rows.size(); i++) {
         regions.add(new RegionInfo(rows.get(i)));
       }
-    }
-
-    public List<RegionInfo> getRegions() {
-      return regions;
     }
 
     public int regionNum() {
