@@ -19,6 +19,10 @@
 *.tar.gz
 *.rar
 
+# Exclude external lib
+extlib/*
+!extlib/*.jar
+
 # Directories
 /.idea
 *target/
