@@ -23,7 +23,9 @@ import org.apache.hadoop.hbase.client.Admin;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MergeTable extends AbstractHBaseToy {
@@ -57,9 +59,10 @@ public class MergeTable extends AbstractHBaseToy {
   @Override
   protected int haveFun() throws Exception {
     Document doc = Jsoup.connect(merge_table_url.value()).get();
-    Element element = doc.selectFirst("tbody");
-    for (Element ele : element.getAllElements()) {
-      System.out.println(ele);
+    Element element = doc.getElementById("regionServerDetailsTable");
+    TableInfo table = new TableInfo(element);
+    for (RegionInfo region : table.getRegions()) {
+      System.out.println(region);
     }
     return 0;
   }
@@ -68,5 +71,69 @@ public class MergeTable extends AbstractHBaseToy {
   protected void destroyToy() throws Exception {
     admin.close();
     super.destroyToy();
+  }
+
+  class RegionInfo {
+
+    String name;
+    String server;
+    String read_requests;
+    String write_requests;
+    String file_size;
+    String file_num;
+    String mem_size;
+    String locality;
+    String start_key;
+    String end_key;
+
+    RegionInfo(Element region) {
+      Elements column = region.select("td");
+               int i = 0;
+      name           = column.get(i++).text();
+      server         = column.get(i++).text();
+      read_requests  = column.get(i++).text();
+      write_requests = column.get(i++).text();
+      file_size      = column.get(i++).text();
+      file_num       = column.get(i++).text();
+      mem_size       = column.get(i++).text();
+      locality       = column.get(i++).text();
+      start_key      = column.get(i++).text();
+      end_key        = column.get(i++).text();
+    }
+
+    @Override
+    public String toString() {
+      return "RegionInfo{" +
+          "name='" + name + '\'' +
+          ", server='" + server + '\'' +
+          ", read_requests='" + read_requests + '\'' +
+          ", write_requests='" + write_requests + '\'' +
+          ", file_size='" + file_size + '\'' +
+          ", file_num='" + file_num + '\'' +
+          ", mem_size='" + mem_size + '\'' +
+          ", locality='" + locality + '\'' +
+          ", start_key='" + start_key + '\'' +
+          ", end_key='" + end_key + '\'' +
+          '}';
+    }
+
+  }
+
+  class TableInfo {
+
+    final List<RegionInfo> regions;
+
+    TableInfo(Element table) {
+      Elements rows = table.select("tr");
+      regions = new ArrayList<>(rows.size() - 1); // Skip first title row
+      for (int i = 1; i < rows.size(); i++) {
+        regions.add(new RegionInfo(rows.get(i)));
+      }
+    }
+
+    public List<RegionInfo> getRegions() {
+      return regions;
+    }
+
   }
 }
