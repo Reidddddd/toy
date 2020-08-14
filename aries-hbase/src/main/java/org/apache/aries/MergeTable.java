@@ -16,9 +16,12 @@
 
 package org.apache.aries;
 
+import org.apache.aries.common.Constants;
 import org.apache.aries.common.IntParameter;
 import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringParameter;
+import org.apache.hadoop.hbase.HRegionInfo;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -49,20 +52,38 @@ public class MergeTable extends AbstractHBaseToy {
   }
 
   Admin admin;
+  TableName table;
+  long threshold_bytes;
 
   @Override
   protected void buildToy(ToyConfiguration configuration) throws Exception {
     super.buildToy(configuration);
     admin = connection.getAdmin();
+    int start = merge_table_url.value().indexOf("=") + 1;
+    table = TableName.valueOf(merge_table_url.value().substring(start));
+    threshold_bytes = merge_threshold.value() * Constants.ONE_MB;
   }
 
   @Override
   protected int haveFun() throws Exception {
+    List<HRegionInfo> regions = admin.getTableRegions(table);
+
     Document doc = Jsoup.connect(merge_table_url.value()).get();
     Element element = doc.getElementById("regionServerDetailsTable");
-    TableInfo table = new TableInfo(element);
-    for (RegionInfo region : table.getRegions()) {
-      System.out.println(region);
+    TableInfo table_info = new TableInfo(element);
+    for (int i = 0; i < table_info.regionNum(); i += 2) {
+      RegionInfo regionA = table_info.getRegionAtIndex(i);
+      RegionInfo regionB = table_info.getRegionAtIndex(i + 1);
+      if (regionA.getSizeInBytes() < threshold_bytes) {
+        System.out.println("RegionA:");
+        System.out.println(regionA);
+        System.out.println(regions.get(i));
+      }
+      if (regionB.getSizeInBytes() < threshold_bytes) {
+        System.out.println("RegionB:");
+        System.out.println(regionB);
+        System.out.println(regions.get(i + 1));
+      }
     }
     return 0;
   }
@@ -101,6 +122,24 @@ public class MergeTable extends AbstractHBaseToy {
       end_key        = column.get(i++).text();
     }
 
+    public long getSizeInBytes() {
+      long size;
+      String num = file_size.split(" ")[0];
+      if (file_size.contains("GB")) {
+        float gb = Float.parseFloat(num); // get the number
+        size = (long) (gb * Constants.ONE_GB);
+      } else if (file_size.contains("MB")) {
+        float mb = Float.parseFloat(num);
+        size = (long) (mb * Constants.ONE_MB);
+      } else if (file_size.contains("KB")) {
+        float kb = Float.parseFloat(num);
+        size = (long) (kb * Constants.ONE_KB);
+      } else {
+        size = Long.parseLong(num);
+      }
+      return size;
+    }
+
     @Override
     public String toString() {
       return "RegionInfo{" +
@@ -135,5 +174,14 @@ public class MergeTable extends AbstractHBaseToy {
       return regions;
     }
 
+    public int regionNum() {
+      return regions.size();
+    }
+
+    RegionInfo getRegionAtIndex(int i) {
+      return regions.get(i);
+    }
+
   }
+
 }
