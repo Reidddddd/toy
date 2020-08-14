@@ -116,7 +116,8 @@ then
   execute_jar=$execute_jar:$exe_jar
 fi
 
-execute_jar=$bin/../extlib/*.jar:$execute_jar
+grep_thin_jar "$bin/../extlib/*.jar"
+execute_jar=$execute_jar:$exe_jar
 
 echo "Execution classpath: $execute_jar"
 
