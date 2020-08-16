@@ -62,6 +62,8 @@ public class MergeTable extends AbstractHBaseToy {
   long threshold_bytes;
   int round = Constants.UNSET_INT;
 
+  final Conditions conditions = new Conditions();
+
   @Override
   protected void buildToy(ToyConfiguration configuration) throws Exception {
     super.buildToy(configuration);
@@ -69,6 +71,9 @@ public class MergeTable extends AbstractHBaseToy {
     int start = merge_table_url.value().indexOf("=") + 1;
     table = TableName.valueOf(merge_table_url.value().substring(start));
     threshold_bytes = merge_threshold.value() * Constants.ONE_MB;
+    conditions.addCondition((region_A, region_B) -> region_A.getSizeInBytes() < threshold_bytes || region_B.getSizeInBytes() < threshold_bytes);
+    conditions.addCondition((region_A, region_B) -> (region_A.readRequests() == 0 && region_A.writeRequests() == 0) ||
+                                                    (region_B.readRequests() == 0 && region_B.writeRequests() == 0));
   }
 
   @Override
@@ -90,7 +95,7 @@ public class MergeTable extends AbstractHBaseToy {
         }
         RegionInfo region_A = table_info.getRegionAtIndex(index_a);
         RegionInfo region_B = table_info.getRegionAtIndex(index_b);
-        if (region_A.getSizeInBytes() < threshold_bytes || region_B.getSizeInBytes() < threshold_bytes) {
+        if (conditions.shouldMerge(region_A, region_B)) {
           HRegionInfo A_region = regions.get(index_a);
           HRegionInfo B_region = regions.get(index_b);
           LOG.info("Merging region " + A_region.getRegionId() + " and " + B_region.getRegionId());
@@ -107,12 +112,11 @@ public class MergeTable extends AbstractHBaseToy {
   }
 
   private int calculateHowManyRuns(TableInfo table) {
-    int result = 0;
     int qualified_for_merge = 0;
     for (RegionInfo region : table.getRegions()) {
       qualified_for_merge += region.getSizeInBytes() < threshold_bytes ? 1 : 0;
     }
-    result = (int) (Math.log(qualified_for_merge) / Math.log(2));
+    int result = (int) (Math.log(qualified_for_merge) / Math.log(2));
     LOG.info("There will be " + result + " runs");
     return result;
   }
@@ -121,6 +125,28 @@ public class MergeTable extends AbstractHBaseToy {
   protected void destroyToy() throws Exception {
     admin.close();
     super.destroyToy();
+  }
+
+  interface Condition {
+    boolean shouldMerge(RegionInfo region_A, RegionInfo region_B);
+  }
+
+  class Conditions implements Condition {
+    List<Condition> conditions = new ArrayList<>();
+
+    void addCondition(Condition condition) {
+      conditions.add(condition);
+    }
+
+    @Override
+    public boolean shouldMerge(RegionInfo region_A, RegionInfo region_B) {
+      for (Condition condition : conditions) {
+        if (condition.shouldMerge(region_A, region_B)) {
+          return true;
+        }
+      }
+      return false;
+    }
   }
 
   class RegionInfo {
@@ -167,6 +193,14 @@ public class MergeTable extends AbstractHBaseToy {
         size = Long.parseLong(num);
       }
       return size;
+    }
+
+    public int readRequests() {
+      return Integer.parseInt(read_requests);
+    }
+
+    public int writeRequests() {
+      return Integer.parseInt(write_requests);
     }
 
     @Override
