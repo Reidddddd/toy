@@ -196,11 +196,11 @@ public class MergeTable extends AbstractHBaseToy {
     }
 
     public int readRequests() {
-      return Integer.parseInt(read_requests);
+      return Integer.parseInt(read_requests.replaceAll(",", ""));
     }
 
     public int writeRequests() {
-      return Integer.parseInt(write_requests);
+      return Integer.parseInt(write_requests.replaceAll(",", ""));
     }
 
     @Override
