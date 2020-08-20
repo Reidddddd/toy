@@ -37,32 +37,47 @@ public class MergeTable extends AbstractHBaseToy {
 
   private final Parameter<String> merge_table_url =
       StringParameter.newBuilder("mt.url").setRequired().setDescription("The pages of the table. Please copy from HBase Web UI").opt();
-  private final Parameter<Integer> merge_threshold =
-      IntParameter.newBuilder("mt.merge_threshold_megabytes")
-                  .setRequired().setDescription("Regions under this threshold will be merged, unit in MB").opt();
+  private final Parameter<Integer> merge_size_threshold =
+      IntParameter.newBuilder("mt.merge_threshold_megabytes").setDefaultValue(100)
+                  .setDescription("Regions under this threshold will be merged, unit in MB").opt();
   private final Parameter<Integer> runs_interval_sec =
       IntParameter.newBuilder("mt.run_interval_sec").setDefaultValue(600).setDescription("Interval between merge run, in seconds").opt();
+  private final Parameter<String> merge_condition =
+      StringParameter.newBuilder("mt.merge_condition").setDefaultValue("all").setRequired()
+                     .setDescription("Merge condition, there're 3 options: all, size, rreq, "
+                         + "all contains size and rreq. size condition needs to have mt.merge_threshold_megabytes set, 100 by default."
+                         + " rreq is short for read request which needs mt.merge_threshold_readrequest set, 0 by default.").opt();
+  private final Parameter<Integer> merge_rreq_threshold =
+      IntParameter.newBuilder("mt.merge_threshold_readrequest").setDefaultValue(0)
+                  .setDescription("Regions read request under this threshold will be merged.").opt();
 
   @Override
   protected void requisite(List<Parameter> requisites) {
     requisites.add(merge_table_url);
-    requisites.add(merge_threshold);
+    requisites.add(merge_condition);
+    requisites.add(merge_size_threshold);
+    requisites.add(merge_rreq_threshold);
     requisites.add(runs_interval_sec);
   }
 
   @Override
   protected void exampleConfiguration() {
     example(merge_table_url.key(), "http://host:port/table.jsp?name=namespace:table");
-    example(merge_threshold.key(), "100");
+    example(merge_condition.key(), "all");
+    example(merge_size_threshold.key(), "100");
+    example(merge_rreq_threshold.key(), "0");
     example(runs_interval_sec.key(), "500");
   }
 
   Admin admin;
   TableName table;
   long threshold_bytes;
+  int read_requests;
   int round = Constants.UNSET_INT;
 
   final Conditions conditions = new Conditions();
+  final MergeCondition size_condition = region -> region.getSizeInBytes() < threshold_bytes;
+  final MergeCondition rreq_condition = region -> region.readRequests() <= read_requests;
 
   @Override
   protected void buildToy(ToyConfiguration configuration) throws Exception {
@@ -70,9 +85,20 @@ public class MergeTable extends AbstractHBaseToy {
     admin = connection.getAdmin();
     int start = merge_table_url.value().indexOf("=") + 1;
     table = TableName.valueOf(merge_table_url.value().substring(start));
-    threshold_bytes = merge_threshold.value() * Constants.ONE_MB;
-    conditions.addCondition(region -> region.getSizeInBytes() < threshold_bytes);
-    conditions.addCondition(region -> region.readRequests() == 0);
+
+    String type = merge_condition.value();
+    if (type.equalsIgnoreCase("size")) {
+      threshold_bytes = merge_size_threshold.value() * Constants.ONE_MB;
+      conditions.addCondition(size_condition);
+    } else if (type.equalsIgnoreCase("rreq")) {
+      read_requests = merge_rreq_threshold.value();
+      conditions.addCondition(rreq_condition);
+    } else if (type.equalsIgnoreCase("all")) {
+      threshold_bytes = merge_size_threshold.value() * Constants.ONE_MB;
+      conditions.addCondition(size_condition);
+      read_requests = merge_rreq_threshold.value();
+      conditions.addCondition(rreq_condition);
+    }
   }
 
   @Override
