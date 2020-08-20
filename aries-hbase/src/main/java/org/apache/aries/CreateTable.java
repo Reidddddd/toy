@@ -59,6 +59,8 @@ public class CreateTable extends AbstractHBaseToy {
                   .addConstraint(v -> v > 1).addConstraint(v -> v <= 1000).addConstraint(v -> 1000 % v == 0).opt();
   private final Parameter<String> table_owners =
       StringParameter.newBuilder("ct.table_owners").setRequired().setDescription("Whom the table is under in charge by, delimited by ','").opt();
+  private final Parameter<Integer> table_split_size =
+      IntParameter.newBuilder("ct.table_split_size_in_megabytes").setDescription("The MAX_FILESIZE of a table, larger than this will trigger split.").opt();
   // Column family parameters
   // Following are optionals
   private final Parameter<Enum> compression =
@@ -106,6 +108,7 @@ public class CreateTable extends AbstractHBaseToy {
     requisites.add(hex_split_regions);
     requisites.add(dec_split_regions);
     requisites.add(table_owners);
+    requisites.add(table_split_size);
     // Family parameters
     requisites.add(compression);
     requisites.add(cache_data_on_write);
@@ -133,6 +136,9 @@ public class CreateTable extends AbstractHBaseToy {
     }
 
     HTableDescriptor descriptor = buildTableDescriptor();
+    if (!table_split_size.empty()) {
+      descriptor.setMaxFileSize(table_split_size.value() * Constants.ONE_MB);
+    }
     for (String f : families.value()) {
       descriptor.addFamily(buildFamilyDescriptor(f, connection.getConfiguration()));
     }
