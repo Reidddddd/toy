@@ -23,7 +23,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * An abstract toy.
@@ -67,18 +69,18 @@ public abstract class AbstractToy implements Toy {
   private final void printParameters(ToyConfiguration toy_conf, String parameter_prefix) {
     LOG.info("Parameters for " +  this.getClass().getSimpleName() + " are:");
     Properties properties = toy_conf.getProperties();
-    for (Object rawkey : properties.keySet()) {
-      String key = (String) rawkey;
-      if (!key.startsWith(parameter_prefix)) {
-        continue;
-      }
-
+    Set<String> keys = properties.keySet().stream().map(String.class::cast).filter(k -> k.startsWith(parameter_prefix)).collect(Collectors.toSet());
+    for (String key : keys) {
       Iterator<Parameter> iter = parameters.iterator();
       while (iter.hasNext()) {
         Parameter parameter = iter.next();
-             if (key.equals(parameter.key()))     example(parameter.key(), parameter.valueInString());
-        else if (key.startsWith(parameter.key())) example(key, (String) properties.get(key));
-        else iter.remove();
+        if (key.equals(parameter.key())) {
+          example(parameter.key(), parameter.valueInString());
+          iter.remove();
+        } else if (key.startsWith(parameter.key())) {
+          example(key, (String) properties.get(key));
+          iter.remove();
+        }
       }
     }
     for (Parameter parameter : parameters) {
