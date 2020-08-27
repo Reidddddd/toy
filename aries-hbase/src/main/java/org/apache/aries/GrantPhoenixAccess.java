@@ -56,4 +56,8 @@ public class GrantPhoenixAccess extends GrantAccessControl {
     example(p_users.key(), "whoever");
     example(test_db.key(), "false");
   }
+
+  @Override protected String getParameterPrefix() {
+    return "gpa";
+  }
 }

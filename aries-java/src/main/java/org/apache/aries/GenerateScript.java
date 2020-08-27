@@ -104,6 +104,10 @@ public class GenerateScript extends AbstractJavaToy {
                           repeat_as_line.value());
   }
 
+  @Override protected String getParameterPrefix() {
+    return "gs";
+  }
+
   private List<String> readScriptTemplate() {
     List<String> lines = new ArrayList<>();
     try (FileLineIterator iter = new FileLineIterator(source_script)) {

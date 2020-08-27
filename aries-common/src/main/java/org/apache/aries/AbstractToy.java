@@ -19,8 +19,10 @@ package org.apache.aries;
 import org.apache.aries.common.HelpPrinter;
 import org.apache.aries.common.Parameter;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -31,7 +33,7 @@ public abstract class AbstractToy implements Toy {
   protected static final Logger LOG = Logger.getLogger(AbstractToy.class.getName());
 
   @SuppressWarnings("rawtypes")
-  private final List<Parameter> parameters = new ArrayList<>();
+  private final List<Parameter> parameters = new LinkedList<>();
 
   @Override
   public final void init() {
@@ -52,7 +54,7 @@ public abstract class AbstractToy implements Toy {
     preCheck(toy_conf, parameters);
     midCheck();
     buildToy(toy_conf);
-    printParameters();
+    printParameters(toy_conf, getParameterPrefix());
     try {
       return haveFun();
     } finally {
@@ -60,10 +62,27 @@ public abstract class AbstractToy implements Toy {
     }
   }
 
-  private final void printParameters() {
+  protected abstract String getParameterPrefix();
+
+  private final void printParameters(ToyConfiguration toy_conf, String parameter_prefix) {
     LOG.info("Parameters for " +  this.getClass().getSimpleName() + " are:");
+    Properties properties = toy_conf.getProperties();
+    for (Object rawkey : properties.keySet()) {
+      String key = (String) rawkey;
+      if (!key.startsWith(parameter_prefix)) {
+        continue;
+      }
+
+      Iterator<Parameter> iter = parameters.iterator();
+      while (iter.hasNext()) {
+        Parameter parameter = iter.next();
+             if (key.equals(parameter.key()))     example(parameter.key(), parameter.valueInString());
+        else if (key.startsWith(parameter.key())) example(key, (String) properties.get(key));
+        else iter.remove();
+      }
+    }
     for (Parameter parameter : parameters) {
-      LOG.info(parameter.key() + "=" + parameter.valueInString());
+      example(parameter.key(), String.valueOf(parameter.defvalue()));
     }
   }
 

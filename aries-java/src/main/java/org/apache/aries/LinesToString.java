@@ -97,4 +97,8 @@ public class LinesToString extends AbstractJavaToy {
   protected void destroyToy() throws Exception {
   }
 
+  @Override protected String getParameterPrefix() {
+    return "lts";
+  }
+
 }

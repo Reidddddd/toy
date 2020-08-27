@@ -50,4 +50,8 @@ public class DropPhoenixTable extends AbstractPhoenixToy {
     example(tables.key(), "PHOENIX.TABLE1,PHOENIX.TABLE2,PHOENIX.TABLE3");
   }
 
+  @Override protected String getParameterPrefix() {
+    return "dpt";
+  }
+
 }

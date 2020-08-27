@@ -152,6 +152,10 @@ public class MergeTable extends AbstractHBaseToy {
     super.destroyToy();
   }
 
+  @Override protected String getParameterPrefix() {
+    return "mt";
+  }
+
   interface MergeCondition {
     boolean shouldMerge(RegionInfo region);
   }

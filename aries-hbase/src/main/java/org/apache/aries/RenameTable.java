@@ -91,4 +91,8 @@ public class RenameTable extends AbstractHBaseToy {
     example(new_table_names.key(), "b,bob:toy,bob:alice");
   }
 
+  @Override protected String getParameterPrefix() {
+    return "rt";
+  }
+
 }

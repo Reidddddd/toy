@@ -138,6 +138,10 @@ public class PutWorker extends AbstractHBaseToy {
     service.shutdown();
   }
 
+  @Override protected String getParameterPrefix() {
+    return "pw";
+  }
+
   private static String char_list = "abcdefghijklmnopqrstuvwxyz0123456789";
   private static String generateRandomString(int size) {
     StringBuilder builder = new StringBuilder();

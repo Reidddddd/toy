@@ -167,6 +167,10 @@ public class CreateTable extends AbstractHBaseToy {
     example(in_memory.key() + ".a", "true");
   }
 
+  @Override protected String getParameterPrefix() {
+    return "ct";
+  }
+
   private HTableDescriptor buildTableDescriptor() {
     HTableDescriptor descriptor = new HTableDescriptor(table);
     descriptor.setValue(Bytes.toBytes("TABLE_OWNERS"), Bytes.toBytes(table_owners.value()));

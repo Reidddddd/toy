@@ -102,4 +102,8 @@ public class TopicCreation extends AbstractKafkaToy {
     ac.close(5, TimeUnit.SECONDS);
   }
 
+  @Override protected String getParameterPrefix() {
+    return "tc";
+  }
+
 }

@@ -282,4 +282,8 @@ public class GrantAccessControl extends AbstractHBaseToy {
     LOG.info(g_v + " " + user + " permissions: " + ToyUtils.arrayToString(actions) + " on " + scope + ": " + scope_name );
   }
 
+  @Override protected String getParameterPrefix() {
+    return "gac";
+  }
+
 }

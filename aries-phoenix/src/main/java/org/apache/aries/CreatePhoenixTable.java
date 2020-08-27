@@ -119,4 +119,8 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
     example(options.key(), "cn,us,sg,jp,uk");
   }
 
+  @Override protected String getParameterPrefix() {
+    return "cpt";
+  }
+
 }

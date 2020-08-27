@@ -80,6 +80,10 @@ public class MarsRover extends AbstractJavaToy {
   @Override protected void destroyToy() throws Exception {
   }
 
+  @Override protected String getParameterPrefix() {
+    return "mr";
+  }
+
   static class Plateau {
 
     int border_x;
