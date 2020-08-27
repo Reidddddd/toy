@@ -28,6 +28,7 @@ public abstract class AbstractPhoenixToy extends AbstractToy {
   protected PhoenixConnection connection;
 
   @Override protected void buildToy(ToyConfiguration configuration) throws Exception {
+    LOG.info("Cluster connection: " + configuration.get(PHOENIX_URL));
     connection = (PhoenixConnection) driver.connect(configuration.get(PHOENIX_URL), configuration.getProperties());
   }
 

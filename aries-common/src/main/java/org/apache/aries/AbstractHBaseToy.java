@@ -25,11 +25,15 @@ import org.apache.hadoop.hbase.client.ConnectionFactory;
  */
 public abstract class AbstractHBaseToy extends AbstractToy {
 
+  private static final String HBASE_QUORUM = "hbase.zookeeper.quorum";
+  private static final String HBASE_ZNODE = "zookeeper.znode.parent";
+
   protected Connection connection;
 
   @Override
   protected void buildToy(ToyConfiguration configuration) throws Exception {
     Configuration hbase_conf = ConfigurationFactory.createHBaseConfiguration(configuration);
+    LOG.info("Cluster connection: " + hbase_conf.get(HBASE_QUORUM) + ":" + hbase_conf.get(HBASE_ZNODE));
     connection = ConnectionFactory.createConnection(hbase_conf);
   }
 
