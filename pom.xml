@@ -16,10 +16,11 @@
         <module>aries-hdfs</module>
         <module>aries-phoenix</module>
         <module>aries-kafka</module>
+        <module>aries-benchmark</module>
     </modules>
 
     <properties>
-        <revision>0.2</revision>
+        <revision>0.3</revision>
     </properties>
 
 </project>

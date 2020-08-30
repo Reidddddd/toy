@@ -57,6 +57,29 @@ grep_thin_jar() {
   done
 }
 
+grep_fat_jar() {
+  for jar in $1
+  do
+    if [[ $jar == *"jar-with-dependencies"* ]]
+    then
+      exe_jar=$jar
+    fi
+  done
+}
+
+grep_ext_jar() {
+  exe_jar=""
+  for jar in $1
+  do
+    if [[ $exe_jar == "" ]]
+    then
+      exe_jar=$jar
+    else
+      exe_jar=$jar:$exe_jar
+    fi
+  done
+}
+
 regex="(-(test|src|scaladoc|javadoc)\.jar|jar.asc)$"
 should_include_file() {
   file=$1
@@ -93,6 +116,9 @@ execute_jar=$execute_jar:$exe_jar
 # aries-phoenix jar
 grep_thin_jar "$bin/../aries-phoenix/target/aries-phoenix-[0-9]*.[0-9]*.jar"
 execute_jar=$execute_jar:$exe_jar
+# aries-benchmark jar
+grep_fat_jar "$bin/../aries-benchmark/target/aries-benchmark-[0-9]*.[0-9]*.jar"
+execute_jar=$execute_jar:$exe_jar
 
 # Extract external dependency
 if [[ $kind == "hbase" ]]
@@ -116,7 +142,7 @@ then
   execute_jar=$execute_jar:$exe_jar
 fi
 
-grep_thin_jar "$bin/../extlib/*.jar"
+grep_ext_jar "$bin/../extlib/*.jar"
 execute_jar=$execute_jar:$exe_jar
 
 echo "Execution classpath: $execute_jar"
