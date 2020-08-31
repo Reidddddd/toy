@@ -4,7 +4,7 @@
 
 #if [ "$#" -lt 6 ]
 #then
-#  echo "Usage: aries --kind [java|hbase|hdfs|kafka|phoenix]"
+#  echo "Usage: aries --kind [java|hbase|hdfs|kafka|phoenix|benchmark]"
 #  echo "             --toy [name of toy]"
 #  echo "             --conf_dir [configuration's directory]"
 #  echo "             --help (this will print help message of the toy)"
@@ -18,7 +18,7 @@ get_value() {
   then
     kind=$v
   else
-    echo "Usage: aries --kind [java|hbase|hdfs|kafka|phoenix]"
+    echo "Usage: aries --kind [java|hbase|hdfs|kafka|phoenix|benchmark]"
     echo "             --toy [name of toy]"
     echo "             --conf_dir [configuration's directory]"
     echo "             --help (this will print help message of the toy)"

@@ -26,19 +26,23 @@ import org.openjdk.jmh.annotations.State;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-public class ByteBufferIntoConcurrentMapSet extends AbstractBenchmarkToy {
+public class ByteBufferIntoConcurrentSkipMapSet extends AbstractBenchmarkToy {
 
-  private Map<ByteBuffer, ByteBuffer> onheapmap;
-  private Map<ByteBuffer, ByteBuffer> offheapmap;
-  privae
   private ByteBuffer[] onheap = new ByteBuffer[1000];
   private ByteBuffer[] offheap = new ByteBuffer[1000];
-  private Random random = new Random();
+
+  Random random = new Random();
+
+  private Map<ByteBuffer, Boolean> kmap;
+  private Set<ByteBuffer> kset;
+  private Map<ByteBuffer, ByteBuffer> kvmap;
 
   @Setup
   public void initial() {
@@ -49,20 +53,28 @@ public class ByteBufferIntoConcurrentMapSet extends AbstractBenchmarkToy {
       offheap[i] = ByteBuffer.allocateDirect(Constants.ONE_KB);
     }
 
-    onheapmap = new ConcurrentSkipListMap<>();
-    offheapmap = new ConcurrentSkipListMap<>();
+    kmap = new ConcurrentSkipListMap<>();
+    kvmap = new ConcurrentSkipListMap<>();
+    kset = new ConcurrentSkipListSet<>();
   }
 
   @Benchmark
-  public void onheapPut() {
+  public void testKMap() {
     ByteBuffer bf = onheap[random.nextInt(1000)];
-    onheapmap.put(bf, bf);
+    kmap.put(bf, true);
   }
 
   @Benchmark
-  public void offheapPut() {
-    ByteBuffer bf = offheap[random.nextInt(1000)];
-    offheapmap.put(bf, bf);
+  public void testKVMap() {
+    ByteBuffer bf = onheap[random.nextInt(1000)];
+    kvmap.put(bf, bf);
+  }
+
+  @Benchmark
+  public void testKSet() {
+    ByteBuffer bf = onheap[random.nextInt(1000)];
+    if (kset.contains(bf)) kset.remove(bf);
+    kset.add(bf);
   }
 
 }
