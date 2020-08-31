@@ -36,11 +36,17 @@ import java.util.concurrent.TimeUnit;
 public class ByteBufferIntoConcurrentSkipMapSet extends AbstractBenchmarkToy {
 
   private ByteBuffer[] onheap = new ByteBuffer[1000];
-  private ByteBuffer[] offheap = new ByteBuffer[1000];
 
-  Random random = new Random();
+  @State(Scope.Benchmark)
+  public static class Index {
+    int x = 0;
 
-  private Map<ByteBuffer, Boolean> kmap;
+    public int getIndex() {
+      return x == 1000 ? 0 : x++;
+    }
+  }
+
+  private Map<ByteBuffer, Object> kmap;
   private Set<ByteBuffer> kset;
   private Map<ByteBuffer, ByteBuffer> kvmap;
 
@@ -49,9 +55,6 @@ public class ByteBufferIntoConcurrentSkipMapSet extends AbstractBenchmarkToy {
     for (int i = 0; i < 1000; i++) {
       onheap[i] = ByteBuffer.allocate(Constants.ONE_KB);
     }
-    for (int i = 0; i < 1000; i++) {
-      offheap[i] = ByteBuffer.allocateDirect(Constants.ONE_KB);
-    }
 
     kmap = new ConcurrentSkipListMap<>();
     kvmap = new ConcurrentSkipListMap<>();
@@ -59,20 +62,20 @@ public class ByteBufferIntoConcurrentSkipMapSet extends AbstractBenchmarkToy {
   }
 
   @Benchmark
-  public void testKMap() {
-    ByteBuffer bf = onheap[random.nextInt(1000)];
+  public void testKMap(Index index) {
+    ByteBuffer bf = onheap[index.getIndex()];
     kmap.put(bf, true);
   }
 
   @Benchmark
-  public void testKVMap() {
-    ByteBuffer bf = onheap[random.nextInt(1000)];
+  public void testKVMap(Index index) {
+    ByteBuffer bf = onheap[index.getIndex()];
     kvmap.put(bf, bf);
   }
 
   @Benchmark
-  public void testKSet() {
-    ByteBuffer bf = onheap[random.nextInt(1000)];
+  public void testKSet(Index index) {
+    ByteBuffer bf = onheap[index.getIndex()];
     if (kset.contains(bf)) kset.remove(bf);
     kset.add(bf);
   }
