@@ -16,7 +16,6 @@
         <module>aries-hdfs</module>
         <module>aries-phoenix</module>
         <module>aries-kafka</module>
-        <module>aries-benchmark</module>
     </modules>
 
     <properties>
