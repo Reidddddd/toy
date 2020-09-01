@@ -104,31 +104,22 @@ grep_phoenix_jar() {
 # aries-common jar
 grep_thin_jar "$bin/../aries-common/target/aries-common-[0-9]*.[0-9]*.jar"
 execute_jar=$exe_jar
-# aries-java jar
-grep_thin_jar "$bin/../aries-java/target/aries-java-[0-9]*.[0-9]*.jar"
-execute_jar=$execute_jar:$exe_jar
-# aries-hbase jar
-grep_thin_jar "$bin/../aries-hbase/target/aries-hbase-[0-9]*.[0-9]*.jar"
-execute_jar=$execute_jar:$exe_jar
-# aries-kafka jar
-grep_thin_jar "$bin/../aries-kafka/target/aries-kafka-[0-9]*.[0-9]*.jar"
-execute_jar=$execute_jar:$exe_jar
-# aries-phoenix jar
-grep_thin_jar "$bin/../aries-phoenix/target/aries-phoenix-[0-9]*.[0-9]*.jar"
-execute_jar=$execute_jar:$exe_jar
-# aries-benchmark jar
-grep_fat_jar "$bin/../aries-benchmark/target/aries-benchmark-[0-9]*.[0-9]*.jar"
-execute_jar=$execute_jar:$exe_jar
 
 # Extract external dependency
 if [[ $kind == "hbase" ]]
 then
+# aries-hbase jar
+  grep_thin_jar "$bin/../aries-hbase/target/aries-hbase-[0-9]*.[0-9]*.jar"
+  execute_jar=$execute_jar:$exe_jar
   execute_jar=$execute_jar:`$hbase_home/bin/hbase classpath`
 elif [[ $kind == "hdfs" ]]
 then
   execute_jar=$execute_jar:`$hdfs_home/bin/hdfs classpath`
 elif [[ $kind == "kafka" ]]
 then
+  # aries-kafka jar
+  grep_thin_jar "$bin/../aries-kafka/target/aries-kafka-[0-9]*.[0-9]*.jar"
+  execute_jar=$execute_jar:$exe_jar
   for file in $kafka_home/libs/*
   do
     if should_include_file $file
@@ -138,7 +129,20 @@ then
   done
 elif [[ $kind == "phoenix" ]]
 then
+  # aries-phoenix jar
+  grep_thin_jar "$bin/../aries-phoenix/target/aries-phoenix-[0-9]*.[0-9]*.jar"
+  execute_jar=$execute_jar:$exe_jar
   grep_phoenix_jar "$phoenix_home/*"
+  execute_jar=$execute_jar:$exe_jar
+elif [[ $kind == "benchmark" ]]
+then
+  # aries-benchmark jar
+  grep_fat_jar "$bin/../aries-benchmark/target/aries-benchmark-[0-9]*.[0-9]*.jar"
+  execute_jar=$execute_jar:$exe_jar
+elif [[  $kind == "java" ]]
+then
+  # aries-java jar
+  grep_thin_jar "$bin/../aries-java/target/aries-java-[0-9]*.[0-9]*.jar"
   execute_jar=$execute_jar:$exe_jar
 fi
 
