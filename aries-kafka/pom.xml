@@ -68,6 +68,7 @@
       <groupId>org.rc</groupId>
       <artifactId>aries-common</artifactId>
       <version>${project.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.kafka</groupId>

@@ -43,4 +43,17 @@ public final class ConfigurationFactory {
     return configuration;
   }
 
+  /**
+   * Create hdfs configuration.
+   * @param toy_conf toy configuration
+   * @return wrapped hdfs configuration
+   */
+  public static synchronized Configuration createHDFSConfiguration(ToyConfiguration toy_conf) {
+    Configuration configuration = new Configuration();
+    for (Map.Entry<Object, Object> e : toy_conf.getProperties().entrySet()) {
+      configuration.set((String)e.getKey(), (String)e.getValue());
+    }
+    return configuration;
+  }
+
 }

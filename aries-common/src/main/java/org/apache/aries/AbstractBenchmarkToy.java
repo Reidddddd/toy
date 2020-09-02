@@ -59,7 +59,6 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
     requisites.add(warmup_time);
     requisites.add(measure_iterations);
     requisites.add(measure_time);
-
   }
 
   @Override
