@@ -19,9 +19,11 @@ package org.apache.aries;
 import org.apache.aries.common.HelpPrinter;
 import org.apache.aries.common.Parameter;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -70,21 +72,25 @@ public abstract class AbstractToy implements Toy {
     LOG.info("Parameters for " +  this.getClass().getSimpleName() + " are:");
     Properties properties = toy_conf.getProperties();
     Set<String> keys = properties.keySet().stream().map(String.class::cast).filter(k -> k.startsWith(parameter_prefix)).collect(Collectors.toSet());
-    for (String key : keys) {
-      Iterator<Parameter> iter = parameters.iterator();
-      while (iter.hasNext()) {
-        Parameter parameter = iter.next();
+    Map<Parameter, Boolean> printed = new HashMap<>();
+    for (Parameter parameter : parameters) {
+      printed.put(parameter, false);
+    }
+    for (Parameter parameter : parameters) {
+      for (String key : keys) {
         if (key.equals(parameter.key())) {
           example(parameter.key(), parameter.valueInString());
-          iter.remove();
+          printed.put(parameter, true);
         } else if (key.startsWith(parameter.key())) {
           example(key, (String) properties.get(key));
-          iter.remove();
+          printed.put(parameter, true);
         }
       }
     }
-    for (Parameter parameter : parameters) {
-      example(parameter.key(), String.valueOf(parameter.defvalue()));
+    for (Map.Entry<Parameter, Boolean> entry : printed.entrySet()) {
+      if (!entry.getValue()) {
+        example(entry.getKey().key(), String.valueOf(entry.getKey().defvalue()));
+      }
     }
   }
 

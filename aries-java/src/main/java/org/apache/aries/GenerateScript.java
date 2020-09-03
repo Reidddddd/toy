@@ -173,6 +173,7 @@ public class GenerateScript extends AbstractJavaToy {
     writer.newLine();
     while (line.contains("$")) {
       int set = Character.digit(line.charAt(line.indexOf("$") + 1), 10);
+      if (set < 0) break;
       String key_for_replact = "$" + set;
       line = line.replace(key_for_replact, p_sets.get(set).get(index));
     }

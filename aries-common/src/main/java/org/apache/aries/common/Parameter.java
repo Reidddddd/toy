@@ -18,6 +18,7 @@ package org.apache.aries.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A class defines parameter. Use {@link Builder} to create a Parameter.
@@ -45,6 +46,10 @@ public final class Parameter<T> {
     this.default_value = value;
     this.type = type;
     this.constraints = constraints;
+  }
+
+  @Override public int hashCode() {
+    return Objects.hash(key);
   }
 
   /**
