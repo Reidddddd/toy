@@ -94,12 +94,14 @@ execute_jar=$exe_jar
 # Extract external dependency
 if [[ $kind == "hbase" ]]
 then
-# aries-hbase jar
+  # aries-hbase jar
   grep_thin_jar "$bin/../aries-hbase/target/aries-hbase-[0-9]*.[0-9]*.jar"
   execute_jar=$execute_jar:$exe_jar
   execute_jar=$execute_jar:`$hbase_home/bin/hbase classpath`
 elif [[ $kind == "hdfs" ]]
 then
+  # aries-hdfs jar
+  grep_thin_jar "$bin/../aries-hdfs/target/aries-hdfs-[0-9]*.[0-9]*.jar"
   execute_jar=$execute_jar:`$hdfs_home/bin/hdfs classpath`
 elif [[ $kind == "kafka" ]]
 then
