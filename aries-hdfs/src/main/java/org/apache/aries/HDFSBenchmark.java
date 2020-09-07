@@ -38,8 +38,9 @@ public class HDFSBenchmark extends AbstractBenchmarkToy {
     requisites.add(working_directory);
   }
 
-  @Override protected void example(String key, String value) {
-    super.example(key, value);
+  @Override
+  protected void exampleConfiguration() {
+    super.exampleConfiguration();
     example(working_directory.key(), working_directory.defvalue());
   }
 

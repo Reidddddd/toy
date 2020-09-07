@@ -56,6 +56,13 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     bytes = generateBytes();
   }
 
+  @Override
+  protected void exampleConfiguration() {
+    super.exampleConfiguration();
+    example(write_size.key(), "128");
+    example(write_buffer_size.key(), "1024");
+  }
+
   @Override protected void destroyToy() throws Exception {
     super.destroyToy();
   }
