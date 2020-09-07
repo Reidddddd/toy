@@ -87,7 +87,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   private byte[] generateBytes() {
     byte[] array = new byte[write_buffer_size.value()];
     for (int i = 0; i < write_buffer_size.value(); i++) {
-      bytes[i] = Byte.decode(nums[random.nextInt(10)]);
+      array[i] = Byte.decode(nums[random.nextInt(10)]);
     }
     return array;
   }
