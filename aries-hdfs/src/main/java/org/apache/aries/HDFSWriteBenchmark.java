@@ -36,8 +36,8 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   private final Parameter<Integer> write_buffer_size =
       IntParameter.newBuilder("bm.hdfs.write.buffer_size_in_bytes").setDefaultValue(Constants.ONE_KB).setDescription("What is the size of each write's buffer").opt();
 
-  //private final Parameter<String[]> tcp_nodelay =
-  //    StringArrayParameter.newBuilder("bm.hdfs.write.ipc.client.tcpnodelay").setDescription("Use TCP_NODELAY flag to bypass Nagle's algorithm transmission delays.").opt();
+  private final Parameter<String[]> write_packet =
+      StringArrayParameter.newBuilder("bm.hdfs.write.write_packet_size").setDescription("Packet size for clients to write (in KB)").opt();
 
 
   @Override
@@ -45,13 +45,19 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     super.requisite(requisites);
     requisites.add(write_size);
     requisites.add(write_buffer_size);
-    //requisites.add(tcp_nodelay);
+    requisites.add(write_packet);
   }
 
   @Override
   protected void decorateOptions(ChainedOptionsBuilder options_builder) {
     super.decorateOptions(options_builder);
     options_builder.param("tcp_no_delay", "true", "false");
+    if (!write_packet.empty()) {
+      for (String packet : write_packet.value()) {
+        packet = String.valueOf(Integer.valueOf(packet) * Constants.ONE_KB);
+      }
+      options_builder.param("write_packet_size", write_packet.value());
+    }
   }
 
 
@@ -83,6 +89,8 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   @Param({"true", "false"})
   String tcp_no_delay;  // Use TCP_NODELAY flag to bypass Nagle's algorithm transmission delays
+  @Param({"64", "128", "256", "512", "1024"})
+  String write_packet_size; // Packet size for clients to write
 
   @Override
   public void setup() throws Exception {
@@ -94,6 +102,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   @Override
   void injectConfiguration() {
     conf.set("ipc.client.tcpnodelay", tcp_no_delay);
+    conf.set("dfs.client-write-packet-size", write_packet_size);
   }
 
   @Benchmark
