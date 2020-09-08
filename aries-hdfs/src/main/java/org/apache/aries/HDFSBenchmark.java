@@ -36,8 +36,6 @@ public abstract class HDFSBenchmark extends BasicBenchmarkToy {
   protected Configuration conf;
   protected Path work_dir;
 
-  protected ToyConfiguration toy_conf;
-
   @Setup
   public void setup() throws Exception {
     super.setup();
