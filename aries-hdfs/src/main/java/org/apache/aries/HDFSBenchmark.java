@@ -21,6 +21,8 @@ import org.apache.aries.common.StringParameter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.TearDown;
 
 import java.util.List;
 
@@ -32,6 +34,20 @@ public class HDFSBenchmark extends AbstractBenchmarkToy {
   protected FileSystem file_system;
   protected Configuration conf;
   protected Path work_dir;
+
+  protected ToyConfiguration toy_conf;
+
+  @Setup
+  public void setup() throws Exception {
+    conf = ConfigurationFactory.createHDFSConfiguration(toy_conf);
+    file_system = FileSystem.get(conf);
+    work_dir = new Path(working_directory.value());
+    if (!file_system.exists(work_dir)) {
+      LOG.info("Creating directory " + work_dir);
+      file_system.mkdirs(work_dir);
+    }
+    LOG.info("Working directory is " + work_dir);
+  }
 
   @Override protected void requisite(List<Parameter> requisites) {
     super.requisite(requisites);
@@ -46,16 +62,15 @@ public class HDFSBenchmark extends AbstractBenchmarkToy {
 
   @Override protected void buildToy(ToyConfiguration configuration) throws Exception {
     super.buildToy(configuration);
-    conf = ConfigurationFactory.createHDFSConfiguration(configuration);
-    file_system = FileSystem.get(conf);
-    work_dir = new Path(working_directory.value());
-    if (!file_system.exists(work_dir)) {
-      file_system.mkdirs(work_dir);
-    }
+    toy_conf = configuration;
   }
 
   @Override protected void destroyToy() throws Exception {
     super.destroyToy();
+  }
+
+  @TearDown
+  public void teardown() throws Exception {
     file_system.close();
   }
 

@@ -70,7 +70,6 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   public void testHDFSWrite() throws Exception {
     FSDataOutputStream os = null;
     try {
-      LOG.info("Working dir" + work_dir + " url: " + work_dir.toUri());
       Path out = new Path(work_dir, generateRandomString());
       os = file_system.create(out);
       long written_bytes = 0;
