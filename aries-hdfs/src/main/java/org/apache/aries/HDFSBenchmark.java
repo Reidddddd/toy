@@ -21,11 +21,14 @@ import org.apache.aries.common.StringParameter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 
 import java.util.List;
 
+@State(Scope.Benchmark)
 public class HDFSBenchmark extends AbstractBenchmarkToy {
 
   private final Parameter<String> working_directory =
