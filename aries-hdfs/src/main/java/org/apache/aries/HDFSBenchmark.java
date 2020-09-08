@@ -40,6 +40,7 @@ public abstract class HDFSBenchmark extends BasicBenchmarkToy {
   public void setup() throws Exception {
     super.setup();
     conf = ConfigurationFactory.createHDFSConfiguration(toy_conf);
+    injectConfiguration();
     file_system = FileSystem.get(conf);
     work_dir = new Path(working_directory.value());
     if (!file_system.exists(work_dir)) {
@@ -59,5 +60,7 @@ public abstract class HDFSBenchmark extends BasicBenchmarkToy {
   public void teardown() throws Exception {
     file_system.close();
   }
+
+  abstract void injectConfiguration();
 
 }
