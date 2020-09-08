@@ -66,6 +66,7 @@ public abstract class HDFSBenchmark extends AbstractBenchmarkToy {
   @Override protected void requisite(List<Parameter> requisites) {
     super.requisite(requisites);
     requisites.add(working_directory);
+    requisites.add(toy_configuration);
   }
 
   @Override
