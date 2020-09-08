@@ -22,16 +22,10 @@ import org.apache.aries.common.Parameter;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.Path;
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
-@State(Scope.Benchmark)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   private final Parameter<Integer> write_size =

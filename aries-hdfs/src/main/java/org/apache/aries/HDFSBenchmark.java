@@ -21,18 +21,24 @@ import org.apache.aries.common.StringParameter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
-public class HDFSBenchmark extends AbstractBenchmarkToy {
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+public abstract class HDFSBenchmark extends AbstractBenchmarkToy {
 
   private final Parameter<String> working_directory =
       StringParameter.newBuilder("bm.hdfs.working_directory").setDefaultValue("/benchmark").setDescription("Working directory for benchwork.").opt();
+  private final Parameter<String> toy_configuration =
+      StringParameter.newBuilder("bm.hdfs.toy_configuration_dir").setRequired().setDescription("Toy configuration directory").opt();
 
   protected FileSystem file_system;
   protected Configuration conf;
@@ -40,9 +46,14 @@ public class HDFSBenchmark extends AbstractBenchmarkToy {
 
   protected ToyConfiguration toy_conf;
 
+  @Override
+  protected void decorateOptions(ChainedOptionsBuilder options_builder) {
+    options_builder.jvmArgs("-D" + toy_configuration.key() + "=" + toy_configuration.value());
+  }
+
   @Setup
   public void setup() throws Exception {
-    conf = ConfigurationFactory.createHDFSConfiguration(toy_conf);
+    conf = ConfigurationFactory.createHDFSConfiguration(ToyConfiguration.create(System.getProperty(toy_configuration.key())));
     file_system = FileSystem.get(conf);
     work_dir = new Path(working_directory.value());
     if (!file_system.exists(work_dir)) {
@@ -61,6 +72,7 @@ public class HDFSBenchmark extends AbstractBenchmarkToy {
   protected void exampleConfiguration() {
     super.exampleConfiguration();
     example(working_directory.key(), working_directory.defvalue());
+    example(toy_configuration.key(), "/path/to/dir");
   }
 
   @Override protected void buildToy(ToyConfiguration configuration) throws Exception {

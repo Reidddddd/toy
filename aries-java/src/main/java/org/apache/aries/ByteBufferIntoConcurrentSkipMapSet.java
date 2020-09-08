@@ -22,6 +22,7 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -43,6 +44,10 @@ public class ByteBufferIntoConcurrentSkipMapSet extends AbstractBenchmarkToy {
     public int getIndex() {
       return x == 1000 ? 0 : x++;
     }
+  }
+
+  @Override
+  protected void decorateOptions(ChainedOptionsBuilder options_builder) {
   }
 
   private Map<ByteBuffer, Object> kmap;

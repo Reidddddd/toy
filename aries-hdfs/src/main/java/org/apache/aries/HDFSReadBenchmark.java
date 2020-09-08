@@ -16,8 +16,6 @@
 
 package org.apache.aries;
 
-import org.apache.hadoop.io.IOUtils;
-
 public class HDFSReadBenchmark extends HDFSBenchmark {
 
   @Override protected void buildToy(ToyConfiguration configuration) throws Exception {

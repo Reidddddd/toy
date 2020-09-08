@@ -22,7 +22,7 @@ import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringParameter;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
@@ -95,19 +95,21 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
 
   @Override
   protected int haveFun() throws Exception {
-    Options opt =
+    ChainedOptionsBuilder options_builder =
         new OptionsBuilder().include(this.getClass().getSimpleName())
                             .forks(forks.value())
                             .warmupIterations(warmup_iterations.value()).warmupTime(warmup_t)
                             .measurementIterations(measure_iterations.value()).measurementTime(measure_t)
-                            .threads(threads.value()).mode((Mode) mode.value())
-                            .build();
-    new Runner(opt).run();
+                            .threads(threads.value()).mode((Mode) mode.value());
+    decorateOptions(options_builder);
+    new Runner(options_builder.build()).run();
     return RETURN_CODE.SUCCESS.code();
   }
 
   @Override
   protected void destroyToy() throws Exception {
   }
+
+  abstract protected void decorateOptions(ChainedOptionsBuilder options_builder);
 
 }
