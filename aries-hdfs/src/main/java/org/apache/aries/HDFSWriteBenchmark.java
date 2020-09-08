@@ -26,9 +26,6 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -73,6 +70,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   public void testHDFSWrite() throws Exception {
     FSDataOutputStream os = null;
     try {
+      LOG.info("Working dir" + work_dir + " url: " + work_dir.toUri());
       Path out = new Path(work_dir, generateRandomString());
       os = file_system.create(out);
       long written_bytes = 0;
