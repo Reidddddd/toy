@@ -68,7 +68,7 @@ public abstract class AbstractToy implements Toy {
 
   protected abstract String getParameterPrefix();
 
-  private final void printParameters(ToyConfiguration toy_conf, String parameter_prefix) {
+  protected void printParameters(ToyConfiguration toy_conf, String parameter_prefix) {
     LOG.info("Parameters for " +  this.getClass().getSimpleName() + " are:");
     Properties properties = toy_conf.getProperties();
     Set<String> keys = properties.keySet().stream().map(String.class::cast).filter(k -> k.startsWith(parameter_prefix)).collect(Collectors.toSet());

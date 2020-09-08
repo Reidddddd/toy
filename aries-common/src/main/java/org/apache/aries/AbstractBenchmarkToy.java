@@ -51,7 +51,7 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
   }
 
   @Override
-  final protected void requisite(List<Parameter> requisites) {
+  protected void requisite(List<Parameter> requisites) {
     requisites.add(forks);
     requisites.add(threads);
     requisites.add(mode);

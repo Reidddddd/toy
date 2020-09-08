@@ -48,17 +48,16 @@ public abstract class BasicBenchmarkToy extends AbstractBenchmarkToy {
   @Setup
   public void setup() throws Exception {
     toy_conf = ToyConfiguration.create(System.getProperty(toy_configuration.key()));
-    addParameters(parameters);
+    requisite(parameters);
     preCheck(toy_conf, parameters);
     midCheck();
+    printParameters(toy_conf, getParameterPrefix());
   }
 
-  /**
-   * Add paramters for {@link #setup()}
-   * @param parameters
-   */
-  protected void addParameters(List<Parameter> parameters) {
-    parameters.add(toy_configuration);
+  @Override
+  protected void requisite(List<Parameter> requisites) {
+    super.requisite(requisites);
+    requisites.add(toy_configuration);
   }
 
 }

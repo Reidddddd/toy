@@ -29,7 +29,7 @@ import java.util.List;
 public abstract class HDFSBenchmark extends BasicBenchmarkToy {
 
   private final Parameter<String> working_directory =
-      StringParameter.newBuilder("bm.hdfs.working_directory").setDefaultValue("/benchmark").setDescription("Working directory for benchwork.").opt();
+      StringParameter.newBuilder("v").setDefaultValue("/benchmark").setDescription("Working directory for benchwork.").opt();
 
 
   protected FileSystem file_system;
@@ -52,9 +52,9 @@ public abstract class HDFSBenchmark extends BasicBenchmarkToy {
   }
 
   @Override
-  protected void addParameters(List<Parameter> parameters) {
-    super.addParameters(parameters);
-    parameters.add(working_directory);
+  protected void requisite(List<Parameter> requisites) {
+    super.requisite(requisites);
+    requisites.add(working_directory);
   }
 
   @TearDown
