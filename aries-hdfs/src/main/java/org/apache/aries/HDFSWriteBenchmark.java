@@ -23,7 +23,6 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.Path;
 import org.openjdk.jmh.annotations.Benchmark;
 
-import java.util.List;
 import java.util.Random;
 
 public class HDFSWriteBenchmark extends HDFSBenchmark {
@@ -37,27 +36,10 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   private byte[] bytes;
 
   @Override
-  protected void requisite(List<Parameter> requisites) {
-    super.requisite(requisites);
-    requisites.add(write_size);
-    requisites.add(write_buffer_size);
-  }
-
-  @Override protected void buildToy(ToyConfiguration configuration) throws Exception {
-    super.buildToy(configuration);
+  public void setup() throws Exception {
+    super.setup();
     size_in_bytes = write_size.value() * Constants.ONE_MB;
     bytes = generateBytes();
-  }
-
-  @Override
-  protected void exampleConfiguration() {
-    super.exampleConfiguration();
-    example(write_size.key(), "128");
-    example(write_buffer_size.key(), "1024");
-  }
-
-  @Override protected void destroyToy() throws Exception {
-    super.destroyToy();
   }
 
   @Benchmark

@@ -51,7 +51,7 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
   }
 
   @Override
-  protected void requisite(List<Parameter> requisites) {
+  final protected void requisite(List<Parameter> requisites) {
     requisites.add(forks);
     requisites.add(threads);
     requisites.add(mode);
@@ -76,7 +76,7 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
   TimeValue measure_t = TimeValue.seconds(10);
 
   @Override
-  protected void buildToy(ToyConfiguration configuration) throws Exception {
+  final protected void buildToy(ToyConfiguration configuration) throws Exception {
     warmup_t = toTimeValue(warmup_time.value());
     measure_t = toTimeValue(measure_time.value());
   }
@@ -94,7 +94,7 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
   }
 
   @Override
-  protected int haveFun() throws Exception {
+  final protected int haveFun() throws Exception {
     ChainedOptionsBuilder options_builder =
         new OptionsBuilder().include(this.getClass().getSimpleName())
                             .forks(forks.value())
@@ -107,7 +107,7 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
   }
 
   @Override
-  protected void destroyToy() throws Exception {
+  final protected void destroyToy() throws Exception {
   }
 
   abstract protected void decorateOptions(ChainedOptionsBuilder options_builder);

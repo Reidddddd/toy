@@ -116,7 +116,7 @@ public abstract class AbstractToy implements Toy {
    * @param requisites requisites to be checked
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
-  private void preCheck(ToyConfiguration configuration, List<Parameter> requisites) {
+  protected void preCheck(ToyConfiguration configuration, List<Parameter> requisites) {
     for (Parameter p : requisites) {
       if (!configuration.containsKey(p.key())) {
         if (p.required()) {
