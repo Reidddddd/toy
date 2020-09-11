@@ -108,6 +108,8 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   @Benchmark
   public void testHDFSWrite() throws Exception {
     FSDataOutputStream os = null;
+    LOG.info(file_system.getConf().get("ipc.client.tcpnodelay"));
+    LOG.info(file_system.getConf().get("dfs.client-write-packet-size"));
     try {
       Path out = new Path(work_dir, generateRandomString());
       os = file_system.create(out);
