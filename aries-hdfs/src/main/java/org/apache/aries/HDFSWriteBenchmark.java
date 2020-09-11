@@ -68,7 +68,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   final Random random = new Random();
   private byte[] flipOneByte(byte[] bytes) {
     int len = bytes.length;
-    bytes[random.nextInt(len)] = Byte.parseByte(ToyUtils.generateRandomString(1));
+    bytes[random.nextInt(len)] = ToyUtils.generateRandomString(1).getBytes()[0];
     return bytes;
   }
 
