@@ -16,6 +16,7 @@
 
 package org.apache.aries;
 
+import org.apache.aries.common.BoolParameter;
 import org.apache.aries.common.EnumParameter;
 import org.apache.aries.common.IntParameter;
 import org.apache.aries.common.Parameter;
@@ -45,6 +46,8 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
       StringParameter.newBuilder("bm.warmup_time").setDefaultValue("10s").setDescription("Time for each warmup iteration").opt();
   private final Parameter<String> measure_time =
       StringParameter.newBuilder("bm.measure_time").setDefaultValue("10s").setDescription("Time for each execution iteration").opt();
+  private final Parameter<Boolean> gc_profiler =
+      BoolParameter.newBuilder("bm.gc_profiler", false).setDescription("If turn on gc profiler, false by default").opt();
 
   @Override
   protected String getParameterPrefix() {
@@ -60,6 +63,7 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
     requisites.add(warmup_time);
     requisites.add(measure_iterations);
     requisites.add(measure_time);
+    requisites.add(gc_profiler);
   }
 
   @Override
@@ -71,6 +75,7 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
     example(warmup_time.key(), "10s");
     example(measure_iterations.key(), "5");
     example(measure_time.key(), "10s");
+    example(gc_profiler.key(), "true");
   }
 
   TimeValue warmup_t = TimeValue.seconds(10);
@@ -101,7 +106,8 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
                             .forks(forks.value())
                             .warmupIterations(warmup_iterations.value()).warmupTime(warmup_t)
                             .measurementIterations(measure_iterations.value()).measurementTime(measure_t)
-                            .threads(threads.value()).mode((Mode) mode.value()).addProfiler(GCProfiler.class);
+                            .threads(threads.value()).mode((Mode) mode.value());
+    if (gc_profiler.value()) options_builder.addProfiler(GCProfiler.class);
     decorateOptions(options_builder);
     new Runner(options_builder.build()).run();
     return RETURN_CODE.SUCCESS.code();

@@ -61,10 +61,11 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   }
   private void setParameters(ChainedOptionsBuilder options_builder, Parameter<String[]> parameter, String para_key, StrConvert cvt) {
     if (!parameter.empty()) {
-      for (String value : parameter.value()) {
-        value = cvt.convert(value);
+      String[] values = parameter.value();
+      for (int i = 0; i < values.length; i++) {
+        values[i] = cvt.convert(values[i]);
       }
-      options_builder.param(para_key, parameter.value());
+      options_builder.param(para_key, values);
     }
   }
   private interface StrConvert {
