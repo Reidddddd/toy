@@ -39,6 +39,8 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   private final Parameter<String[]> write_packet =
       StringArrayParameter.newBuilder("bm.hdfs.write.write_packet_size").setDescription("Packet size for clients to write (in KB)").opt();
+  private final Parameter<String[]> iofile_buffer_size =
+      StringArrayParameter.newBuilder("bm.hdfs.write.io_file_buffer_size").setDescription("The size of buffer for use in sequence files").opt();
 
 
   @Override
@@ -47,20 +49,27 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     requisites.add(write_size);
     requisites.add(write_buffer_size);
     requisites.add(write_packet);
+    requisites.add(iofile_buffer_size);
   }
 
   @Override
   protected void decorateOptions(ChainedOptionsBuilder options_builder) {
     super.decorateOptions(options_builder);
     options_builder.param("tcp_no_delay", "true", "false");
-    if (!write_packet.empty()) {
-      for (String packet : write_packet.value()) {
-        packet = String.valueOf(Integer.valueOf(packet) * Constants.ONE_KB);
+    setParameters(options_builder, write_packet, "write_packet_size", s -> String.valueOf(Integer.valueOf(s) * Constants.ONE_KB));
+    setParameters(options_builder, iofile_buffer_size, "io_file_buffer_size", s -> String.valueOf(Integer.valueOf(s) * Constants.ONE_KB));
+  }
+  private void setParameters(ChainedOptionsBuilder options_builder, Parameter<String[]> parameter, String para_key, StrConvert cvt) {
+    if (!parameter.empty()) {
+      for (String value : parameter.value()) {
+        value = cvt.convert(value);
       }
-      options_builder.param("write_packet_size", write_packet.value());
+      options_builder.param(para_key, parameter.value());
     }
   }
-
+  private interface StrConvert {
+    String convert(String in);
+  }
 
   private long size_in_bytes;
   private byte[] bytes;
@@ -73,11 +82,10 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   }
 
 
-
-  @Param({"true", "false"})
-  String tcp_no_delay;  // Use TCP_NODELAY flag to bypass Nagle's algorithm transmission delays
-  @Param({"64", "128", "256", "512", "1024"})
-  String write_packet_size; // Packet size for clients to write
+  // The size of buffer for use in sequence files. The size of this buffer should probably be a multiple of hardware page size (4096 on Intel x86),
+  // and it determines how much data is buffered during read and write operations.
+  @Param({"4096"})
+  String io_file_buffer_size;
 
   @Override
   public void setup() throws Exception {
@@ -88,8 +96,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   @Override
   void injectConfiguration() {
-    conf.set("ipc.client.tcpnodelay", tcp_no_delay);
-    conf.set("dfs.client-write-packet-size", write_packet_size);
+    conf.set("io.file.buffer.size", io_file_buffer_size);
   }
 
   @Benchmark

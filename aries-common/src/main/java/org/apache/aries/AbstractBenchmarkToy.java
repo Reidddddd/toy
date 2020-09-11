@@ -21,6 +21,7 @@ import org.apache.aries.common.IntParameter;
 import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringParameter;
 import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.profile.GCProfiler;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
@@ -100,7 +101,7 @@ public abstract class AbstractBenchmarkToy extends AbstractToy {
                             .forks(forks.value())
                             .warmupIterations(warmup_iterations.value()).warmupTime(warmup_t)
                             .measurementIterations(measure_iterations.value()).measurementTime(measure_t)
-                            .threads(threads.value()).mode((Mode) mode.value());
+                            .threads(threads.value()).mode((Mode) mode.value()).addProfiler(GCProfiler.class);
     decorateOptions(options_builder);
     new Runner(options_builder.build()).run();
     return RETURN_CODE.SUCCESS.code();
