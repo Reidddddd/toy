@@ -27,6 +27,7 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -100,6 +101,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     conf.set("io.file.buffer.size", io_file_buffer_size);
   }
 
+
   @Benchmark
   public void testHDFSWrite() throws Exception {
     FSDataOutputStream os = null;
@@ -108,7 +110,8 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
       os = file_system.create(out);
       long written_bytes = 0;
       while (written_bytes < size_in_bytes) {
-        os.write(flipOneByte(bytes));
+        byte[] bytes = getBytes();
+        os.write(bytes);
         written_bytes += bytes.length;
       }
     } finally {
@@ -118,4 +121,15 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     }
   }
 
+  private int[] byte_size = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
+  private HashMap<Integer, byte[]> cached = new HashMap<>();
+  private byte[] getBytes() {
+    int size = random.nextInt(byte_size.length);
+    if (cached.containsKey(size)) return cached.get(size);
+    byte[] bytes = ToyUtils.generateRandomString(size * Constants.ONE_KB).getBytes();
+    cached.put(size, bytes);
+    return bytes;
+  }
+
 }
+
