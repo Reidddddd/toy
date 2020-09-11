@@ -16,6 +16,7 @@
 
 package org.apache.aries;
 
+import org.apache.aries.common.ToyUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.TableNotFoundException;
@@ -142,15 +143,6 @@ public class PutWorker extends AbstractHBaseToy {
     return "pw";
   }
 
-  private static String char_list = "abcdefghijklmnopqrstuvwxyz0123456789";
-  private static String generateRandomString(int size) {
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < size; i++) {
-      builder.append(char_list.charAt((int)(Math.random() * char_list.length())));
-    }
-    return builder.toString();
-  }
-
   class Worker implements Runnable {
 
     Connection connection;
@@ -173,11 +165,11 @@ public class PutWorker extends AbstractHBaseToy {
       try {
         mutator = connection.getBufferedMutator(param);
         while (running) {
-          Put put = new Put(Bytes.toBytes(generateRandomString(10)));
+          Put put = new Put(Bytes.toBytes(ToyUtils.generateRandomString(10)));
           put.addColumn(
               Bytes.toBytes(family.value()),
               Bytes.toBytes("q"),
-              Bytes.toBytes(generateRandomString(22))
+              Bytes.toBytes(ToyUtils.generateRandomString(22))
           );
           mutator.mutate(put);
         }

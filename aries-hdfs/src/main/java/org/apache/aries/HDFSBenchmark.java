@@ -44,10 +44,8 @@ public abstract class HDFSBenchmark extends BasicBenchmarkToy {
     file_system = FileSystem.get(conf);
     work_dir = new Path(working_directory.value());
     if (!file_system.exists(work_dir)) {
-      LOG.info("Creating directory " + work_dir);
       file_system.mkdirs(work_dir);
     }
-    LOG.info("Working directory is " + work_dir);
   }
 
   @Override

@@ -33,5 +33,14 @@ public final class ToyUtils {
     return s.substring(0, s.lastIndexOf(","));
   }
 
+  public static String RANDOM_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789ABCEDEFGHIJKLMNOPQRSTUVWXYZ";
+  public static String generateRandomString(int size) {
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < size; i++) {
+      builder.append(RANDOM_CHARS.charAt((int)(Math.random() * RANDOM_CHARS.length())));
+    }
+    return builder.toString();
+  }
+
 }
 

@@ -20,6 +20,7 @@ import org.apache.aries.common.Constants;
 import org.apache.aries.common.IntParameter;
 import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringArrayParameter;
+import org.apache.aries.common.ToyUtils;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.Path;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -63,26 +64,12 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   private long size_in_bytes;
   private byte[] bytes;
+
   final Random random = new Random();
-  final String[] nums = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-  private String generateRandomString() {
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < 10; i++) {
-      builder.append(nums[random.nextInt(10)]);
-    }
-    return builder.toString();
-  }
-  private byte[] switchOneByte(byte[] bytes) {
+  private byte[] flipOneByte(byte[] bytes) {
     int len = bytes.length;
-    bytes[random.nextInt(len)] = Byte.decode(nums[random.nextInt(10)]);
+    bytes[random.nextInt(len)] = Byte.parseByte(ToyUtils.generateRandomString(1));
     return bytes;
-  }
-  private byte[] generateBytes() {
-    byte[] array = new byte[write_buffer_size.value()];
-    for (int i = 0; i < write_buffer_size.value(); i++) {
-      array[i] = Byte.decode(nums[random.nextInt(10)]);
-    }
-    return array;
   }
 
 
@@ -96,7 +83,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   public void setup() throws Exception {
     super.setup();
     size_in_bytes = write_size.value() * Constants.ONE_MB;
-    bytes = generateBytes();
+    bytes = ToyUtils.generateRandomString(write_buffer_size.value()).getBytes();
   }
 
   @Override
@@ -108,14 +95,12 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   @Benchmark
   public void testHDFSWrite() throws Exception {
     FSDataOutputStream os = null;
-    LOG.info(file_system.getConf().get("ipc.client.tcpnodelay"));
-    LOG.info(file_system.getConf().get("dfs.client-write-packet-size"));
     try {
-      Path out = new Path(work_dir, generateRandomString());
+      Path out = new Path(work_dir, ToyUtils.generateRandomString(10));
       os = file_system.create(out);
       long written_bytes = 0;
       while (written_bytes < size_in_bytes) {
-        os.write(switchOneByte(bytes));
+        os.write(flipOneByte(bytes));
         written_bytes += bytes.length;
       }
     } finally {
