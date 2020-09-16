@@ -35,8 +35,6 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   private final Parameter<Integer> write_size =
       IntParameter.newBuilder("bm.hdfs.write.file_size_in_mb").setDefaultValue(128).setDescription("What is the size of a file to be writtien on HDFS").opt();
-  private final Parameter<Integer> write_buffer_size =
-      IntParameter.newBuilder("bm.hdfs.write.buffer_size_in_bytes").setDefaultValue(Constants.ONE_KB).setDescription("What is the size of each write's buffer").opt();
 
   private final Parameter<String[]> write_packet =
       StringArrayParameter.newBuilder("bm.hdfs.write.write_packet_size").setDescription("Packet size for clients to write (in KB)").opt();
@@ -48,7 +46,6 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   protected void requisite(List<Parameter> requisites) {
     super.requisite(requisites);
     requisites.add(write_size);
-    requisites.add(write_buffer_size);
     requisites.add(write_packet);
     requisites.add(iofile_buffer_size);
   }
@@ -74,15 +71,6 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   }
 
   private long size_in_bytes;
-  private byte[] bytes;
-
-  final Random random = new Random();
-  private byte[] flipOneByte(byte[] bytes) {
-    int len = bytes.length;
-    bytes[random.nextInt(len)] = ToyUtils.generateRandomString(1).getBytes()[0];
-    return bytes;
-  }
-
 
   // The size of buffer for use in sequence files. The size of this buffer should probably be a multiple of hardware page size (4096 on Intel x86),
   // and it determines how much data is buffered during read and write operations.
@@ -93,14 +81,12 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   public void setup() throws Exception {
     super.setup();
     size_in_bytes = write_size.value() * Constants.ONE_MB;
-    bytes = ToyUtils.generateRandomString(write_buffer_size.value()).getBytes();
   }
 
   @Override
   void injectConfiguration() {
     conf.set("io.file.buffer.size", io_file_buffer_size);
   }
-
 
   @Benchmark
   public void testHDFSWrite() throws Exception {
@@ -121,8 +107,9 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     }
   }
 
-  private int[] byte_size = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
-  private HashMap<Integer, byte[]> cached = new HashMap<>();
+  private final int[] byte_size = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
+  private final HashMap<Integer, byte[]> cached = new HashMap<>();
+  private final Random random = new Random();
   private byte[] getBytes() {
     int size = random.nextInt(byte_size.length);
     if (cached.containsKey(size)) return cached.get(size);
