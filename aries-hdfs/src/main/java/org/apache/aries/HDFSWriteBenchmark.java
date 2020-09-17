@@ -38,8 +38,10 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   private final Parameter<String[]> write_packet =
       StringArrayParameter.newBuilder("bm.hdfs.write.write_packet_size").setDescription("Packet size for clients to write (in KB)").opt();
-  private final Parameter<String[]> iofile_buffer_size =
-      StringArrayParameter.newBuilder("bm.hdfs.write.io_file_buffer_size").setDescription("The size of buffer for use in sequence files").opt();
+  private final Parameter<String[]> checksum_bytes =
+      StringArrayParameter.newBuilder("bm.hdfs.write.bytes_per_checksum").setDescription("The number of bytes per checksum").opt();
+  private final Parameter<String[]> max_packets =
+      StringArrayParameter.newBuilder("bm.hdfs.write.max_packets_in_flight").setDescription("The number of bytes per checksum").opt();
 
 
   @Override
@@ -47,15 +49,16 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     super.requisite(requisites);
     requisites.add(write_size);
     requisites.add(write_packet);
-    requisites.add(iofile_buffer_size);
+    requisites.add(checksum_bytes);
+    requisites.add(max_packets);
   }
 
   @Override
   protected void decorateOptions(ChainedOptionsBuilder options_builder) {
     super.decorateOptions(options_builder);
-    options_builder.param("tcp_no_delay", "true", "false");
     setParameters(options_builder, write_packet, "write_packet_size", s -> String.valueOf(Integer.valueOf(s) * Constants.ONE_KB));
-    setParameters(options_builder, iofile_buffer_size, "io_file_buffer_size", s -> String.valueOf(Integer.valueOf(s) * Constants.ONE_KB));
+    setParameters(options_builder, checksum_bytes, "bytes_per_checksum", s -> String.valueOf(Integer.valueOf(s)));
+    setParameters(options_builder, max_packets, "max_packets_in_flight", s -> String.valueOf(Integer.valueOf(s)));
   }
   private void setParameters(ChainedOptionsBuilder options_builder, Parameter<String[]> parameter, String para_key, StrConvert cvt) {
     if (!parameter.empty()) {
@@ -72,10 +75,12 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   private long size_in_bytes;
 
-  // The size of buffer for use in sequence files. The size of this buffer should probably be a multiple of hardware page size (4096 on Intel x86),
-  // and it determines how much data is buffered during read and write operations.
-  @Param({"4096"})
-  String io_file_buffer_size;
+  @Param({"512"})
+  String bytes_per_checksum;
+  @Param({"64"})
+  String write_packet_size;
+  @Param({"80"})
+  String max_packets_in_flight;
 
   @Override
   public void setup() throws Exception {
@@ -85,7 +90,9 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   @Override
   void injectConfiguration() {
-    conf.set("io.file.buffer.size", io_file_buffer_size);
+    conf.set("dfs.bytes-per-checksum", bytes_per_checksum);
+    conf.set("dfs.client-write-packet-size", write_packet_size);
+    conf.set("dfs.client.write.max-packets-in-flight", max_packets_in_flight);
   }
 
   @Benchmark
