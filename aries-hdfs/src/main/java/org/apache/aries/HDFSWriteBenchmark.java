@@ -41,7 +41,11 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   private final Parameter<String[]> checksum_bytes =
       StringArrayParameter.newBuilder("bm.hdfs.write.bytes_per_checksum").setDescription("The number of bytes per checksum").opt();
   private final Parameter<String[]> max_packets =
-      StringArrayParameter.newBuilder("bm.hdfs.write.max_packets_in_flight").setDescription("The number of bytes per checksum").opt();
+      StringArrayParameter.newBuilder("bm.hdfs.write.max_packets_in_flight").setDescription("The maximum number of DFSPackets allowed in flight").opt();
+  private final Parameter<String[]> tcp_no_delay =
+      StringArrayParameter.newBuilder("bm.hdfs.write.tcp_no_delay").setDescription("set TCP_NODELAY to sockets for transferring data from DFS client").opt();
+  private final Parameter<String[]> socket_send_buffer =
+      StringArrayParameter.newBuilder("bm.hdfs.write.socket_buffer_kb").setDescription("Socket send buffer size for a write pipeline in DFSClient side in KB").opt();
 
 
   @Override
@@ -51,14 +55,18 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     requisites.add(write_packet);
     requisites.add(checksum_bytes);
     requisites.add(max_packets);
+    requisites.add(tcp_no_delay);
+    requisites.add(socket_send_buffer);
   }
 
   @Override
   protected void decorateOptions(ChainedOptionsBuilder options_builder) {
     super.decorateOptions(options_builder);
     setParameters(options_builder, write_packet, "write_packet_size", s -> String.valueOf(Integer.valueOf(s) * Constants.ONE_KB));
-    setParameters(options_builder, checksum_bytes, "bytes_per_checksum", s -> String.valueOf(Integer.valueOf(s)));
-    setParameters(options_builder, max_packets, "max_packets_in_flight", s -> String.valueOf(Integer.valueOf(s)));
+    setParameters(options_builder, checksum_bytes, "bytes_per_checksum", s -> s);
+    setParameters(options_builder, max_packets, "max_packets_in_flight", s -> s);
+    setParameters(options_builder, tcp_no_delay, "tcp_nodelay", s -> s);
+    setParameters(options_builder, socket_send_buffer, "socket_buffer", s -> String.valueOf(Integer.valueOf(s) * Constants.ONE_KB));
   }
   private void setParameters(ChainedOptionsBuilder options_builder, Parameter<String[]> parameter, String para_key, StrConvert cvt) {
     if (!parameter.empty()) {
@@ -81,6 +89,10 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   String write_packet_size;
   @Param({"80"})
   String max_packets_in_flight;
+  @Param({"true"})
+  String tcp_nodelay;
+  @Param({"0"})
+  String socket_buffer;
 
   @Override
   public void setup() throws Exception {
@@ -93,6 +105,8 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     conf.set("dfs.bytes-per-checksum", bytes_per_checksum);
     conf.set("dfs.client-write-packet-size", write_packet_size);
     conf.set("dfs.client.write.max-packets-in-flight", max_packets_in_flight);
+    conf.set("dfs.data.transfer.client.tcpnodelay", tcp_nodelay);
+    conf.set("dfs.client.socket.send.buffer.size", socket_buffer);
   }
 
   @Benchmark
