@@ -23,6 +23,7 @@ import org.apache.aries.common.StringArrayParameter;
 import org.apache.aries.common.ToyUtils;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
@@ -82,6 +83,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   }
 
   private long size_in_bytes;
+  private byte[] io_buffer;
 
   @Param({"512"})
   String bytes_per_checksum;
@@ -98,6 +100,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   public void setup() throws Exception {
     super.setup();
     size_in_bytes = write_size.value() * Constants.ONE_MB;
+    io_buffer = ToyUtils.generateRandomString(conf.getInt("io.file.buffer.size", 4096)).getBytes();
   }
 
   @Override
@@ -117,9 +120,8 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
       os = file_system.create(out);
       long written_bytes = 0;
       while (written_bytes < size_in_bytes) {
-        byte[] bytes = getBytes();
-        os.write(bytes);
-        written_bytes += bytes.length;
+        os.write(io_buffer);
+        written_bytes += io_buffer.length;
       }
     } finally {
       if (os != null) {
