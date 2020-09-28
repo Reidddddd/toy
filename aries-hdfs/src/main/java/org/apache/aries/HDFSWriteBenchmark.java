@@ -23,14 +23,11 @@ import org.apache.aries.common.StringArrayParameter;
 import org.apache.aries.common.ToyUtils;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IOUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 public class HDFSWriteBenchmark extends HDFSBenchmark {
 
@@ -47,6 +44,8 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
       StringArrayParameter.newBuilder("bm.hdfs.write.tcp_no_delay").setDescription("set TCP_NODELAY to sockets for transferring data from DFS client").opt();
   private final Parameter<String[]> socket_send_buffer =
       StringArrayParameter.newBuilder("bm.hdfs.write.socket_buffer_kb").setDescription("Socket send buffer size for a write pipeline in DFSClient side in KB").opt();
+  private final Parameter<String[]> checksum =
+      StringArrayParameter.newBuilder("bm.hdfs.write.checksum_type").setDescription("Checksum type").opt();
 
 
   @Override
@@ -58,6 +57,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     requisites.add(max_packets);
     requisites.add(tcp_no_delay);
     requisites.add(socket_send_buffer);
+    requisites.add(checksum);
   }
 
   @Override
@@ -68,6 +68,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     setParameters(options_builder, max_packets, "max_packets_in_flight", s -> s);
     setParameters(options_builder, tcp_no_delay, "tcp_nodelay", s -> s);
     setParameters(options_builder, socket_send_buffer, "socket_buffer", s -> String.valueOf(Integer.valueOf(s) * Constants.ONE_KB));
+    setParameters(options_builder, checksum, "checksum_type", s -> s);
   }
   private void setParameters(ChainedOptionsBuilder options_builder, Parameter<String[]> parameter, String para_key, StrConvert cvt) {
     if (!parameter.empty()) {
@@ -85,6 +86,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   private long size_in_bytes;
   private byte[] io_buffer;
 
+
   @Param({"512"})
   String bytes_per_checksum;
   @Param({"64"})
@@ -95,6 +97,8 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   String tcp_nodelay;
   @Param({"0"})
   String socket_buffer;
+  @Param({"CRC32C"})
+  String checksum_type;
 
   @Override
   public void setup() throws Exception {
@@ -105,6 +109,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   @Override
   void injectConfiguration() {
+    conf.set("dfs.checksum.type", checksum_type);
     conf.set("dfs.bytes-per-checksum", bytes_per_checksum);
     conf.set("dfs.client-write-packet-size", write_packet_size);
     conf.set("dfs.client.write.max-packets-in-flight", max_packets_in_flight);
@@ -116,8 +121,7 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
   public void testHDFSWrite() throws Exception {
     FSDataOutputStream os = null;
     try {
-      Path out = new Path(work_dir, ToyUtils.generateRandomString(10));
-      os = file_system.create(out);
+      os = file_system.create(new Path(work_dir, ToyUtils.generateRandomString(10)));
       long written_bytes = 0;
       while (written_bytes < size_in_bytes) {
         os.write(io_buffer);
@@ -130,15 +134,9 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     }
   }
 
-  private final int[] byte_size = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
-  private final HashMap<Integer, byte[]> cached = new HashMap<>();
-  private final Random random = new Random();
-  private byte[] getBytes() {
-    int size = random.nextInt(byte_size.length);
-    if (cached.containsKey(size)) return cached.get(size);
-    byte[] bytes = ToyUtils.generateRandomString(size * Constants.ONE_KB).getBytes();
-    cached.put(size, bytes);
-    return bytes;
+  @Override
+  public void teardown() throws Exception {
+    super.teardown();
   }
 
 }
