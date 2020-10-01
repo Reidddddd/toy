@@ -21,6 +21,7 @@ import org.apache.aries.common.StringArrayParameter;
 import org.apache.hadoop.hbase.HRegionInfo;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.util.Bytes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,10 @@ public class SplitTable extends AbstractHBaseToy {
       StringArrayParameter.newBuilder("st.table_name").setRequired()
           .setDescription("Tables's names to be dropped, delimited by ','. Pattern is supported, by prefixing '#'")
           .addConstraint(v -> v.length > 0).opt();
+  private final Parameter<String[]> regions =
+      StringArrayParameter.newBuilder("st.regions_of_table").setRequired()
+          .setDescription("Regions's encoded names of a table, delimited by ','. If specified, st.table_name size must be 1.")
+          .opt();
 
   @Override protected String getParameterPrefix() {
     return "st";
@@ -40,10 +45,12 @@ public class SplitTable extends AbstractHBaseToy {
 
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(tables);
+    requisites.add(regions);
   }
 
   @Override protected void exampleConfiguration() {
-    example(tables.key(), "ns1:t1,ns2:t2");
+    example(tables.key(), "ns1:t1");
+    example(regions.key(), "24221b13bcd6c3f86c75c64ebdf688f2,28e8df1df7540441e125bd8d748252b0");
   }
 
   Admin admin;
@@ -52,7 +59,22 @@ public class SplitTable extends AbstractHBaseToy {
     admin = connection.getAdmin();
   }
 
+  @Override protected void midCheck() {
+    if (!regions.empty() && tables.value().length > 1) {
+      throw new IllegalArgumentException("When " + regions.key() + " is set, we can split only one table at one time only, for safety concerns");
+    }
+  }
+
   @Override protected int haveFun() throws Exception {
+    if (!regions.empty()) {
+      String table = tables.value()[0];
+      for (String region : regions.value()) {
+        LOG.info("Splitting table " + table + "'s region " + region);
+        admin.splitRegion(Bytes.toBytes(region));
+      }
+      return RETURN_CODE.SUCCESS.code();
+    }
+
     List<TableName> pending = new ArrayList<>();
     for (String table_or_pattern : tables.value()) {
       if (table_or_pattern.startsWith("#")) {
@@ -64,11 +86,16 @@ public class SplitTable extends AbstractHBaseToy {
 
     for (TableName name : pending) {
       for (HRegionInfo region : admin.getTableRegions(name)) {
-        LOG.info("Spliting region " + region.getRegionId());
+        LOG.info("Splitting table " + name + "'s region " + region.getEncodedName());
         admin.splitRegion(region.getEncodedNameAsBytes());
       }
     }
     return RETURN_CODE.SUCCESS.code();
+  }
+
+  @Override protected void destroyToy() throws Exception {
+    admin.close();
+    super.destroyToy();
   }
 
 }
