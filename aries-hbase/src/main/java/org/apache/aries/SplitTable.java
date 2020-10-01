@@ -35,7 +35,7 @@ public class SplitTable extends AbstractHBaseToy {
           .setDescription("Tables's names to be dropped, delimited by ','. Pattern is supported, by prefixing '#'")
           .addConstraint(v -> v.length > 0).opt();
   private final Parameter<String[]> regions =
-      StringArrayParameter.newBuilder("st.regions_of_table").setRequired()
+      StringArrayParameter.newBuilder("st.regions_of_table")
           .setDescription("Regions's encoded names of a table, delimited by ','. If specified, st.table_name size must be 1.")
           .opt();
 
