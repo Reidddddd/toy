@@ -105,15 +105,11 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   @Setup(Level.Trial)
   public void setup() throws Exception {
-    LOG.info("Calling setup!");
-    super.setup();
-    size_in_bytes = write_size.value() * Constants.ONE_MB;
-    io_buffer = ToyUtils.generateRandomString(conf.getInt("io.file.buffer.size", 4096)).getBytes();
-  }
-
-  @Setup(Level.Invocation)
-  public void reinit() throws Exception {
-    LOG.info("Calling reinit!");
+    if (!inited) {
+      super.setup();
+      size_in_bytes = write_size.value() * Constants.ONE_MB;
+      io_buffer = ToyUtils.generateRandomString(conf.getInt("io.file.buffer.size", 4096)).getBytes();
+    }
     conf.set("dfs.checksum.type", checksum_type);
     conf.set("dfs.bytes-per-checksum", bytes_per_checksum);
     conf.set("dfs.client-write-packet-size", write_packet_size);
