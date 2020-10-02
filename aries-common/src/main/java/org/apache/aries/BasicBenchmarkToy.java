@@ -52,7 +52,6 @@ public abstract class BasicBenchmarkToy extends AbstractBenchmarkToy {
     requisite(parameters);
     preCheck(toy_conf, parameters);
     midCheck();
-    printParameters(toy_conf, getParameterPrefix());
   }
 
   @Override

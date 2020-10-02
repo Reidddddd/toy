@@ -115,7 +115,6 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
 
   @Benchmark
   public void testHDFSWrite() throws Exception {
-    LOG.info("+1");
     FSDataOutputStream os = null;
     try {
       os = file_system.create(new Path(work_dir, ToyUtils.generateRandomString(10)));
