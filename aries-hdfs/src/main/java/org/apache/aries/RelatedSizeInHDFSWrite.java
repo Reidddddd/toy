@@ -58,7 +58,9 @@ public class RelatedSizeInHDFSWrite extends AbstractHDFSToy {
     LOG.info("Body size: " + bodySize);
     LOG.info("Chunk size: " + chunkSize);
     LOG.info("Chunks per packet: " + chunksPerPacket);
-    LOG.info("Packet size: " + (chunkSize * chunksPerPacket));
+    int packet_size = chunkSize * chunksPerPacket;
+    LOG.info("Packet size: " + packet_size);
+    LOG.info("Buf in DFSPacket: " + (PacketHeader.PKT_MAX_HEADER_LEN + packet_size));
     return 0;
   }
 
