@@ -40,7 +40,6 @@ public abstract class BasicBenchmarkToy extends AbstractBenchmarkToy {
   private final List<Parameter> parameters = new LinkedList<>();
 
   protected ToyConfiguration toy_conf;
-  protected boolean inited = false;
 
   @Override
   protected void decorateOptions(ChainedOptionsBuilder options_builder) {
@@ -54,7 +53,6 @@ public abstract class BasicBenchmarkToy extends AbstractBenchmarkToy {
     preCheck(toy_conf, parameters);
     midCheck();
     printParameters(toy_conf, getParameterPrefix());
-    inited = true;
   }
 
   @Override
