@@ -55,8 +55,10 @@ public class RelatedSizeInHDFSWrite extends AbstractHDFSToy {
     int bodySize = write_packet_size - PacketHeader.PKT_MAX_HEADER_LEN;
     int chunkSize = checksumOpt.getBytesPerChecksum() + checksumOpt.getChecksumType().size;
     int chunksPerPacket = Math.min(bodySize / chunkSize, 1);
+    LOG.info("Body size: " + bodySize);
+    LOG.info("Chunk size: " + chunkSize);
     LOG.info("Chunks per packet: " + chunksPerPacket);
-    LOG.info("Packet size: " + chunkSize * chunksPerPacket);
+    LOG.info("Packet size: " + (chunkSize * chunksPerPacket));
     return 0;
   }
 
