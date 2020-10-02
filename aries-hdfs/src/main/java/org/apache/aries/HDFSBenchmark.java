@@ -21,6 +21,8 @@ import org.apache.aries.common.StringParameter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.TearDown;
 
@@ -32,20 +34,25 @@ public abstract class HDFSBenchmark extends BasicBenchmarkToy {
       StringParameter.newBuilder("bm.hdfs.working_directory").setDefaultValue("/benchmark").setDescription("Working directory for benchwork.").opt();
 
 
-  protected FileSystem file_system;
+  protected DistributedFileSystem file_system = new DistributedFileSystem();;
   protected Configuration conf;
   protected Path work_dir;
 
-  @Setup
+  @Setup(Level.Trial)
   public void setup() throws Exception {
     super.setup();
     conf = ConfigurationFactory.createHDFSConfiguration(toy_conf);
-    injectConfiguration();
-    file_system = FileSystem.get(conf);
+    file_system.initialize(FileSystem.getDefaultUri(conf), conf);
     work_dir = new Path(working_directory.value());
     if (!file_system.exists(work_dir)) {
       file_system.mkdirs(work_dir);
     }
+  }
+
+  @Setup(Level.Invocation)
+  public void reinit() throws Exception {
+    injectConfiguration();
+    file_system.initialize(FileSystem.getDefaultUri(conf), conf);
   }
 
   @Override
@@ -54,8 +61,9 @@ public abstract class HDFSBenchmark extends BasicBenchmarkToy {
     requisites.add(working_directory);
   }
 
-  @TearDown
+  @TearDown(Level.Trial)
   public void teardown() throws Exception {
+    file_system.delete(work_dir, true);
     file_system.close();
   }
 

@@ -18,6 +18,7 @@ package org.apache.aries;
 
 import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringParameter;
+import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -45,7 +46,7 @@ public abstract class BasicBenchmarkToy extends AbstractBenchmarkToy {
     options_builder.jvmArgs("-D" + toy_configuration.key() + "=" + toy_configuration.value());
   }
 
-  @Setup
+  @Setup(Level.Trial)
   public void setup() throws Exception {
     toy_conf = ToyConfiguration.create(System.getProperty(toy_configuration.key()));
     requisite(parameters);

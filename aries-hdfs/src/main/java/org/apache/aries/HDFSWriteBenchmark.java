@@ -134,10 +134,5 @@ public class HDFSWriteBenchmark extends HDFSBenchmark {
     }
   }
 
-  @Override
-  public void teardown() throws Exception {
-    super.teardown();
-  }
-
 }
 
