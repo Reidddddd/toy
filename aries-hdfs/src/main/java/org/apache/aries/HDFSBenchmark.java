@@ -33,8 +33,7 @@ public abstract class HDFSBenchmark extends BasicBenchmarkToy {
   private final Parameter<String> working_directory =
       StringParameter.newBuilder("bm.hdfs.working_directory").setDefaultValue("/benchmark").setDescription("Working directory for benchwork.").opt();
 
-
-  protected DistributedFileSystem file_system = new DistributedFileSystem();;
+  protected DistributedFileSystem file_system = new DistributedFileSystem();
   protected Configuration conf;
   protected Path work_dir;
 
@@ -49,12 +48,6 @@ public abstract class HDFSBenchmark extends BasicBenchmarkToy {
     }
   }
 
-  @Setup(Level.Invocation)
-  public void reinit() throws Exception {
-    injectConfiguration();
-    file_system.initialize(FileSystem.getDefaultUri(conf), conf);
-  }
-
   @Override
   protected void requisite(List<Parameter> requisites) {
     super.requisite(requisites);
@@ -66,7 +59,5 @@ public abstract class HDFSBenchmark extends BasicBenchmarkToy {
     file_system.delete(work_dir, true);
     file_system.close();
   }
-
-  abstract void injectConfiguration();
 
 }
