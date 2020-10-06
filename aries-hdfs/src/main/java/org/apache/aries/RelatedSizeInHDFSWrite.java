@@ -16,6 +16,7 @@
 
 package org.apache.aries;
 
+import org.apache.aries.common.IntParameter;
 import org.apache.aries.common.Parameter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Options;
@@ -27,14 +28,18 @@ import java.util.List;
 
 public class RelatedSizeInHDFSWrite extends AbstractHDFSToy {
 
+  private final Parameter<Integer> expected_packet_size = IntParameter.newBuilder("rsihw.expected_packet_size").setDescription("Expected packet size in flight, in bytes").opt();
+
   @Override protected String getParameterPrefix() {
-    return "rs";
+    return "rsihw";
   }
 
   @Override protected void requisite(List<Parameter> requisites) {
+    requisites.add(expected_packet_size);
   }
 
   @Override protected void exampleConfiguration() {
+    example(expected_packet_size.key(), "512");
   }
 
   DfsClientConf client_conf;
@@ -68,6 +73,16 @@ public class RelatedSizeInHDFSWrite extends AbstractHDFSToy {
     LOG.info("Buf in DFSPacket: " + packet_with_header);
     LOG.info("Max packets in flight: " + client_conf.getWriteMaxPackets());
     LOG.info("Max bytes in flight: " + (client_conf.getWriteMaxPackets() * packet_with_header));
+
+    if (!expected_packet_size.empty()) {
+      int expected_packet_sz = expected_packet_size.value() - PacketHeader.PKT_MAX_HEADER_LEN;
+      LOG.info("Expected buf in DFSPacket: " + expected_packet_sz);
+      int expected_chunks_per_packet = (expected_packet_sz / chunkSize);
+      LOG.info("Expected chunks per packet: " + expected_chunks_per_packet);
+      int expected_body_size = expected_chunks_per_packet * chunkSize;
+      LOG.info("Expected body size: " + expected_body_size);
+      LOG.info("Expected write packet size: " + (expected_body_size + PacketHeader.PKT_MAX_HEADER_LEN));
+    }
     return RETURN_CODE.SUCCESS.code();
   }
 
