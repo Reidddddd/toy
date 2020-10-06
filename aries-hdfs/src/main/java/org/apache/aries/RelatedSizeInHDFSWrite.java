@@ -39,6 +39,7 @@ public class RelatedSizeInHDFSWrite extends AbstractHDFSToy {
 
   DfsClientConf client_conf;
   Configuration conf;
+
   @Override protected void buildToy(ToyConfiguration configuration) throws Exception {
     super.buildToy(configuration);
     conf = file_system.getConf();
@@ -47,6 +48,9 @@ public class RelatedSizeInHDFSWrite extends AbstractHDFSToy {
 
   @Override protected int haveFun() throws Exception {
     Options.ChecksumOpt checksumOpt = client_conf.getDefaultChecksumOpt();
+    LOG.info("Using checksum tpye: " + checksumOpt.getChecksumType().name());
+    LOG.info("Checksum bytes: " + checksumOpt.getChecksumType().size);
+    LOG.info("Bytes per checksum: " + checksumOpt.getBytesPerChecksum());
     LOG.info("Internal buffer before checksum: " + (checksumOpt.getBytesPerChecksum() * 9));
     LOG.info("Internal buffer for storing checksum: " + (checksumOpt.getChecksumType().size * 9));
     int write_packet_size = client_conf.getWritePacketSize();
