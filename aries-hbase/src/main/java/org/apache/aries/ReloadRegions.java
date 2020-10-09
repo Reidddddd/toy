@@ -76,9 +76,11 @@ public class ReloadRegions extends AbstractHBaseToy {
   }
 
   @Override protected int haveFun() throws Exception {
+    admin.setBalancerRunning(false, true);
     unload();
     promptForConfirm();
     reload();
+    admin.setBalancerRunning(true, true);
     return RETURN_CODE.SUCCESS.code();
   }
 
@@ -127,9 +129,7 @@ public class ReloadRegions extends AbstractHBaseToy {
         }
       });
     }
-    while (moved.get() != 0) {
-      LOG.info("Remaining " + moved.get() + " regions.");
-    }
+    while (moved.get() != 0);
   }
 
   @Override protected void destroyToy() throws Exception {
