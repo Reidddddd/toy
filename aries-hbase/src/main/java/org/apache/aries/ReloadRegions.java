@@ -33,6 +33,7 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReloadRegions extends AbstractHBaseToy {
 
@@ -62,18 +63,15 @@ public class ReloadRegions extends AbstractHBaseToy {
   }
 
   Admin admin;
-  ServerName target;
-  ServerName temp;
   List<HRegionInfo> target_regions;
   ExecutorService pool;
-  CyclicBarrier barrier;
 
   @Override protected void buildToy(ToyConfiguration configuration) throws Exception {
     super.buildToy(configuration);
     admin = connection.getAdmin();
-    target = findServer(target_server.value());
+    ServerName target = findServer(target_server.value());
     target_regions = ProtobufUtil.getOnlineRegions(HConnectionManager.getConnection(connection.getConfiguration()).getAdmin(target));
-    barrier = new CyclicBarrier(target_regions.size() + 1);
+    LOG.info("There are " + target_regions.size() + " regions.");
     pool = Executors.newFixedThreadPool(thread_pool_size.value());
   }
 
@@ -116,19 +114,22 @@ public class ReloadRegions extends AbstractHBaseToy {
   }
 
   private void move(ServerName target) throws InterruptedException, BrokenBarrierException {
+    AtomicInteger moved = new AtomicInteger(target_regions.size());
     for (HRegionInfo region : target_regions) {
       pool.submit(() -> {
         try {
           LOG.info("Moving " + region.getEncodedName() + " to " + target.getServerName());
           admin.move(region.getEncodedNameAsBytes(), Bytes.toBytes(target.getServerName()));
           LOG.info("Moved " + region.getEncodedName() + " to " + target.getServerName());
-          barrier.await();
-        } catch (IOException | InterruptedException | BrokenBarrierException e) {
+          moved.decrementAndGet();
+        } catch (IOException e) {
           LOG.info("Error in moving " + region.getEncodedName());
         }
       });
     }
-    barrier.await();
+    while (moved.get() != 0) {
+      LOG.info("Remaining " + moved.get() + " regions.");
+    }
   }
 
   @Override protected void destroyToy() throws Exception {
