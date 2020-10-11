@@ -18,7 +18,7 @@ package org.apache.aries;
 
 import org.apache.aries.common.IntParameter;
 import org.apache.aries.common.Parameter;
-import org.apache.aries.common.StringParameter;
+import org.apache.aries.common.StringArrayParameter;
 import org.apache.hadoop.hbase.HRegionInfo;
 import org.apache.hadoop.hbase.ServerName;
 import org.apache.hadoop.hbase.client.Admin;
@@ -29,20 +29,18 @@ import org.apache.hadoop.hbase.util.Bytes;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReloadRegions extends AbstractHBaseToy {
 
-  private final Parameter<String> target_server =
-      StringParameter.newBuilder("rr.target_server").setRequired()
-          .setDescription("Regions on this server will be unloaded, then reloaded. Please use server:port format").opt();
-  private final Parameter<String> temp_server =
-      StringParameter.newBuilder("rr.temp_server").setRequired()
-          .setDescription("This server will be used for store the regions from target server temporarily.").opt();
+  private final Parameter<String[]> target_servers =
+      StringArrayParameter.newBuilder("rr.target_servers").setRequired()
+          .setDescription("Regions on these server will be unloaded, then reloaded. Please use server:port format, delimited by ','").opt();
+  private final Parameter<String[]> temp_servers =
+      StringArrayParameter.newBuilder("rr.temp_servers").setRequired()
+          .setDescription("These servers will be used for store the regions from target servers temporarily.").opt();
   private final Parameter<Integer> thread_pool_size =
       IntParameter.newBuilder("rr.threads_for_move_regions").setDefaultValue(8).setDescription("Number of threads for moving regions.").opt();
 
@@ -51,14 +49,14 @@ public class ReloadRegions extends AbstractHBaseToy {
   }
 
   @Override protected void requisite(List<Parameter> requisites) {
-    requisites.add(target_server);
-    requisites.add(temp_server);
+    requisites.add(target_servers);
+    requisites.add(temp_servers);
     requisites.add(thread_pool_size);
   }
 
   @Override protected void exampleConfiguration() {
-    example(target_server.key(), "target_server.com:5678");
-    example(temp_server.key(), "temp_server.com:5678");
+    example(target_servers.key(), "target_server_1.com:5678,target_server_2.com:5678");
+    example(temp_servers.key(), "temp_server_1.com:5678,temp_server_2.com:5678");
     example(thread_pool_size.key(), "8");
   }
 
@@ -66,19 +64,33 @@ public class ReloadRegions extends AbstractHBaseToy {
   List<HRegionInfo> target_regions;
   ExecutorService pool;
 
+  ServerName target;
+  ServerName temp;
+
   @Override protected void buildToy(ToyConfiguration configuration) throws Exception {
     super.buildToy(configuration);
     admin = connection.getAdmin();
-    ServerName target = findServer(target_server.value());
-    target_regions = ProtobufUtil.getOnlineRegions(HConnectionManager.getConnection(connection.getConfiguration()).getAdmin(target));
-    LOG.info("There are " + target_regions.size() + " regions.");
     pool = Executors.newFixedThreadPool(thread_pool_size.value());
   }
 
+  @Override
+  protected void midCheck() {
+    if (target_servers.value().length != temp_servers.value().length) {
+      throw new IllegalArgumentException("Target servers size should be equal to temp servers size");
+    }
+  }
+
   @Override protected int haveFun() throws Exception {
-    unload();
-    promptForConfirm();
-    reload();
+    int size = target_servers.value().length;
+    for (int i = 0; i < size; i++) {
+      target = findServer(target_servers.value()[i]);
+      temp = findServer(temp_servers.value()[i]);
+      target_regions = ProtobufUtil.getOnlineRegions(HConnectionManager.getConnection(connection.getConfiguration()).getAdmin(target));
+      LOG.info("There are " + target_regions.size() + " regions on " + target);
+      unloadRegionsTo(temp);
+      promptForConfirm();
+      reloadRegionsTo(target);
+    }
     return RETURN_CODE.SUCCESS.code();
   }
 
@@ -102,18 +114,18 @@ public class ReloadRegions extends AbstractHBaseToy {
     return null;
   }
 
-  private void unload() throws Exception {
-    move(findServer(temp_server.value()));
+  private void unloadRegionsTo(ServerName server) throws Exception {
+    move(server);
     LOG.info("Unload regions finished!");
   }
 
-  private void reload() throws Exception {
+  private void reloadRegionsTo(ServerName server) throws Exception {
     // Like it is restarted, startcode will get updated.
-    move(findServer(target_server.value()));
+    move(server);
     LOG.info("Reload regions finished!");
   }
 
-  private void move(ServerName target) throws InterruptedException, BrokenBarrierException {
+  private void move(ServerName target) {
     AtomicInteger moved = new AtomicInteger(target_regions.size());
     for (HRegionInfo region : target_regions) {
       pool.submit(() -> {
