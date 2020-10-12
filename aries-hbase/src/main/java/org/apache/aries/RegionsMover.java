@@ -135,6 +135,8 @@ public class RegionsMover extends AbstractHBaseToy {
             LOG.info("There are " + regions.size() + " regions on " + target);
             unloadRegionsTo(regions, target);
             promptForConfirm();
+            // in case source is restarted
+            source = findServer(source_servers.value()[i]);
             reloadRegionsTo(regions, source);
           }
         }
