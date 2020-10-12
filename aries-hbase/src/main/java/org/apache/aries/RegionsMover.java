@@ -109,6 +109,7 @@ public class RegionsMover extends AbstractHBaseToy {
           LOG.info("There are " + regions.size() + " regions on " + source);
           unloadRegionsTo(regions, target);
         }
+        break;
       }
       case RELOAD: {
         if (batch_move.value()) {
@@ -137,6 +138,7 @@ public class RegionsMover extends AbstractHBaseToy {
             reloadRegionsTo(regions, source);
           }
         }
+        break;
       }
     }
     return RETURN_CODE.SUCCESS.code();
