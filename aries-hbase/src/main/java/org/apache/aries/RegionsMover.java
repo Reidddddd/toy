@@ -84,6 +84,7 @@ public class RegionsMover extends AbstractHBaseToy {
     admin = connection.getAdmin();
     pool = Executors.newFixedThreadPool(thread_pool_size.value());
     mode = (MODE) move_or_reload.value();
+    LOG.info("Using mode: " + mode.name());
   }
 
   @Override
