@@ -108,7 +108,9 @@ public class SplitTable extends AbstractHBaseToy {
       for (int i = 0; i < table_info.regionNum(); i++) {
         RegionInfo region = table_info.getRegionAtIndex(i);
         if (region.getSizeInBytes() > threshold_bytes) {
-          admin.splitRegion(regions.get(i).getEncodedNameAsBytes());
+          HRegionInfo target_region = regions.get(i);
+          LOG.info("Splitting region " + target_region.getRegionId());
+          admin.splitRegion(target_region.getEncodedNameAsBytes());
         }
       }
       return RETURN_CODE.SUCCESS.code();
