@@ -19,7 +19,9 @@ package org.apache.aries;
 import org.apache.aries.common.Constants;
 import org.apache.aries.common.IntParameter;
 import org.apache.aries.common.Parameter;
+import org.apache.aries.common.RegionInfo;
 import org.apache.aries.common.StringParameter;
+import org.apache.aries.common.TableInfo;
 import org.apache.hadoop.hbase.HRegionInfo;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
@@ -112,7 +114,7 @@ public class MergeTable extends AbstractHBaseToy {
         // It is determined by first run.
         round = calculateHowManyRuns(table_info);
       }
-      for (int i = 0, index_a, index_b; i < table_info.regionNum(); ) {
+      for (int i = 0, index_a, index_b; i < table_info.regionNum();) {
         index_a = i++;
         index_b = i++;
         if (index_b >= table_info.regionNum()) {
@@ -184,100 +186,6 @@ public class MergeTable extends AbstractHBaseToy {
       }
       return false;
     }
-  }
-
-  class RegionInfo {
-
-    String name;
-    String server;
-    String read_requests;
-    String write_requests;
-    String file_size;
-    String file_num;
-    String mem_size;
-    String locality;
-    String start_key;
-    String end_key;
-
-    RegionInfo(Element region) {
-      Elements column = region.select("td");
-               int i = 0;
-      name           = column.get(i++).text();
-      server         = column.get(i++).text();
-      read_requests  = column.get(i++).text();
-      write_requests = column.get(i++).text();
-      file_size      = column.get(i++).text();
-      file_num       = column.get(i++).text();
-      mem_size       = column.get(i++).text();
-      locality       = column.get(i++).text();
-      start_key      = column.get(i++).text();
-      end_key        = column.get(i++).text();
-    }
-
-    public long getSizeInBytes() {
-      long size;
-      String num = file_size.split(" ")[0];
-      if (file_size.contains("GB")) {
-        float gb = Float.parseFloat(num); // get the number
-        size = (long) (gb * Constants.ONE_GB);
-      } else if (file_size.contains("MB")) {
-        float mb = Float.parseFloat(num);
-        size = (long) (mb * Constants.ONE_MB);
-      } else if (file_size.contains("KB")) {
-        float kb = Float.parseFloat(num);
-        size = (long) (kb * Constants.ONE_KB);
-      } else {
-        size = Long.parseLong(num);
-      }
-      return size;
-    }
-
-    public int readRequests() {
-      return Integer.parseInt(read_requests.replaceAll(",", ""));
-    }
-
-    @Override
-    public String toString() {
-      return "RegionInfo{" +
-          "name='" + name + '\'' +
-          ", server='" + server + '\'' +
-          ", read_requests='" + read_requests + '\'' +
-          ", write_requests='" + write_requests + '\'' +
-          ", file_size='" + file_size + '\'' +
-          ", file_num='" + file_num + '\'' +
-          ", mem_size='" + mem_size + '\'' +
-          ", locality='" + locality + '\'' +
-          ", start_key='" + start_key + '\'' +
-          ", end_key='" + end_key + '\'' +
-          '}';
-    }
-
-  }
-
-  class TableInfo {
-
-    final List<RegionInfo> regions;
-
-    TableInfo(Element table) {
-      Elements rows = table.select("tr");
-      regions = new ArrayList<>(rows.size() - 1); // Skip first title row
-      for (int i = 1; i < rows.size(); i++) {
-        regions.add(new RegionInfo(rows.get(i)));
-      }
-    }
-
-    public List<RegionInfo> getRegions() {
-      return regions;
-    }
-
-    public int regionNum() {
-      return regions.size();
-    }
-
-    RegionInfo getRegionAtIndex(int i) {
-      return regions.get(i);
-    }
-
   }
 
 }

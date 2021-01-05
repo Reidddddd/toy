@@ -16,12 +16,20 @@
 
 package org.apache.aries;
 
+import org.apache.aries.common.Constants;
+import org.apache.aries.common.IntParameter;
 import org.apache.aries.common.Parameter;
+import org.apache.aries.common.RegionInfo;
 import org.apache.aries.common.StringArrayParameter;
+import org.apache.aries.common.StringParameter;
+import org.apache.aries.common.TableInfo;
 import org.apache.hadoop.hbase.HRegionInfo;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +38,11 @@ import java.util.regex.Pattern;
 
 public class SplitTable extends AbstractHBaseToy {
 
+  private final Parameter<String> split_table_url =
+      StringParameter.newBuilder("st.url").setDescription("The pages of the table. Please copy from HBase Web UI").opt();
+  private final Parameter<Integer> split_size_threshold =
+      IntParameter.newBuilder("st.merge_threshold_megabytes").setDefaultValue(10240)
+                  .setDescription("Regions above this threshold will be splited, unit in MB").opt();
   private final Parameter<String[]> tables =
       StringArrayParameter.newBuilder("st.table_name").setRequired()
           .setDescription("Tables's names to be dropped, delimited by ','. Pattern is supported, by prefixing '#'")
@@ -44,11 +57,15 @@ public class SplitTable extends AbstractHBaseToy {
   }
 
   @Override protected void requisite(List<Parameter> requisites) {
+    requisites.add(split_table_url);
+    requisites.add(split_size_threshold);
     requisites.add(tables);
     requisites.add(regions);
   }
 
   @Override protected void exampleConfiguration() {
+    example(split_table_url.key(), "http://host:port/table.jsp?name=namespace:table");
+    example(split_size_threshold.key(), "10240");
     example(tables.key(), "ns1:t1");
     example(regions.key(), "24221b13bcd6c3f86c75c64ebdf688f2,28e8df1df7540441e125bd8d748252b0");
   }
@@ -57,6 +74,10 @@ public class SplitTable extends AbstractHBaseToy {
   @Override protected void buildToy(ToyConfiguration configuration) throws Exception {
     super.buildToy(configuration);
     admin = connection.getAdmin();
+
+    if (!split_size_threshold.empty()) {
+      threshold_bytes = split_size_threshold.value() * Constants.ONE_MB;
+    }
   }
 
   @Override protected void midCheck() {
@@ -65,12 +86,30 @@ public class SplitTable extends AbstractHBaseToy {
     }
   }
 
+  long threshold_bytes;
+
   @Override protected int haveFun() throws Exception {
     if (!regions.empty()) {
       String table = tables.value()[0];
       for (String region : regions.value()) {
         LOG.info("Splitting table " + table + "'s region " + region);
         admin.splitRegion(Bytes.toBytes(region));
+      }
+      return RETURN_CODE.SUCCESS.code();
+    }
+
+    if (!split_table_url.empty()) {
+      int start = split_table_url.value().indexOf("=") + 1;
+      TableName table = TableName.valueOf(split_table_url.value().substring(start));
+      List<HRegionInfo> regions = admin.getTableRegions(table);
+      Document doc = Jsoup.connect(split_table_url.value()).get();
+      Element element = doc.getElementById("regionServerDetailsTable");
+      TableInfo table_info = new TableInfo(element);
+      for (int i = 0; i < table_info.regionNum(); i++) {
+        RegionInfo region = table_info.getRegionAtIndex(i);
+        if (region.getSizeInBytes() > threshold_bytes) {
+          admin.splitRegion(regions.get(i).getEncodedNameAsBytes());
+        }
       }
       return RETURN_CODE.SUCCESS.code();
     }
