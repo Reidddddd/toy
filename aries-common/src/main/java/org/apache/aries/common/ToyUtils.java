@@ -16,6 +16,9 @@
 
 package org.apache.aries.common;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 public final class ToyUtils {
 
   public static void assertLengthValid(String[] res, int expected) {
@@ -40,6 +43,10 @@ public final class ToyUtils {
       builder.append(RANDOM_CHARS.charAt((int)(Math.random() * RANDOM_CHARS.length())));
     }
     return builder.toString();
+  }
+
+  public static byte[] generateBase64Value(String key) {
+    return Base64.getEncoder().encode(key.getBytes(StandardCharsets.UTF_8));
   }
 
 }

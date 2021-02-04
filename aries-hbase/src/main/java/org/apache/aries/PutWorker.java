@@ -16,6 +16,7 @@
 
 package org.apache.aries;
 
+import org.apache.aries.common.EnumParameter;
 import org.apache.aries.common.ToyUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.TableName;
@@ -59,12 +60,20 @@ public class PutWorker extends AbstractHBaseToy {
                    .setDescription("Buffer size in bytes for batch put").opt();
   private final Parameter<Integer> running_time =
       IntParameter.newBuilder("pw.running_time").setDescription("How long this application run (in seconds").opt();
+  private final Parameter<Enum> value_kind =
+      EnumParameter.newBuilder("pw.value_kind", VALUE_KIND.FIXED, VALUE_KIND.class)
+                   .setDescription("Value is fixed or random generated").opt();
+
+  enum VALUE_KIND {
+    RANDOM, FIXED
+  }
 
   private Admin admin;
   private ExecutorService service;
   private volatile boolean running = true;
   private TableName table;
   private final Object mutex = new Object();
+  private VALUE_KIND kind;
 
   @Override
   protected void requisite(List<Parameter> requisites) {
@@ -73,6 +82,7 @@ public class PutWorker extends AbstractHBaseToy {
     requisites.add(family);
     requisites.add(buffer_size);
     requisites.add(running_time);
+    requisites.add(value_kind);
   }
 
   @Override
@@ -82,6 +92,7 @@ public class PutWorker extends AbstractHBaseToy {
     example(family.key(), "f");
     example(buffer_size.key(), "1024");
     example(running_time.key(), "300");
+    example(value_kind.key(), "FIXED");
   }
 
   @Override
@@ -120,6 +131,8 @@ public class PutWorker extends AbstractHBaseToy {
         }
       }, 0);
     }
+
+    kind = (VALUE_KIND) value_kind.value();
   }
 
   @Override
@@ -165,11 +178,15 @@ public class PutWorker extends AbstractHBaseToy {
       try {
         mutator = connection.getBufferedMutator(param);
         while (running) {
-          Put put = new Put(Bytes.toBytes(ToyUtils.generateRandomString(10)));
+          String k = ToyUtils.generateRandomString(10);
+          byte[] value = (kind == VALUE_KIND.FIXED) ?
+              ToyUtils.generateBase64Value(k) :
+              Bytes.toBytes(ToyUtils.generateRandomString(22));
+          Put put = new Put(Bytes.toBytes(k));
           put.addColumn(
               Bytes.toBytes(family.value()),
               Bytes.toBytes("q"),
-              Bytes.toBytes(ToyUtils.generateRandomString(22))
+              value
           );
           mutator.mutate(put);
         }
