@@ -107,8 +107,10 @@ public class PutWorker extends AbstractHBaseToy {
     }
 
     service = Executors.newFixedThreadPool(num_connections.value());
+    Worker[] workers = new Worker[num_connections.value()];
     for (int i = 0; i < num_connections.value(); i++) {
-      service.submit(new Worker(configuration));
+      workers[i] = new Worker(configuration);
+      service.submit(workers[i]);
     }
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -143,6 +145,7 @@ public class PutWorker extends AbstractHBaseToy {
       mutex.wait();
       running = false;
     }
+    service.awaitTermination(30, TimeUnit.SECONDS);
     LOG.info("Total wrote " + totalRows.get() + " rows in " + running_time.value() + " seconds.");
     LOG.info("Avg " + (double) (totalRows.get()) / running_time.value());
     LOG.info("Existing.");
@@ -153,7 +156,6 @@ public class PutWorker extends AbstractHBaseToy {
   protected void destroyToy() throws Exception {
     super.destroyToy();
     admin.close();
-    service.shutdown();
   }
 
   @Override protected String getParameterPrefix() {
