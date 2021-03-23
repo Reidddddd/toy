@@ -29,6 +29,7 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
   private final Set<String> compression_set = new HashSet<>(Arrays.asList("LZO", "GZ", "NONE", "SNAPPY", "LZ4", "BZIP2"));
   private final Set<String> bloom_set = new HashSet<>(Arrays.asList("NONE", "ROW", "ROWCOL"));
   private final String TABLE_OWNERS = "TABLE_OWNERS";
+  private final String SENSITIVE_DATA = "SENESITIVE_DATA";
   private final String BLOOMFILTER = "BLOOMFILTER";
   private final String BLOCKSIZE = "BLOCKSIZE";
   private final String COMPRESSION = "COMPRESSION";
@@ -40,6 +41,10 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
       StringParameter.newBuilder("cpt.create_table_sql").setRequired().setDescription("Create table sql, it can be patterned with %s").opt();
   private final Parameter<String> owners =
       StringParameter.newBuilder("cpt.table_owners").setRequired().setDescription("Owners of table, delimited by ','").opt();
+  private final Parameter<Boolean> sensitive_data =
+      BoolParameter.newBuilder("cpt.sensitive_data", false)
+          .setDescription("Whether the table is used for sensitive data.")
+          .opt();
   private final Parameter<Integer> bucket_size =
       IntParameter.newBuilder("cpt.salt_buckets").setDescription("Salted bucket size for table, larger size will increase throughput but introduce latency").opt();
   private final Parameter<String> compression =
@@ -90,6 +95,7 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
     StringBuilder
            builder = new StringBuilder(sql);
            builder.append(" ").append(TABLE_OWNERS).append("='").append(owners.value()).append("'");
+           builder.append(", ").append(SENSITIVE_DATA).append("='").append(sensitive_data.value()).append("'");
            builder.append(", ").append(UPDATE_CACHE_FREQUENCY).append("='").append("NEVER").append("'");
            builder.append(", ").append(BLOCKSIZE).append("='").append(Constants.ONE_KB * 32).append("'");
     if (!bucket_size.empty())
@@ -112,6 +118,7 @@ public class CreatePhoenixTable extends AbstractPhoenixToy {
   protected void exampleConfiguration() {
     example(sql.key(), "CREATE TABLE user_%s (\"user_id\" BIGINT PRIMARY KEY );");
     example(owners.key(), "bob,alice");
+    example(sensitive_data.key(), "true");
     example(bucket_size.key(), "2");
     example(compression.key(), "SNAPPY");
     example(bloomfilter.key(), "ROW");

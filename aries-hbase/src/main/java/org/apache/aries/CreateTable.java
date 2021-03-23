@@ -59,6 +59,10 @@ public class CreateTable extends AbstractHBaseToy {
                   .addConstraint(v -> v > 1).addConstraint(v -> v <= 1000).addConstraint(v -> 1000 % v == 0).opt();
   private final Parameter<String> table_owners =
       StringParameter.newBuilder("ct.table_owners").setRequired().setDescription("Whom the table is under in charge by, delimited by ','").opt();
+  private final Parameter<Boolean> sensitive_data =
+      BoolParameter.newBuilder("ct.sensitive_data", false)
+                   .setDescription("Whether the table is used for sensitive data.")
+                   .opt();
   private final Parameter<Integer> table_split_size =
       IntParameter.newBuilder("ct.table_split_size_in_megabytes").setDescription("The MAX_FILESIZE of a table, larger than this will trigger split.").opt();
   // Column family parameters
@@ -108,6 +112,7 @@ public class CreateTable extends AbstractHBaseToy {
     requisites.add(hex_split_regions);
     requisites.add(dec_split_regions);
     requisites.add(table_owners);
+    requisites.add(sensitive_data);
     requisites.add(table_split_size);
     // Family parameters
     requisites.add(compression);
@@ -157,6 +162,7 @@ public class CreateTable extends AbstractHBaseToy {
     example(split_algorithm.key(), "HEX");
     example(hex_split_regions.key(), "4");
     example(table_owners.key(), "foo");
+    example(sensitive_data.key(), "TRUE");
     example(compression.key() + ".a", "SNAPPY");
     example(cache_data_on_write.key() + ".a", "true");
     example(cache_data_in_L1.key() + ".a", "true");
@@ -174,6 +180,7 @@ public class CreateTable extends AbstractHBaseToy {
   private HTableDescriptor buildTableDescriptor() {
     HTableDescriptor descriptor = new HTableDescriptor(table);
     descriptor.setValue(Bytes.toBytes("TABLE_OWNERS"), Bytes.toBytes(table_owners.value()));
+    descriptor.setValue(Bytes.toBytes("SENSITIVE_DATA"), Bytes.toBytes(sensitive_data.value()));
     return descriptor;
   }
 
