@@ -63,6 +63,10 @@ public class PutWorker extends AbstractHBaseToy {
   private final Parameter<Enum> value_kind =
       EnumParameter.newBuilder("pw.value_kind", VALUE_KIND.FIXED, VALUE_KIND.class)
                    .setDescription("Value is fixed or random generated").opt();
+  private final Parameter<Integer> running_threads =
+      IntParameter.newBuilder("pw.running_threads").setDefaultValue(1)
+                  .setDescription("How many threads use one connection.")
+                  .addConstraint(v -> v > 0).opt();
 
   enum VALUE_KIND {
     RANDOM, FIXED
@@ -174,27 +178,32 @@ public class PutWorker extends AbstractHBaseToy {
     public void run() {
       BufferedMutator mutator = null;
       BufferedMutatorParams param = new BufferedMutatorParams(table);
+      ExecutorService service = Executors.newFixedThreadPool(running_threads.value());
       param.writeBufferSize(buffer_size.value());
       try {
         mutator = connection.getBufferedMutator(param);
-        while (running) {
-          String k = ToyUtils.generateRandomString(10);
-          byte[] value = (kind == VALUE_KIND.FIXED) ?
-              ToyUtils.generateBase64Value(k) :
-              Bytes.toBytes(ToyUtils.generateRandomString(22));
-          Put put = new Put(Bytes.toBytes(k));
-          put.addColumn(
-              Bytes.toBytes(family.value()),
-              Bytes.toBytes("q"),
-              value
-          );
-          mutator.mutate(put);
-        }
       } catch (IOException e) {
         LOG.warning("Error occured " + e.getMessage());
       }
+      for (int i = 0; i < running_threads.value(); i++) {
+        BufferedMutator finalMutator = mutator;
+        service.execute(() -> {
+          try {
+            while (running) {
+              String k = ToyUtils.generateRandomString(10);
+              byte[] value = (kind == VALUE_KIND.FIXED) ?
+                  ToyUtils.generateBase64Value(k) :
+                  Bytes.toBytes(ToyUtils.generateRandomString(22));
+              Put put = new Put(Bytes.toBytes(k));
+              put.addColumn(Bytes.toBytes(family.value()), Bytes.toBytes("q"), value);
+              finalMutator.mutate(put);
+            }
+          } catch (IOException e) {
+            LOG.warning("Error occured " + e.getMessage());
+          }
+        });
+      }
     }
-
   }
 
 }
