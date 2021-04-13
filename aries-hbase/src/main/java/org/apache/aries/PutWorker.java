@@ -87,6 +87,7 @@ public class PutWorker extends AbstractHBaseToy {
     requisites.add(buffer_size);
     requisites.add(running_time);
     requisites.add(value_kind);
+    requisites.add(running_threads);
   }
 
   @Override
@@ -97,6 +98,7 @@ public class PutWorker extends AbstractHBaseToy {
     example(buffer_size.key(), "1024");
     example(running_time.key(), "300");
     example(value_kind.key(), "FIXED");
+    example(running_threads.key(), "10");
   }
 
   @Override
@@ -203,6 +205,7 @@ public class PutWorker extends AbstractHBaseToy {
           }
         });
       }
+      service.shutdown();
     }
   }
 
