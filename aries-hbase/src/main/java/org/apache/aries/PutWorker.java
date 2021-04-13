@@ -41,6 +41,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class PutWorker extends AbstractHBaseToy {
 
@@ -78,6 +79,7 @@ public class PutWorker extends AbstractHBaseToy {
   private TableName table;
   private final Object mutex = new Object();
   private VALUE_KIND kind;
+  private AtomicLong totalRows = new AtomicLong(0);
 
   @Override
   protected void requisite(List<Parameter> requisites) {
@@ -111,8 +113,10 @@ public class PutWorker extends AbstractHBaseToy {
     }
 
     service = Executors.newFixedThreadPool(num_connections.value());
+    Worker[] workers = new Worker[num_connections.value()];
     for (int i = 0; i < num_connections.value(); i++) {
-      service.submit(new Worker(configuration));
+      workers[i] = new Worker(configuration);
+      service.submit(workers[i]);
     }
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -147,6 +151,9 @@ public class PutWorker extends AbstractHBaseToy {
       mutex.wait();
       running = false;
     }
+    service.awaitTermination(30, TimeUnit.SECONDS);
+    LOG.info("Total wrote " + totalRows.get() + " rows in " + running_time.value() + " seconds.");
+    LOG.info("Avg " + (double) (totalRows.get()) / running_time.value());
     LOG.info("Existing.");
     return 0;
   }
@@ -155,7 +162,6 @@ public class PutWorker extends AbstractHBaseToy {
   protected void destroyToy() throws Exception {
     super.destroyToy();
     admin.close();
-    service.shutdown();
   }
 
   @Override protected String getParameterPrefix() {
@@ -165,6 +171,7 @@ public class PutWorker extends AbstractHBaseToy {
   class Worker implements Runnable {
 
     Connection connection;
+    long numberOfRows;
 
     Worker(ToyConfiguration conf) throws IOException {
       connection = createConnection(conf);
@@ -186,6 +193,8 @@ public class PutWorker extends AbstractHBaseToy {
         mutator = connection.getBufferedMutator(param);
       } catch (IOException e) {
         LOG.warning("Error occured " + e.getMessage());
+      } finally {
+        totalRows.addAndGet(numberOfRows);
       }
       for (int i = 0; i < running_threads.value(); i++) {
         BufferedMutator finalMutator = mutator;
