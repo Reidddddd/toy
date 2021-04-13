@@ -64,6 +64,10 @@ public class PutWorker extends AbstractHBaseToy {
   private final Parameter<Enum> value_kind =
       EnumParameter.newBuilder("pw.value_kind", VALUE_KIND.FIXED, VALUE_KIND.class)
                    .setDescription("Value is fixed or random generated").opt();
+  private final Parameter<Integer> running_threads =
+      IntParameter.newBuilder("pw.running_threads").setDefaultValue(1)
+          .setDescription("How many threads use one connection.")
+          .addConstraint(v -> v > 0).opt();
 
   enum VALUE_KIND {
     RANDOM, FIXED
@@ -85,6 +89,7 @@ public class PutWorker extends AbstractHBaseToy {
     requisites.add(buffer_size);
     requisites.add(running_time);
     requisites.add(value_kind);
+    requisites.add(running_threads);
   }
 
   @Override
@@ -95,6 +100,7 @@ public class PutWorker extends AbstractHBaseToy {
     example(buffer_size.key(), "1024");
     example(running_time.key(), "300");
     example(value_kind.key(), "FIXED");
+    example(running_threads.key(), "10");
   }
 
   @Override
@@ -165,7 +171,7 @@ public class PutWorker extends AbstractHBaseToy {
   class Worker implements Runnable {
 
     Connection connection;
-    long numberOfRows;
+    AtomicLong numberOfRows = new AtomicLong(0);
 
     Worker(ToyConfiguration conf) throws IOException {
       connection = createConnection(conf);
@@ -182,28 +188,40 @@ public class PutWorker extends AbstractHBaseToy {
       BufferedMutator mutator = null;
       BufferedMutatorParams param = new BufferedMutatorParams(table);
       param.writeBufferSize(buffer_size.value());
+      ExecutorService service = Executors.newFixedThreadPool(running_threads.value());
       try {
         mutator = connection.getBufferedMutator(param);
-        while (running) {
-          String k = ToyUtils.generateRandomString(10);
-          byte[] value = (kind == VALUE_KIND.FIXED) ?
-              ToyUtils.generateBase64Value(k) :
-              Bytes.toBytes(ToyUtils.generateRandomString(22));
-          Put put = new Put(Bytes.toBytes(k));
-          put.addColumn(
-              Bytes.toBytes(family.value()),
-              Bytes.toBytes("q"),
-              value
-          );
-          mutator.mutate(put);
-          numberOfRows++;
+        for (int i = 0; i < running_threads.value(); i++) {
+          BufferedMutator finalMutator = mutator;
+          service.execute(() -> {
+            while (running) {
+              String k = ToyUtils.generateRandomString(10);
+              byte[] value = (kind == VALUE_KIND.FIXED) ?
+                  ToyUtils.generateBase64Value(k) :
+                  Bytes.toBytes(ToyUtils.generateRandomString(22));
+              Put put = new Put(Bytes.toBytes(k));
+              put.addColumn(
+                  Bytes.toBytes(family.value()),
+                  Bytes.toBytes("q"),
+                  value
+              );
+              try {
+                finalMutator.mutate(put);
+              } catch (IOException e) {
+                LOG.warning("Error occured " + e.getMessage());
+              }
+              numberOfRows.incrementAndGet();
+            }
+          });
         }
+        service.shutdown();
+        service.awaitTermination(running_time.value(), TimeUnit.SECONDS);
         mutator.flush();
         mutator.close();
-      } catch (IOException e) {
+      } catch (IOException | InterruptedException e) {
         LOG.warning("Error occured " + e.getMessage());
       } finally {
-        totalRows.addAndGet(numberOfRows);
+        totalRows.addAndGet(numberOfRows.get());
       }
     }
 
