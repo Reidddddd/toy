@@ -215,7 +215,7 @@ public class PutWorker extends AbstractHBaseToy {
           });
         }
         service.shutdown();
-        service.awaitTermination(running_time.value(), TimeUnit.SECONDS);
+        service.awaitTermination(running_time.value() + 1, TimeUnit.SECONDS);
         mutator.flush();
         mutator.close();
       } catch (IOException | InterruptedException e) {
