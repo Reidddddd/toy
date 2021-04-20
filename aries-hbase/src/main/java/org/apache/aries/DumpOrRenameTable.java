@@ -18,32 +18,30 @@ package org.apache.aries;
 
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
-import org.apache.hadoop.hbase.protobuf.generated.HBaseProtos;
 import org.apache.aries.common.BoolParameter;
 import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringArrayParameter;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RenameTable extends AbstractHBaseToy {
+public class DumpOrRenameTable extends AbstractHBaseToy {
 
   private Parameter<String[]> old_table_names =
-      StringArrayParameter.newBuilder("rt.old_table_names").setRequired()
+      StringArrayParameter.newBuilder("drt.old_table_names").setRequired()
                           .setDescription("Old tables's names").opt();
   private Parameter<String[]> new_table_names =
-      StringArrayParameter.newBuilder("rt.new_table_names").setRequired()
-                          .setDescription("New tables's names").opt();
-  private Parameter<Boolean> skip_flush =
-      BoolParameter.newBuilder("rt.snapshot_skip_flush", false)
-                   .setDescription("Whether skip flush when snapshot table").opt();
+      StringArrayParameter.newBuilder("drt.new_table_names").setRequired()
+                          .setDescription("New table names if it is a renaming operation, otherwise these will be used as snapshot names").opt();
+  private Parameter<Boolean> dump_only =
+      BoolParameter.newBuilder("drt.dump_snapshot_only", true)
+                   .setDescription("Dump snapshot only, cloning and renaming will not happen").opt();
 
   @Override protected void requisite(List<Parameter> requisites) {
     requisites.add(old_table_names);
     requisites.add(new_table_names);
-    requisites.add(skip_flush);
+    requisites.add(dump_only);
   }
 
   @Override protected void midCheck() {
@@ -67,14 +65,21 @@ public class RenameTable extends AbstractHBaseToy {
 
   @Override protected int haveFun() throws Exception {
     admin = connection.getAdmin();
-    table_mapping.forEach((o, n) -> {
-      TableName name = TableName.valueOf(o);
-      try {
-        admin.snapshot(name.getQualifierAsString(), name,
-            skip_flush.value() ? HBaseProtos.SnapshotDescription.Type.SKIPFLUSH : HBaseProtos.SnapshotDescription.Type.FLUSH);
-        admin.cloneSnapshot(name.getQualifierAsString(), TableName.valueOf(n), true);
-      } catch (IOException e) {
-        LOG.warning("Failed to snapshot " + name);
+    table_mapping.forEach((old_name, new_name) -> {
+      TableName name = TableName.valueOf(old_name);
+      if (dump_only.value()) {
+        try {
+          admin.snapshot(new_name, name);
+        } catch (Exception e) {
+          LOG.warning("Failed to snapshot " + name + " with reason " + e.getMessage());
+        }
+      } else {
+        try {
+          admin.snapshot(name.getQualifierAsString(), name);
+          admin.cloneSnapshot(name.getQualifierAsString(), TableName.valueOf(new_name), true);
+        } catch (Exception e) {
+          LOG.warning("Failed to rename " + name + " with reason " + e.getMessage());
+        }
       }
     });
     return 0;
@@ -89,10 +94,11 @@ public class RenameTable extends AbstractHBaseToy {
   protected void exampleConfiguration() {
     example(old_table_names.key(), "a,alice:toy,bob:table");
     example(new_table_names.key(), "b,bob:toy,bob:alice");
+    example(dump_only.key(), "true");
   }
 
   @Override protected String getParameterPrefix() {
-    return "rt";
+    return "drt";
   }
 
 }
