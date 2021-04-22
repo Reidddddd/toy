@@ -20,6 +20,7 @@ import org.apache.aries.common.BoolParameter;
 import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringParameter;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellScanner;
@@ -30,6 +31,7 @@ import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
 import org.apache.hadoop.hbase.mapreduce.TableMapper;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.Job;
 
@@ -71,6 +73,7 @@ public class SnapshotReader extends AbstractHBaseToy {
       Map.Entry<String, String> e = it.next();
       LOG.info(e.getKey() + "=" + e.getValue());
     }
+    FileSystem fs = FileSystem.get(FileSystem.getDefaultUri(conf), conf);
     Job job = Job.getInstance(conf, "HBaseSnapshotReader");
     job.setJarByClass(SnapshotReader.class);
     Scan scan = new Scan();
