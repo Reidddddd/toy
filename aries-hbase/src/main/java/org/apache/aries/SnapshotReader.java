@@ -33,7 +33,9 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.Job;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class SnapshotReader extends AbstractHBaseToy {
 
@@ -60,6 +62,11 @@ public class SnapshotReader extends AbstractHBaseToy {
   @Override
   protected int haveFun() throws Exception {
     Configuration conf = connection.getConfiguration();
+    Iterator<Map.Entry<String, String>> it = conf.iterator();
+    while (it.hasNext()) {
+      Map.Entry<String, String> e = it.next();
+      LOG.info(e.getKey() + "=" + e.getValue());
+    }
     Job job = Job.getInstance(conf, "HBaseSnapshotReader");
     job.setJarByClass(SnapshotReader.class);
     Scan scan = new Scan();
