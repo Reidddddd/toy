@@ -16,6 +16,7 @@
 
 package org.apache.aries;
 
+import org.apache.aries.common.BoolParameter;
 import org.apache.aries.common.Parameter;
 import org.apache.aries.common.StringParameter;
 import org.apache.hadoop.conf.Configuration;
@@ -41,6 +42,7 @@ public class SnapshotReader extends AbstractHBaseToy {
 
   Parameter<String> snapshot = StringParameter.newBuilder("sr.snapshot_name").setRequired().setDescription("Snapshot name to be read").opt();
   Parameter<String> restoreDir = StringParameter.newBuilder("sr.restore_dir").setRequired().setDescription("Restore dir for snapshot reading").opt();
+  Parameter<Boolean> dependency = BoolParameter.newBuilder("sr.dependency_or_not", false).setDescription("If we add dependency").opt();
 
   @Override
   protected String getParameterPrefix() {
@@ -51,12 +53,14 @@ public class SnapshotReader extends AbstractHBaseToy {
   protected void requisite(List<Parameter> requisites) {
     requisites.add(snapshot);
     requisites.add(restoreDir);
+    requisites.add(dependency);
   }
 
   @Override
   protected void exampleConfiguration() {
     example(snapshot.key(), "table-snapshot");
     example(restoreDir.key(), "hdfs://hdfs/restore_dir");
+    example(dependency.key(), "true");
   }
 
   @Override
@@ -77,7 +81,7 @@ public class SnapshotReader extends AbstractHBaseToy {
         ImmutableBytesWritable.class,
         NullWritable.class,
         job,
-        false,
+        dependency.value(),
         new Path(restoreDir.value()));
     job.waitForCompletion(true);
     return 0;
