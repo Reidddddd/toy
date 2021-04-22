@@ -61,6 +61,7 @@ public class SnapshotReader extends AbstractHBaseToy {
   protected int haveFun() throws Exception {
     Configuration conf = connection.getConfiguration();
     Job job = Job.getInstance(conf, "HBaseSnapshotReader");
+    job.setJarByClass(SnapshotReader.class);
     Scan scan = new Scan();
     scan.setCacheBlocks(false);
     TableMapReduceUtil.initTableSnapshotMapperJob(
