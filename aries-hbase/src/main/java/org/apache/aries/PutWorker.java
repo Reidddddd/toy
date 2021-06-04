@@ -66,7 +66,7 @@ public class PutWorker extends AbstractHBaseToy {
                    .setDescription("Value is fixed or random generated").opt();
   private final Parameter<Integer> key_length =
       IntParameter.newBuilder("pw.key_length").setDefaultValue(Constants.DEFAULT_KEY_LENGTH_PW).
-          setDescription("How long will be the generated key.").opt();
+          setDescription("The size of the generated key.").opt();
 
   enum VALUE_KIND {
     RANDOM, FIXED
