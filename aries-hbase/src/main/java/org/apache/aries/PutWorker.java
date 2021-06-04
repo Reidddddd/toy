@@ -64,6 +64,9 @@ public class PutWorker extends AbstractHBaseToy {
   private final Parameter<Enum> value_kind =
       EnumParameter.newBuilder("pw.value_kind", VALUE_KIND.FIXED, VALUE_KIND.class)
                    .setDescription("Value is fixed or random generated").opt();
+  private final Parameter<Integer> key_length =
+      IntParameter.newBuilder("pw.key_length").setDefaultValue(Constants.TEN).
+          setDescription("How long will be the generated key.").opt();
 
   enum VALUE_KIND {
     RANDOM, FIXED
@@ -185,7 +188,7 @@ public class PutWorker extends AbstractHBaseToy {
       try {
         mutator = connection.getBufferedMutator(param);
         while (running) {
-          String k = ToyUtils.generateRandomString(10);
+          String k = ToyUtils.generateRandomString(key_length.value());
           byte[] value = (kind == VALUE_KIND.FIXED) ?
               ToyUtils.generateBase64Value(k) :
               Bytes.toBytes(ToyUtils.generateRandomString(22));
