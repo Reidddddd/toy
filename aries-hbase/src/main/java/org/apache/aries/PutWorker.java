@@ -67,6 +67,9 @@ public class PutWorker extends AbstractHBaseToy {
   private final Parameter<Integer> key_length =
       IntParameter.newBuilder("pw.key_length").setDefaultValue(Constants.DEFAULT_KEY_LENGTH_PW).
           setDescription("The length of the generated key in bytes.").opt();
+  private final Parameter<Integer> value_length =
+      IntParameter.newBuilder("pw.value_length").setDefaultValue(Constants.DEFAULT_VALUE_LENGTH_PW)
+          .setDescription("The length of the generated value in bytes. Must choose RANDOM kine.").opt();
 
   enum VALUE_KIND {
     RANDOM, FIXED
@@ -88,6 +91,8 @@ public class PutWorker extends AbstractHBaseToy {
     requisites.add(buffer_size);
     requisites.add(running_time);
     requisites.add(value_kind);
+    requisites.add(key_length);
+    requisites.add(value_length);
   }
 
   @Override
@@ -99,6 +104,7 @@ public class PutWorker extends AbstractHBaseToy {
     example(running_time.key(), "300");
     example(value_kind.key(), "FIXED");
     example(key_length.key(), "10");
+    example(value_length.key(), "10");
   }
 
   @Override
@@ -192,7 +198,7 @@ public class PutWorker extends AbstractHBaseToy {
           String k = ToyUtils.generateRandomString(key_length.value());
           byte[] value = (kind == VALUE_KIND.FIXED) ?
               ToyUtils.generateBase64Value(k) :
-              Bytes.toBytes(ToyUtils.generateRandomString(22));
+              Bytes.toBytes(ToyUtils.generateRandomString(value_length.value()));
           Put put = new Put(Bytes.toBytes(k));
           put.addColumn(
               Bytes.toBytes(family.value()),

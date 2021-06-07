@@ -44,4 +44,6 @@ public final class Constants {
 
   public static final int DEFAULT_KEY_LENGTH_PW = 10;
 
+  public static final int DEFAULT_VALUE_LENGTH_PW = 22;
+
 }
